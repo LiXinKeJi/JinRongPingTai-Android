@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f5f5f5">
+    <include
+        android:id="@+id/title"
+        layout="@layout/navigation_layout"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TextView
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_gravity="center_horizontal"
+        android:textSize="13sp"
+        android:text="App众筹股份"
+        android:textColor="#666666"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_5"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/txt_guCoin"
+                android:paddingLeft="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="您当前累计消费1111元，当前累计积分152股币"
+                android:textColor="#666666"
+                android:textSize="14dp" />
+            <LinearLayout
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#000000"
+                    android:text="众筹股币"
+                    android:layout_marginLeft="10dp"/>
+                <EditText
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:id="@+id/edit_crowdfunding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:textSize="12sp"
+                    android:textColor="#666666"
+                    android:hint="请输入金额"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="numberDecimal"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#000000"
+                    android:text="元"
+                    android:layout_marginLeft="10dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/white_5"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingRight="15dp">
+
+                <TextView
+                    android:visibility="invisible"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="13sp"
+                    android:textColor="#666666"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="说明每1元相当于1股币"
+                    android:layout_weight="10" />
+
+
+                <TextView
+                    android:id="@+id/txt_pay3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:background="@drawable/black_5"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="支付"
+                    android:textColor="#ffffff" />
+
+            </LinearLayout>
+        </LinearLayout>
+        <TextView
+            android:paddingLeft="10dp"
+            android:layout_margin="10dp"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="说明：每1元相当于1股币"
+             />
+    </LinearLayout>
+
+
+</LinearLayout>
+

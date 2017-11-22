@@ -1,0 +1,79 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '22.0.0'
+    useLibrary 'org.apache.http.legacy'
+    defaultConfig {
+        applicationId "com.finance.client"
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+
+
+    signingConfigs {
+        release {
+            keyAlias 'client'
+            keyPassword '123456'
+            storeFile file('./android.keystore')
+            storePassword '123456'
+        }
+        debug {
+            keyAlias 'client'
+            keyPassword '123456'
+            storeFile file('./android.keystore')
+            storePassword '123456'
+        }
+    }
+
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.debug
+        }
+
+    }
+}
+
+repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+    flatDir{
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':publicmodule')
+    testCompile 'junit:junit:4.12'
+    compile(name: 'alchemy-release', ext: 'aar')
+    compile(name: 'photo-picker-1.0.3.1', ext: 'aar')
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.google.guava:guava:19.0'
+    compile 'com.google.zxing:core:3.2.0'
+    compile 'com.journeyapps:zxing-android-embedded:3.1.0'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'com.makeramen:roundedimageview:2.2.1'
+    compile project(':pingpp')
+    compile project(':okhttputils')
+    compile files('libs/open_sdk_r5781.jar')
+    compile files('libs/SocialSDK_WeiXin_1.jar')
+    compile files('libs/SocialSDK_WeiXin_2.jar')
+    compile files('libs/umeng_social_sdk.jar')
+    compile 'com.android.support:multidex:1.0.0'
+    compile files('libs/jcore-android-1.1.7.jar')
+    compile files('libs/jpush-android-3.0.9.jar')
+    compile 'com.google.code.gson:gson:2.3.1'
+
+}

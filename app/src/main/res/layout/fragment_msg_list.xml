@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ptr="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ffffff">
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        ptr:riv_corner_radius="5dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="10dp"
+        android:background="#dfdfdf"/>
+    <com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView
+        android:id="@+id/ListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        ptr:ptrDrawable="@drawable/default_ptr_flip"
+        ptr:ptrAnimationStyle="flip"
+        android:divider="#dfdfdf"
+        android:dividerHeight="0.5dp">
+
+    </com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView>
+
+</LinearLayout>

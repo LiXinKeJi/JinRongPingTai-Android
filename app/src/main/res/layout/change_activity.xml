@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ffffff">
+    <include
+        layout="@layout/navigation_layout"/>
+    <com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView
+        android:id="@+id/ListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="#dfdfdf"
+        android:dividerHeight="1dp">
+
+    </com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView>
+
+
+</LinearLayout>
