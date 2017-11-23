@@ -60,7 +60,6 @@ public class ModifyUserInfoActivity extends BaseActivity{
         rightBtn.setText("保存");
         rightBtn.setVisibility(View.VISIBLE);
         userinfo= (UserInfoDao) getIntent().getSerializableExtra("userinfo");
-//        avatar=userinfo.getAvatar();
         txtSign=(TextView)findViewById(R.id.Sign);
         findViewById(R.id.HeadImg).setOnClickListener(this);
         findViewById(R.id.HYLayout).setOnClickListener(this);
@@ -69,7 +68,6 @@ public class ModifyUserInfoActivity extends BaseActivity{
         rightBtn.setOnClickListener(this);
         updateView();
         requestCategory();
-        //rightBtn.setVisibility(View.VISIBLE);
     }
 
     private void updateView() {
@@ -163,10 +161,6 @@ public class ModifyUserInfoActivity extends BaseActivity{
 
 
     private void modifyUserAvatar(){
-//        if(TextUtils.isEmpty(avatar)){
-//            Toast.makeText(this, "请选择头像", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
         showLoading();
         Map<String,String> params = Maps.newHashMap();
         params.put("cmd","changeAvatar");
@@ -305,7 +299,6 @@ public class ModifyUserInfoActivity extends BaseActivity{
                             Toast.makeText(ModifyUserInfoActivity.this,"编辑个人信息成功" , Toast.LENGTH_SHORT).show();
                             finish();
                         }
-//                            updateView();
 
                     }
                 });
@@ -483,11 +476,7 @@ public class ModifyUserInfoActivity extends BaseActivity{
     private void UploadImage(String path){
         //ImageLoaderUtil.getInstance().displayImage("file://"+path, (ImageView) findViewById(R.id.HeadImg));
         ((ImageView)findViewById(R.id.HeadImg)).setImageURI(Uri.fromFile(new File(path)));
-
         avatar = ImageUtil.imageFile2Base64(path);
-//        modifyUserAvatar();
-        //base64 encode
-
     }
 
     @Override

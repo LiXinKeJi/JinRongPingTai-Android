@@ -108,15 +108,6 @@ public class MsgFragment extends BaseFragment{
                         }
                     }
                 });
-//        for(int i = 0; i< 10 ;++i){;
-//            item.setCategoryID("123");
-//            MsgItem item = new MsgItem();
-//            item.setCategory("金融")
-//            item.setLogo("https://img1.jiemian.com/101/original/20170904/150451014738829600_a280x210.jpg");
-//            item.setTitle("金融");
-//            item.setUnreadMessage(i);
-//            msgList.add(item);
-//        }
     }
 
 

@@ -7,11 +7,10 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.finance.client.activity.ModifyUserInfoActivity;
 import com.finance.client.R;
+import com.finance.client.activity.ModifyUserInfoActivity;
 import com.finance.client.activity.ReNewActivity;
 import com.finance.client.activity.SettingActivity;
 import com.finance.client.activity.WalletActivity;
@@ -22,6 +21,7 @@ import com.finance.library.Util.UserUtil;
 import com.finance.library.network.AsyncClient;
 import com.finance.library.network.AsyncResponseHandler;
 import com.google.common.collect.Maps;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.yhrun.alchemy.Util.ImageLoaderUtil;
 
 import java.util.Map;
@@ -33,6 +33,7 @@ import java.util.Map;
 
 public class MineFragment extends BaseFragment implements View.OnClickListener{
     public static UserInfoDao userInfo;
+    private RoundedImageView headImg;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         view.findViewById(R.id.WalletLayout).setOnClickListener(this);
         view.findViewById(R.id.XDLayout).setOnClickListener(this);
         view.findViewById(R.id.InfoLayout).setOnClickListener(this);
+        headImg = (RoundedImageView) view.findViewById(R.id.mine_HeadImg);
         return view;
     }
 
@@ -87,7 +89,9 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             ((TextView) getView().findViewById(R.id.ID)).setText("ID号: " + userInfo.getUid());
         }
         if (userInfo!=null&&!TextUtils.isEmpty(userInfo.getAvatar())) {
-            ImageLoaderUtil.getInstance().displayImage(userInfo.getAvatar(), ((ImageView) getView().findViewById(R.id.HeadImg)));
+            ImageLoaderUtil.getInstance().displayImage(userInfo.getAvatar(),headImg);
+        }else {
+            headImg.setImageResource(R.drawable.ic_launcher);
         }
     }
 

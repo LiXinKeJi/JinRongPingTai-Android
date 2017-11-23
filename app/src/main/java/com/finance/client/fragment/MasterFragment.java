@@ -88,7 +88,6 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
                 adapter.notifyDataSetChanged();
                 requestData();
             }
-
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
                 nowPage += 1;
@@ -104,7 +103,6 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
                 }
             }
         });
-
     }
 
     private void requestData(){
@@ -113,7 +111,7 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
         params.put("cmd","getAuthorList");
         params.put("uid", UserUtil.uid);
         params.put("pageCount","10");
-        params.put("nowPage",""+nowPage);
+        params.put("nowPage","" + nowPage);
         AsyncClient.Get()
                 .setHost(Content.DOMAIN)
                 .setReturnClass(MasterListDao.class)
@@ -124,10 +122,6 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
                     public void onResult(boolean success, MasterListDao result, ResponseError error) {
                         dismissLoading();
                         mListView.onRefreshComplete();
-//                        if (!success) {
-//                            Toast.makeText(MasterFragment.this.getContext(), error.errorMsg, Toast.LENGTH_SHORT).show();
-//                            return;
-//                        }
                         if (success) {
                             if (result.getResult().equals("1")) {
                                 Toast.makeText(MasterFragment.this.getContext(), result.getResultNote(), Toast.LENGTH_SHORT).show();
@@ -146,7 +140,6 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
                     }
                 });
     }
-
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.SearchBtn){

@@ -10,34 +10,34 @@
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="#dfdfdf"/>
-    
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/HeadLayout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:gravity="center"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
+            android:layout_weight="1"
             android:textColor="#333333"
             android:layout_centerVertical="true"
             android:text="头像"/>
+        <com.yhrun.alchemy.View.CircleImageView
+            android:id="@+id/HeadImg"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            android:layout_centerVertical="true"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
             android:src="@drawable/jinru3x"/>
-        <com.yhrun.alchemy.View.CircleImageView
-            android:id="@+id/HeadImg"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="50dp"
-            android:layout_centerVertical="true"/>
-    </RelativeLayout>
+
+    </LinearLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
@@ -49,7 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="20dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="20dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -182,7 +182,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="20dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -211,7 +211,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="20dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
