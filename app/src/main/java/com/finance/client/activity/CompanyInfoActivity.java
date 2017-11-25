@@ -34,7 +34,7 @@ import java.util.Map;
 public class CompanyInfoActivity extends BaseActivity{
     private String id;
     private MasterDao info;
-    private TextView rightBtn;
+    private TextView rightBtn,statusInfo;
     private RatingBar ratingBar;
     private TextView tv_score;
     @Override
@@ -43,6 +43,7 @@ public class CompanyInfoActivity extends BaseActivity{
         setContentView(R.layout.activity_company_layout);
         super.onCreate(savedInstanceState);
         rightBtn = (TextView) findViewById(R.id.RightBtnText);
+        statusInfo = (TextView) findViewById(R.id.StatusInfo);
         rightBtn.setText("设置备注");
         rightBtn.setVisibility(View.VISIBLE);
         rightBtn.setOnClickListener(this);
@@ -140,31 +141,20 @@ public class CompanyInfoActivity extends BaseActivity{
         if (info != null && !TextUtils.isEmpty(info.getScore())) {
             tv_score.setText(info.getScore());
         }
-
         if (info != null && !TextUtils.isEmpty(info.getStatus())) {
             if (info.getStatus().equals("0")) {
-                ((TextView) findViewById(R.id.StatusInfo)).setBackgroundResource(R.drawable.black_15);
-                ((TextView) findViewById(R.id.StatusInfo)).setText("已订购");
-                ((TextView) findViewById(R.id.StatusInfo)).setTextColor(Color.parseColor("#ffffff"));
+                statusInfo.setBackgroundResource(R.drawable.black_15);
+                statusInfo.setText("已订购");
+                statusInfo.setTextColor(Color.parseColor("#ffffff"));
             } else if (info.getStatus().equals("1")) {
-                ((TextView) findViewById(R.id.StatusInfo)).setBackgroundResource(R.drawable.black_15);
-                ((TextView) findViewById(R.id.StatusInfo)).setText("订购");
-                ((TextView) findViewById(R.id.StatusInfo)).setTextColor(Color.parseColor("#ffffff"));
+                statusInfo.setBackgroundResource(R.drawable.black_15);
+                statusInfo.setText("订购");
+                statusInfo.setTextColor(Color.parseColor("#ffffff"));
             } else if (info.getStatus().equals("2")) {
-                ((TextView) findViewById(R.id.StatusInfo)).setBackgroundResource(R.drawable.gray_15);
-                ((TextView) findViewById(R.id.StatusInfo)).setText("订购已满");
-                ((TextView) findViewById(R.id.StatusInfo)).setTextColor(Color.parseColor("#777777"));
+                statusInfo.setBackgroundResource(R.drawable.gray_15);
+                statusInfo.setText("订购已满");
+                statusInfo.setTextColor(Color.parseColor("#777777"));
             }
-//            ((TextView) findViewById(R.id.StatusInfo)).setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (!info.getStatus().equals("2")) {
-//                        Intent intent = new Intent(CompanyInfoActivity.this, PaySelectActivity.class);
-//                        intent.putExtra("merchantID", info.getMerchantID());
-//                        startActivity(intent);
-//                    }
-//                }
-//            });
         }
     }
 }

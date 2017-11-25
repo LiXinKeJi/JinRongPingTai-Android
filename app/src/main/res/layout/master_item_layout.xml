@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:background="#dfdfdf"
-            android:id="@+id/Title"
+            android:id="@+id/master_Title"
             android:textSize="12sp"
             android:textColor="#666666"
             android:gravity="center_vertical"
@@ -24,7 +24,7 @@
             android:layout_height="100dp"
             android:orientation="horizontal">
             <com.makeramen.roundedimageview.RoundedImageView
-                android:id="@+id/HeadImg"
+                android:id="@+id/master_HeadImg"
                 android:layout_height="80dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
@@ -45,7 +45,7 @@
                         android:paddingBottom="5dp"
                         android:layout_alignParentRight="true"
                         android:background="@drawable/gray_15"
-                        android:id="@+id/StatusInfo"
+                        android:id="@+id/master_StatusInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text=""
@@ -62,14 +62,14 @@
                     android:layout_marginRight="10dp"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/Name"
+                        android:id="@+id/master_Name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:textColor="#000000"
                         android:text=""/>
                     <TextView
-                        android:id="@+id/ID"
+                        android:id="@+id/master_ID"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
@@ -82,7 +82,7 @@
                         android:layout_marginTop="5dp"
                         android:orientation="horizontal">
                         <TextView
-                            android:id="@+id/Fans"
+                            android:id="@+id/master_Fans"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
@@ -91,7 +91,7 @@
                             android:drawablePadding="3dp"
                             android:drawableLeft="@drawable/dibu03"/>
                         <TextView
-                            android:id="@+id/Score"
+                            android:id="@+id/master_Score"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
@@ -112,7 +112,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/Desc"
+            android:id="@+id/master_Desc"
             android:padding="10dp"
             android:textSize="12sp"
             android:textColor="#666666"

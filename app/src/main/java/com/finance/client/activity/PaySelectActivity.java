@@ -3,7 +3,7 @@ package com.finance.client.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -15,15 +15,18 @@ import android.widget.Toast;
 import com.finance.client.R;
 import com.finance.client.util.Content;
 import com.finance.library.BaseActivity;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.library.Util.UserUtil;
 import com.google.common.collect.Maps;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -40,7 +43,9 @@ public class PaySelectActivity extends BaseActivity{
     private TextView PayBtnB,PayBtnA;
     private EditText edit_password;
     private RelativeLayout get_publisher_phone,PayBtnBLayout;
+    private LinearLayout PwdLayout;
     private String isOrder = "0";
+    private int isSetPassword;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         title = "订购支付";
@@ -57,6 +62,7 @@ public class PaySelectActivity extends BaseActivity{
         get_publisher_phone=(RelativeLayout)findViewById(R.id.get_publisher_phone);
         edit_password=(EditText)findViewById(R.id.password);
         PayBtnBLayout=(RelativeLayout)findViewById(R.id.PayBtnBLayout);
+        PwdLayout=(LinearLayout)findViewById(R.id.PwdLayout);
     }
 
     @Override
@@ -73,64 +79,68 @@ public class PaySelectActivity extends BaseActivity{
                 Toast.makeText(this, "请选择订购类型", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (!edit_password.getText().toString().equals(password))
-            {
-                Toast.makeText(this, "密码输入错误", Toast.LENGTH_SHORT).show();
-                return;
-            }else {
-
-                try {
-                    intent.putExtra("price", priceList.getJSONObject(selectIndex).getString("price"));
-                    intent.putExtra("id", priceList.getJSONObject(selectIndex).getString("id"));
-                    intent.putExtra("projectId", projectIds[selectIndex]);
-                    intent.putExtra("merchantID", merchantID);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            if (isSetPassword==1){
+                if (!edit_password.getText().toString().equals(password)){
+                    Toast.makeText(this, "密码输入错误", Toast.LENGTH_SHORT).show();
+                    return;
+                }else {
+                    try {
+                        intent.putExtra("price", priceList.getJSONObject(selectIndex).getString("price"));
+                        intent.putExtra("id", priceList.getJSONObject(selectIndex).getString("id"));
+                        intent.putExtra("projectId", projectIds[selectIndex]);
+                        intent.putExtra("merchantID", merchantID);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    startActivity(intent);
+                    finish();
                 }
-                startActivity(intent);
-                finish();
             }
         }else if(v.getId() == R.id.PayBtnB){
-            if (!edit_password.getText().toString().equals(password))
-            {
-                Toast.makeText(this, "密码输入错误", Toast.LENGTH_SHORT).show();
-                return;
-            }else {
-                intent.putExtra("price", price);
-                intent.putExtra("id", "1000");
-                intent.putExtra("projectId", "1000");
-                intent.putExtra("merchantID", merchantID);
-                startActivity(intent);
-                finish();
+            if (isSetPassword==1){
+                if (!edit_password.getText().toString().equals(password))
+                {
+                    Toast.makeText(this, "密码输入错误", Toast.LENGTH_SHORT).show();
+                    return;
+                }else {
+                    intent.putExtra("price", price);
+                    intent.putExtra("id", "1000");
+                    intent.putExtra("projectId", "1000");
+                    intent.putExtra("merchantID", merchantID);
+                    startActivity(intent);
+                    finish();
+                }
             }
         }
     }
 
     private void requestInfo(){
         Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","getPriceList");
-//        params.put("uid", UserUtil.uid);
-        params.put("merchantID",merchantID);
+        String json = "{\"cmd\":\"getPriceList\",\"uid\":\""+UserUtil.uid+"\",\"merchantID\":\""+merchantID+"\"}";
+        params.put("json",json);
         showLoading();
-        AsyncClient.Get()
-                .setParams(params)
-                .setHost(Content.DOMAIN)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        if(success && !TextUtils.isEmpty(result)){
-                            try {
-                                updateView(new JSONObject(result));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }else{
-                            Toast.makeText(PaySelectActivity.this, "获取订购信息失败", Toast.LENGTH_SHORT).show();
-                        }
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                Toast.makeText(PaySelectActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onResponse(String response, int id) {
+                Log.i("response", "onResponse: " + response);
+                dismissLoading();
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.getString("result").equals("1")) {
+                        Toast.makeText(PaySelectActivity.this, jsonObject.getString("resultNote"), Toast.LENGTH_SHORT).show();
+                    }else {
+                        updateView(jsonObject);
                     }
-                });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
     private void updateView(JSONObject info) throws JSONException {
         priceList = info.getJSONArray("priceList");
@@ -141,10 +151,16 @@ public class PaySelectActivity extends BaseActivity{
             PayBtnBLayout.setVisibility(View.GONE);
             return;
         }
+        isSetPassword = info.getInt("isSetPassword");
+        if (isSetPassword == 0){
+            PwdLayout.setVisibility(View.GONE);
+        }else {
+            PwdLayout.setVisibility(View.VISIBLE);
+        }
         get_publisher_phone.setVisibility(View.VISIBLE);
         PayBtnA.setVisibility(View.VISIBLE);
         PayBtnBLayout.setVisibility(View.VISIBLE);
-        password=info.getString("password");
+        password = info.getString("password");
         JSONObject jsonObject=info.getJSONObject("other");
         price=jsonObject.getString("price");
         tv_publisher_phone.setText("￥"+price);
@@ -169,8 +185,6 @@ public class PaySelectActivity extends BaseActivity{
                 ((TextView)view.findViewById(R.id.Title)).setText(obj.getString("project"));
                 ((TextView)view.findViewById(R.id.Price)).setText("¥"+obj.getString("price"));
             }
-
-
             if(selectIndex == i){
                 ((ImageView)view.findViewById(R.id.ChooseBtn)).setImageResource(R.drawable.select_icon);
             }else{

@@ -1,21 +1,26 @@
 package com.finance.client.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.finance.client.R;
+import com.finance.client.activity.PaySelectActivity;
+import com.finance.client.common.LogOutDialog;
 import com.finance.client.model.MasterDao;
 import com.finance.library.Content;
 import com.finance.library.Util.UserUtil;
 import com.finance.library.network.AsyncClient;
 import com.finance.library.network.AsyncResponseHandler;
 import com.google.common.collect.Maps;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.yhrun.alchemy.Util.ImageLoaderUtil;
 
 import java.util.List;
@@ -26,22 +31,16 @@ import java.util.Map;
  * Date : 17/9/2
  */
 
-public class MasterAdapter extends BaseAdapter{
+public class MasterAdapter extends BaseAdapter {
     private Context mContext;
     private List<MasterDao> lists;
-    private boolean searchAdapter = false;
-    private View.OnClickListener followListener;
-    public MasterAdapter(Context mContext,List<MasterDao> lists){
+    private boolean searchAdapter;
+    private LogOutDialog dialog1;
+
+    public MasterAdapter(Context mContext, List<MasterDao> lists, boolean searchAdapter) {
         this.mContext = mContext;
         this.lists = lists;
-    }
-
-    public void setFollowListener(View.OnClickListener listener){
-        this.followListener = listener;
-    }
-
-    public void setSearchAdapter(boolean search){
-
+        this.searchAdapter = searchAdapter;
     }
 
     @Override
@@ -61,102 +60,143 @@ public class MasterAdapter extends BaseAdapter{
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        final View view = View.inflate(mContext, R.layout.master_item_layout,null);
+        MasterViewHolder viewHolder;
+        if (convertView == null) {
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.master_item_layout, null);
+            viewHolder = new MasterViewHolder();
+            viewHolder.HeadImg = (RoundedImageView) convertView.findViewById(R.id.master_HeadImg);
+            viewHolder.Title = (TextView) convertView.findViewById(R.id.master_Title);
+            viewHolder.StatusInfo = (TextView) convertView.findViewById(R.id.master_StatusInfo);
+            viewHolder.Name = (TextView) convertView.findViewById(R.id.master_Name);
+            viewHolder.ID = (TextView) convertView.findViewById(R.id.master_ID);
+            viewHolder.Fans = (TextView) convertView.findViewById(R.id.master_Fans);
+            viewHolder.Score = (TextView) convertView.findViewById(R.id.master_Score);
+            viewHolder.Desc = (TextView) convertView.findViewById(R.id.master_Desc);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (MasterViewHolder) convertView.getTag();
+        }
         final MasterDao info = lists.get(position);
-        ((TextView)view.findViewById(R.id.Title)).setText(info.getCategory());
-        ((TextView)view.findViewById(R.id.Name)).setText(info.getName());
-        ImageLoaderUtil.getInstance().displayImage(info.getLogo(), (ImageView) view.findViewById(R.id.HeadImg));
-        ((TextView)view.findViewById(R.id.ID)).setText("ID 号："+info.getMerchantID());
-        ((TextView)view.findViewById(R.id.Desc)).setText(info.getSignature());
-        ((TextView)view.findViewById(R.id.Score)).setText(info.getScore());
-        ((TextView)view.findViewById(R.id.Fans)).setText(""+info.getFansNumber());
-//        if(info.getStatus().equals("0")){
-//            view.findViewById(R.id.StatusLayout).setBackgroundResource(R.drawable.black_15);
-//            ((TextView)view.findViewById(R.id.StatusInfo)).setText("已订购");
-//            ((TextView)view.findViewById(R.id.StatusInfo)).setTextColor(Color.parseColor("#ffffff"));
-//        }else if(info.getStatus().equals("1")){
-//            view.findViewById(R.id.StatusLayout).setBackgroundResource(R.drawable.black_15);
-//            ((TextView)view.findViewById(R.id.StatusInfo)).setText("订购");
-//            ((TextView)view.findViewById(R.id.StatusInfo)).setTextColor(Color.parseColor("#ffffff"));
-//        }else if(info.getStatus().equals("2")){
-//            view.findViewById(R.id.StatusLayout).setBackgroundResource(R.drawable.gray_15);
-//            ((TextView)view.findViewById(R.id.StatusInfo)).setText("订购已满");
-//            ((TextView)view.findViewById(R.id.StatusInfo)).setTextColor(Color.parseColor("#777777"));
-//        }
-
-
-        if(info.getAttention().equals("0")){
-//            view.findViewById(R.id.StatusLayout).setBackgroundResource(R.drawable.black_15);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setBackgroundResource(R.drawable.black_15);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setText("添加");
-            ((TextView)view.findViewById(R.id.StatusInfo)).setTextColor(Color.parseColor("#ffffff"));
-            ((TextView)view.findViewById(R.id.StatusInfo)).setEnabled(true);
-//            view.findViewById(R.id.StatusLayout).setEnabled(true);
-        }else if(info.getAttention().equals("1")){
-//            view.findViewById(R.id.StatusLayout).setBackgroundResource(R.drawable.black_15);
-//            view.findViewById(R.id.StatusLayout).setEnabled(false);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setBackgroundResource(R.drawable.black_15);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setEnabled(false);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setText("已添加");
-            ((TextView)view.findViewById(R.id.StatusInfo)).setTextColor(Color.parseColor("#ffffff"));
+        if (TextUtils.isEmpty(info.getNickName())) {
+            viewHolder.Name.setText(info.getName());
+        } else {
+            viewHolder.Name.setText(info.getNickName());
         }
-        if(searchAdapter && "0".equals(info.getAttention())){
-//            view.findViewById(R.id.StatusLayout).setBackgroundResource(R.drawable.black_15);
-//            view.findViewById(R.id.StatusLayout).setEnabled(true);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setBackgroundResource(R.drawable.black_15);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setEnabled(true);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setText("添加");
-            ((TextView)view.findViewById(R.id.StatusInfo)).setTextColor(Color.parseColor("#ffffff"));
-            ((TextView)view.findViewById(R.id.StatusInfo)).setTag(position);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setOnClickListener(followListener);
-//            view.findViewById(R.id.StatusLayout).setTag(position);
-//            view.findViewById(R.id.StatusLayout).setOnClickListener(followListener);
-        }else if(searchAdapter && "1".equals(info.getAttention())){
-//            view.findViewById(R.id.StatusLayout).setBackgroundResource(R.drawable.gray_15);
-//            view.findViewById(R.id.StatusLayout).setEnabled(false);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setBackgroundResource(R.drawable.gray_15);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setText("已添加");
-            ((TextView)view.findViewById(R.id.StatusInfo)).setEnabled(false);
-            ((TextView)view.findViewById(R.id.StatusInfo)).setTextColor(Color.parseColor("#777777"));
-        }else{
-            ((TextView)view.findViewById(R.id.StatusInfo)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-
-                    follow(position,(TextView)view.findViewById(R.id.StatusInfo));
-
-//                    if(!searchAdapter && !info.getStatus().equals("2")) {
-//                        Intent intent = new Intent(mContext, PaySelectActivity.class);
-//                        intent.putExtra("merchantID",info.getMerchantID());
-//                        mContext.startActivity(intent);
-//                    }
-                }
-            });
+        if (TextUtils.isEmpty(info.getLogo())) {
+            viewHolder.HeadImg.setImageResource(R.drawable.ic_launcher);
+        } else {
+            ImageLoaderUtil.getInstance().displayImage(info.getLogo(), viewHolder.HeadImg);
         }
-        return view;
+        viewHolder.Title.setText(info.getCategory());
+        viewHolder.ID.setText("ID 号：" + info.getMerchantID());
+        viewHolder.Desc.setText(info.getSignature());
+        viewHolder.Score.setText(info.getScore());
+        viewHolder.Fans.setText("" + info.getFansNumber());
+        if (searchAdapter) {
+            switch (info.getAttention()) {
+                case "0":
+                    viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);
+                    viewHolder.StatusInfo.setText("添加");
+                    viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
+                    viewHolder.StatusInfo.setTag(position);
+                    viewHolder.StatusInfo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            follow(position);
+                        }
+                    });
+                    break;
+                case "1":
+                    viewHolder.StatusInfo.setBackgroundResource(R.drawable.gray_15);
+                    viewHolder.StatusInfo.setText("已添加");
+                    viewHolder.StatusInfo.setTextColor(Color.parseColor("#777777"));
+                    break;
+            }
+        } else {
+            switch (info.getStatus()) {
+                case "0":
+                    viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);
+                    viewHolder.StatusInfo.setText("已订购");
+                    viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
+                    viewHolder.StatusInfo.setEnabled(true);
+                    viewHolder.StatusInfo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (dialog1 == null)
+                                dialog1 = new LogOutDialog(mContext, R.string.are_you_sure_cancel, new LogOutDialog.OnSureBtnClickListener() {
+                                    @Override
+                                    public void sure() {
+                                        cancel(position);
+                                    }
+                                });
+                            dialog1.show();
+                        }
+                    });
+                    break;
+                case "1":
+                    viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);
+                    viewHolder.StatusInfo.setText("订购");
+                    viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
+                    viewHolder.StatusInfo.setEnabled(true);
+                    viewHolder.StatusInfo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(mContext, PaySelectActivity.class);
+                            intent.putExtra("merchantID", info.getMerchantID());
+                            intent.putExtra("isOrder", "0");
+                            mContext.startActivity(intent);
+                        }
+                    });
+                    break;
+                case "2":
+                    viewHolder.StatusInfo.setEnabled(false);
+                    viewHolder.StatusInfo.setBackgroundResource(R.drawable.gray_15);
+                    viewHolder.StatusInfo.setText("订购已满");
+                    viewHolder.StatusInfo.setTextColor(Color.parseColor("#777777"));
+                    break;
+            }
+        }
+        return convertView;
     }
 
+    class MasterViewHolder {
+        RoundedImageView HeadImg;
+        TextView Title, StatusInfo, Name, ID, Fans, Score, Desc;
+    }
 
-    private void follow(int index, final TextView tv){
+    private void follow(int index) {
         final MasterDao info = lists.get(index);
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","attention");
+        Map<String, String> params = Maps.newHashMap();
+        params.put("cmd", "attention");
         params.put("uid", UserUtil.uid);
-        params.put("merchantID",info.getMerchantID());
-        AsyncClient.Get()
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .execute(new AsyncResponseHandler() {
-                    @Override
-                    public void onResult(boolean success, Object result, ResponseError error) {
-                        if(success){
-                            Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
-                            info.setAttention("1");
-                           notifyDataSetChanged();
-//                            return;
-                        }
-                    }
-                });
+        params.put("merchantID", info.getMerchantID());
+        AsyncClient.Get().setHost(Content.DOMAIN).setParams(params).execute(new AsyncResponseHandler() {
+            @Override
+            public void onResult(boolean success, Object result, ResponseError error) {
+                if (success) {
+                    Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
+                    info.setAttention("1");
+                    notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    private void cancel(int index) {
+        final MasterDao info = lists.get(index);
+        Map<String, String> params = Maps.newHashMap();
+        params.put("cmd", "cancleOrder");
+        params.put("uid", UserUtil.uid);
+        params.put("merchantID", info.getMerchantID());
+        AsyncClient.Get().setHost(Content.DOMAIN).setParams(params).execute(new AsyncResponseHandler() {
+            @Override
+            public void onResult(boolean success, Object result, ResponseError error) {
+                if (success) {
+                    Toast.makeText(mContext, "取消订购成功", Toast.LENGTH_SHORT).show();
+                    info.setStatus("1");
+                    notifyDataSetChanged();
+                }
+            }
+        });
     }
 }

@@ -4,22 +4,26 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.finance.client.R;
-import com.finance.client.fragment.BaseFragment;
 import com.finance.client.fragment.MasterFragment;
 import com.finance.client.fragment.MineFragment;
 import com.finance.client.fragment.MsgFragment;
 import com.finance.client.receiver.ExampleUtil;
+
 import cn.jpush.android.api.JPushInterface;
 
 /**
@@ -27,80 +31,104 @@ import cn.jpush.android.api.JPushInterface;
  * Date : 17/8/14
  */
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener{
-    private TextView HomeBtn ,OrderBtn,MineBtn;
-    private int index = -1;
-    private int[] selectIcons = {R.drawable.dibu02,R.drawable.dibu04,R.drawable.dibu06};
-    private int[] icons = {R.drawable.dibu01,R.drawable.dibu03,R.drawable.dibu05};
-
+public class MainActivity extends FragmentActivity implements View.OnClickListener {
+    private LinearLayout[] mLinearLayout;
+    private TextView[] mTextView;
+    private Fragment[] mFragments;
+    private Fragment currentFragment = new Fragment();
+    private Context context;
+    private int current = 0;
     public static boolean isForeground = false;
-
+    private long exitTime = 0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-        HomeBtn = (TextView) findViewById(R.id.msgText);
-        OrderBtn = (TextView)findViewById(R.id.orderText);
-        MineBtn = (TextView)findViewById(R.id.mineText);
-        findViewById(R.id.msgBtn).setOnClickListener(this);
-        findViewById(R.id.orderBtn).setOnClickListener(this);
-        findViewById(R.id.mineBtn).setOnClickListener(this);
-        changeTab(0);
+        context = this;
+        initView();
+        initFragment();
+        refreshView();
         registerMessageReceiver();
         init();
     }
 
+    private void initView() {
+        mLinearLayout = new LinearLayout[3];
+        mLinearLayout[0] = (LinearLayout) findViewById(R.id.iv_main_massage);
+        mLinearLayout[1] = (LinearLayout) findViewById(R.id.iv_main_master);
+        mLinearLayout[2] = (LinearLayout) findViewById(R.id.iv_main_mine);
+        mTextView = new TextView[3];
+        mTextView[0] = (TextView) findViewById(R.id.text_main_massage);
+        mTextView[1] = (TextView) findViewById(R.id.text_main_master);
+        mTextView[2] = (TextView) findViewById(R.id.text_main_mine);
+    }
+
+    private void initFragment() {
+        mFragments = new Fragment[3];
+        mFragments[0] = new MsgFragment();
+        mFragments[1] = new MasterFragment();
+        mFragments[2] = new MineFragment();
+        setCurrent(0);
+    }
+
+    private void refreshView() {
+        for (int i = 0; i < mLinearLayout.length; i++) {
+            mLinearLayout[i].setId(i);
+            mLinearLayout[i].setOnClickListener(this);
+        }
+    }
+
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.msgBtn){
-            changeTab(0);
-        }else if(v.getId() == R.id.orderBtn){
-            changeTab(1);
-        }else if(v.getId() == R.id.mineBtn){
-            changeTab(2);
+        switch (v.getId()) {
+            case 0:
+                setCurrent(0);
+                break;
+            case 1:
+                setCurrent(1);
+                break;
+            case 2:
+                setCurrent(2);
+                break;
+            case 3:
+                setCurrent(3);
+                break;
+            default:
+                break;
         }
     }
 
-    private void changeTab(int _index){
-        if(index == _index){
-            return;
+    private void setCurrent(int position) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if (!mFragments[position].isAdded()) {
+            transaction
+                    .hide(currentFragment)
+                    .add(R.id.activity_new_main_layout_content, mFragments[position]);
+        } else {
+            transaction
+                    .hide(currentFragment)
+                    .show(mFragments[position]);
         }
-        index = _index;
-        if(index == 0) {
-            FragmentManager fm = getSupportFragmentManager();
-            BaseFragment fragment = new MsgFragment();
-            fm.beginTransaction().replace(R.id.fragment, fragment).commit();
-            drawableTop(HomeBtn,R.drawable.dibu02,"#000000");
-            drawableTop(OrderBtn,R.drawable.dibu03,"#999999");
-            drawableTop(MineBtn,R.drawable.dibu05,"#999999");
-        }else if(index == 1){
-            FragmentManager fm = getSupportFragmentManager();
-            BaseFragment fragment = new MasterFragment();
-            fm.beginTransaction().replace(R.id.fragment, fragment).commit();
-            drawableTop(HomeBtn,R.drawable.dibu01,"#999999");
-            drawableTop(OrderBtn,R.drawable.dibu04,"#000000");
-            drawableTop(MineBtn,R.drawable.dibu05,"#999999");
-        }else if(index == 2){
-            FragmentManager fm = getSupportFragmentManager();
-            BaseFragment fragment = new MineFragment();
-            fm.beginTransaction().replace(R.id.fragment, fragment).commit();
-            drawableTop(HomeBtn,R.drawable.dibu01,"#999999");
-            drawableTop(OrderBtn,R.drawable.dibu03,"#999999");
-            drawableTop(MineBtn,R.drawable.dibu06,"#000000");
+        currentFragment = mFragments[position];
+        transaction.commit();
+
+        mLinearLayout[position].setSelected(true);
+        Resources resource = context.getResources();
+        ColorStateList csl1 = resource.getColorStateList(R.color.colorBlack);
+        ColorStateList csl2 = resource.getColorStateList(R.color.app_main_colour);
+        for (int i = 0; i < mLinearLayout.length; i++) {
+            if (i != position) {
+                mLinearLayout[i].setSelected(false);
+                mTextView[i].setTextColor(csl1);
+            } else {
+                mTextView[i].setTextColor(csl2);
+            }
         }
+        current = position;
     }
-
-    private void drawableTop(TextView textView,int icon,String color){
-        textView.setTextColor(Color.parseColor(color));
-        Drawable drawable= getResources().getDrawable(icon);
-        drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
-        textView.setCompoundDrawables(null,drawable,null,null);
-    }
-
-
 
     // 初始化 JPush。如果已经初始化，但没有登录成功，则执行重新登录。
-    private void init(){
+    private void init() {
         JPushInterface.init(getApplicationContext());
     }
 
@@ -156,10 +184,23 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     }
 //                    setCostomMsg(showMsg.toString());
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
             }
         }
+    }
 
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK
+                && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
+                Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                finish();
+            }
+            return true;
+        }
 
+        return super.onKeyDown(keyCode, event);
     }
 }

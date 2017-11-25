@@ -39,7 +39,7 @@ import java.util.Map;
  */
 
 public class SearchActivity extends BaseActivity{
-    public  MasterAdapter adapter;
+    public MasterAdapter adapter;
     private List<MasterDao> lists = new ArrayList<>();
     private PullToRefreshListView mListView;
     private TextView rightBtn;
@@ -53,7 +53,7 @@ public class SearchActivity extends BaseActivity{
         setContentView(R.layout.activity_search_layout);
         super.onCreate(savedInstanceState);
         mListView = (PullToRefreshListView) findViewById(R.id.ListView);
-        adapter = new MasterAdapter(this,lists);
+        adapter = new MasterAdapter(this,lists,true);
         mListView.setAdapter(adapter);
         mListView.setMode(PullToRefreshBase.Mode.BOTH);
         rightBtn = (TextView) findViewById(R.id.RightBtnText);
