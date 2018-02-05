@@ -9,22 +9,23 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.finance.client.R;
+import com.finance.client.model.CompanyInfoBean;
 import com.finance.client.model.MasterDao;
 import com.finance.client.util.Content;
+import com.finance.client.util.ToastUtils;
 import com.finance.library.BaseActivity;
 import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
 import com.google.common.collect.Maps;
-import com.yhrun.alchemy.Util.FastJsonUtil;
+import com.google.gson.Gson;
 import com.yhrun.alchemy.Util.ImageLoaderUtil;
-
-import org.json.JSONObject;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -69,39 +70,36 @@ public class CompanyInfoActivity extends BaseActivity{
         super.onClick(v);
         if(v.getId() == R.id.RightBtnText){
             Intent intent = new Intent(this,RemarkActivity.class);
-            intent.putExtra("id",info.getMerchantID());
+            intent.putExtra("id",info.getMerchantId());
             startActivity(intent);
         }
     }
 
     private void requestData(){
-        showLoading();
         Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","getAuthorDetail");
-        params.put("uid", UserUtil.uid);
-        params.put("merchantID",id);
-        AsyncClient.Get()
-                .setParams(params)
-                .setHost(Content.DOMAIN)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        if(success){
-                            try {
-                                JSONObject obj = new JSONObject(result);
-//                                Toast.makeText(CompanyInfoActivity.this, "获取发布者详情成功", Toast.LENGTH_SHORT).show();
-                                info = (MasterDao) FastJsonUtil.parseObject(obj.getString("dataList"),MasterDao.class);
-                                UpdateView();
-                            }catch (Exception e){
+        String json = "{\"cmd\":\"getAuthorDetail\",\"uid\":\""+UserUtil.uid+"\",\"merchantID\":\""+id+"\"}";
+        params.put("json",json);
+        showLoading();
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(CompanyInfoActivity.this,e.getMessage());
+            }
 
-                            }
-                        }else{
-                            Toast.makeText(CompanyInfoActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+            @Override
+            public void onResponse(String response, int id) {
+                Gson gson = new Gson();
+                dismissLoading();
+                CompanyInfoBean companyInfoBean = gson.fromJson(response,CompanyInfoBean.class);
+                if (companyInfoBean.getResult().equals("1")){
+                    ToastUtils.makeText(CompanyInfoActivity.this,companyInfoBean.getResultNote());
+                    return;
+                }
+                info = companyInfoBean.getDataList();
+                UpdateView();
+            }
+        });
     }
 
     private void UpdateView() {
@@ -116,11 +114,11 @@ public class CompanyInfoActivity extends BaseActivity{
                 ((TextView) findViewById(R.id.Name)).setText(info.getName());
             }else
             {
-                ((TextView) findViewById(R.id.Name)).setText(info.getNickName());
+                ((TextView) findViewById(R.id.Name)).setText(info.getName() + "(" + info.getNickName() + ")");
             }
         }
-        if (info != null && !TextUtils.isEmpty(info.getMerchantID())) {
-            ((TextView) findViewById(R.id.ID)).setText("ID号: " + info.getMerchantID());
+        if (info != null && !TextUtils.isEmpty(info.getMerchantId())) {
+            ((TextView) findViewById(R.id.ID)).setText("ID号: " + info.getMerchantId());
         }
         if (info != null && !TextUtils.isEmpty(info.getCategory())) {
             ((TextView) findViewById(R.id.Category)).setText("分类: " + info.getCategory());

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.finance.client.R;
+import com.finance.client.activity.MyApplication;
 import com.finance.client.activity.PaySelectActivity;
 import com.finance.client.common.LogOutDialog;
 import com.finance.client.model.MasterDao;
@@ -68,6 +69,7 @@ public class MasterAdapter extends BaseAdapter {
             viewHolder.Title = (TextView) convertView.findViewById(R.id.master_Title);
             viewHolder.StatusInfo = (TextView) convertView.findViewById(R.id.master_StatusInfo);
             viewHolder.Name = (TextView) convertView.findViewById(R.id.master_Name);
+            viewHolder.NickName = (TextView) convertView.findViewById(R.id.master_nickName);
             viewHolder.ID = (TextView) convertView.findViewById(R.id.master_ID);
             viewHolder.Fans = (TextView) convertView.findViewById(R.id.master_Fans);
             viewHolder.Score = (TextView) convertView.findViewById(R.id.master_Score);
@@ -78,17 +80,18 @@ public class MasterAdapter extends BaseAdapter {
         }
         final MasterDao info = lists.get(position);
         if (TextUtils.isEmpty(info.getNickName())) {
-            viewHolder.Name.setText(info.getName());
+            viewHolder.NickName.setVisibility(View.GONE);
         } else {
-            viewHolder.Name.setText(info.getNickName());
+            viewHolder.NickName.setText("("+info.getNickName()+")");
         }
         if (TextUtils.isEmpty(info.getLogo())) {
             viewHolder.HeadImg.setImageResource(R.drawable.ic_launcher);
         } else {
             ImageLoaderUtil.getInstance().displayImage(info.getLogo(), viewHolder.HeadImg);
         }
+        viewHolder.Name.setText(info.getName());
         viewHolder.Title.setText(info.getCategory());
-        viewHolder.ID.setText("ID 号：" + info.getMerchantID());
+        viewHolder.ID.setText("ID 号：" + info.getMerchantId());
         viewHolder.Desc.setText(info.getSignature());
         viewHolder.Score.setText(info.getScore());
         viewHolder.Fans.setText("" + info.getFansNumber());
@@ -142,7 +145,7 @@ public class MasterAdapter extends BaseAdapter {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(mContext, PaySelectActivity.class);
-                            intent.putExtra("merchantID", info.getMerchantID());
+                            intent.putExtra("merchantID", info.getMerchantId());
                             intent.putExtra("isOrder", "0");
                             mContext.startActivity(intent);
                         }
@@ -161,7 +164,7 @@ public class MasterAdapter extends BaseAdapter {
 
     class MasterViewHolder {
         RoundedImageView HeadImg;
-        TextView Title, StatusInfo, Name, ID, Fans, Score, Desc;
+        TextView Title, StatusInfo, Name,NickName, ID, Fans, Score, Desc;
     }
 
     private void follow(int index) {
@@ -169,13 +172,14 @@ public class MasterAdapter extends BaseAdapter {
         Map<String, String> params = Maps.newHashMap();
         params.put("cmd", "attention");
         params.put("uid", UserUtil.uid);
-        params.put("merchantID", info.getMerchantID());
+        params.put("merchantID", info.getMerchantId());
         AsyncClient.Get().setHost(Content.DOMAIN).setParams(params).execute(new AsyncResponseHandler() {
             @Override
             public void onResult(boolean success, Object result, ResponseError error) {
                 if (success) {
                     Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
                     info.setAttention("1");
+                    MyApplication.temp = 1;
                     notifyDataSetChanged();
                 }
             }
@@ -187,7 +191,7 @@ public class MasterAdapter extends BaseAdapter {
         Map<String, String> params = Maps.newHashMap();
         params.put("cmd", "cancleOrder");
         params.put("uid", UserUtil.uid);
-        params.put("merchantID", info.getMerchantID());
+        params.put("merchantID", info.getMerchantId());
         AsyncClient.Get().setHost(Content.DOMAIN).setParams(params).execute(new AsyncResponseHandler() {
             @Override
             public void onResult(boolean success, Object result, ResponseError error) {

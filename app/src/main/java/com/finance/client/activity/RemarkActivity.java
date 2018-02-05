@@ -9,16 +9,18 @@ import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.util.Content;
+import com.finance.client.util.ToastUtils;
 import com.finance.library.BaseActivity;
 import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.library.model.BaseResultDO;
 import com.google.common.collect.Maps;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -56,38 +58,28 @@ public class RemarkActivity extends BaseActivity{
             return;
         }
         Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","setAuthorNoet");
-        params.put("merchantID",id);
-        params.put("nickName",text);
-        params.put("uid", UserUtil.uid);
+        String json = "{\"cmd\":\"setAuthorNoet\",\"merchantID\":\""+id+"\",\"nickName\":\""+text+"\",\"uid\":\""+UserUtil.uid+"\"}";
+        params.put("json",json);
         showLoading();
-        AsyncClient.Get()
-                .setReturnClass(String.class)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        if(success){
-                            try {
-                                JSONObject jsonObject=new JSONObject(result);
-                                if (jsonObject.getString("result").equals("1"))
-                                {
-                                    Toast.makeText(RemarkActivity.this, jsonObject.getString("resultNote"), Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-                                Toast.makeText(RemarkActivity.this, jsonObject.getString("resultNote"), Toast.LENGTH_SHORT).show();
-                                finish();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(RemarkActivity.this,e.getMessage());
+            }
 
-                        }else{
-                            Toast.makeText(RemarkActivity.this, "操作失败", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    }
-                });
+            @Override
+            public void onResponse(String response, int id) {
+                Gson gson = new Gson();
+                dismissLoading();
+                BaseResultDO baseResultDO = gson.fromJson(response,BaseResultDO.class);
+                if (baseResultDO.getResult().equals("1")){
+                    ToastUtils.makeText(RemarkActivity.this, baseResultDO.getResultNote());
+                    return;
+                }
+                ToastUtils.makeText(RemarkActivity.this, baseResultDO.getResultNote());
+                finish();
+            }
+        });
     }
 }

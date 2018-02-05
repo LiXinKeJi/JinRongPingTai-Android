@@ -11,19 +11,19 @@ import java.util.List;
 
 public class MsgListDao extends BaseResultDO {
 
-    public MsgItem getSystemMessage() {
+    public MeassageBean getSystemMessage() {
         return systemMessage;
     }
 
-    public void setSystemMessage(MsgItem systemMessage) {
+    public void setSystemMessage(MeassageBean systemMessage) {
         this.systemMessage = systemMessage;
     }
 
-    public List<MsgItem> getDataList() {
+    public List<MeassageBean> getDataList() {
         return dataList;
     }
 
-    public void setDataList(List<MsgItem> dataList) {
+    public void setDataList(List<MeassageBean> dataList) {
         this.dataList = dataList;
     }
 
@@ -31,8 +31,8 @@ public class MsgListDao extends BaseResultDO {
 
 
     private String totalPage;
-    private MsgItem systemMessage;
-    private List<MsgItem> dataList;
+    private MeassageBean systemMessage;
+    private List<MeassageBean> dataList;
     private String result;
     private String resultNote;
     private String nowPage;

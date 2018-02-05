@@ -6,14 +6,35 @@ package com.finance.client.model;
  */
 
 public class MasterDao {
-    private String merchantID;
+    private String address;
+    private String attention;
+    private String category;
+    private String fansNumber;
+    private String introduction;
+    private String isVerify;
+    private String logo;
+    private String merchantId;
+    private String name;
+    private String nickName;
+    private String score;
+    private String signature;
+    private String status;
+    private String stopTime;
 
-    public String getMerchantID() {
-        return merchantID;
+    public String getAddress() {
+        return address;
     }
 
-    public void setMerchantID(String merchantID) {
-        this.merchantID = merchantID;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getAttention() {
+        return attention;
+    }
+
+    public void setAttention(String attention) {
+        this.attention = attention;
     }
 
     public String getCategory() {
@@ -24,12 +45,44 @@ public class MasterDao {
         this.category = category;
     }
 
+    public String getFansNumber() {
+        return fansNumber;
+    }
+
+    public void setFansNumber(String fansNumber) {
+        this.fansNumber = fansNumber;
+    }
+
+    public String getIntroduction() {
+        return introduction;
+    }
+
+    public void setIntroduction(String introduction) {
+        this.introduction = introduction;
+    }
+
+    public String getIsVerify() {
+        return isVerify;
+    }
+
+    public void setIsVerify(String isVerify) {
+        this.isVerify = isVerify;
+    }
+
     public String getLogo() {
         return logo;
     }
 
     public void setLogo(String logo) {
         this.logo = logo;
+    }
+
+    public String getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
     }
 
     public String getName() {
@@ -48,14 +101,6 @@ public class MasterDao {
         this.nickName = nickName;
     }
 
-    public String getFansNumber() {
-        return fansNumber;
-    }
-
-    public void setFansNumber(String fansNumber) {
-        this.fansNumber = fansNumber;
-    }
-
     public String getScore() {
         return score;
     }
@@ -70,22 +115,6 @@ public class MasterDao {
 
     public void setSignature(String signature) {
         this.signature = signature;
-    }
-
-    public String getIntroduction() {
-        return introduction;
-    }
-
-    public void setIntroduction(String introduction) {
-        this.introduction = introduction;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getStatus() {
@@ -103,35 +132,4 @@ public class MasterDao {
     public void setStopTime(String stopTime) {
         this.stopTime = stopTime;
     }
-
-    public String getIsVerify() {
-        return isVerify;
-    }
-
-    public void setIsVerify(String isVerify) {
-        this.isVerify = isVerify;
-    }
-
-    private String category;
-    private String logo;
-    private String name;
-    private String nickName;
-    private String fansNumber;
-    private String score;
-    private String signature;
-    private String introduction;
-    private String address;
-    private String status;
-    private String stopTime;
-    private String isVerify;
-
-    public String getAttention() {
-        return attention;
-    }
-
-    public void setAttention(String attention) {
-        this.attention = attention;
-    }
-
-    private String attention;
 }

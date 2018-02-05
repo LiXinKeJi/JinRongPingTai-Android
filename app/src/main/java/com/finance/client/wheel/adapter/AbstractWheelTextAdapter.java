@@ -24,6 +24,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 /**
  * Abstract wheel adapter provides common functionality for adapters.
  */
@@ -42,7 +44,7 @@ public abstract class AbstractWheelTextAdapter extends AbstractWheelAdapter {
     public static final int LABEL_COLOR = 0xFF700070;
     
     /** Default text size */
-    public static final int DEFAULT_TEXT_SIZE = 18;
+    public static final int DEFAULT_TEXT_SIZE = 24;
     
     // Text settings
     private int textColor = DEFAULT_TEXT_COLOR;
@@ -56,10 +58,13 @@ public abstract class AbstractWheelTextAdapter extends AbstractWheelAdapter {
     // Items resources
     protected int itemResourceId;
     protected int itemTextResourceId;
-    
+    private int currentIndex = 0;
+    private static int maxsize = 14;
+    private static int minsize = 12;
     // Empty items resources
     protected int emptyItemResourceId;
-	
+
+    private ArrayList<View> arrayList = new ArrayList<View>();
     /**
      * Constructor
      * @param context the current context
@@ -74,7 +79,7 @@ public abstract class AbstractWheelTextAdapter extends AbstractWheelAdapter {
      * @param itemResource the resource ID for a layout file containing a TextView to use when instantiating items views
      */
     protected AbstractWheelTextAdapter(Context context, int itemResource) {
-        this(context, itemResource, NO_RESOURCE);
+        this(context, itemResource, NO_RESOURCE,maxsize,  minsize);
     }
     
     /**
@@ -83,11 +88,12 @@ public abstract class AbstractWheelTextAdapter extends AbstractWheelAdapter {
      * @param itemResource the resource ID for a layout file containing a TextView to use when instantiating items views
      * @param itemTextResource the resource ID for a text view in the item layout
      */
-    protected AbstractWheelTextAdapter(Context context, int itemResource, int itemTextResource) {
+    protected AbstractWheelTextAdapter(Context context, int itemResource, int itemTextResource,int maxsize, int minsize) {
         this.context = context;
         itemResourceId = itemResource;
         itemTextResourceId = itemTextResource;
-        
+        this.maxsize = maxsize;
+        this.minsize = minsize;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     
@@ -186,13 +192,20 @@ public abstract class AbstractWheelTextAdapter extends AbstractWheelAdapter {
                 convertView = getView(itemResourceId, parent);
             }
             TextView textView = getTextView(convertView, itemTextResourceId);
+            if (!arrayList.contains(textView)) {
+                arrayList.add(textView);
+            }
             if (textView != null) {
                 CharSequence text = getItemText(index);
                 if (text == null) {
                     text = "";
                 }
                 textView.setText(text);
-    
+                if (index == currentIndex) {
+                    textView.setTextSize(maxsize);
+                } else {
+                    textView.setTextSize(minsize);
+                }
                 if (itemResourceId == TEXT_VIEW_ITEM_RESOURCE) {
                     configureTextView(textView);
                 }
@@ -265,5 +278,8 @@ public abstract class AbstractWheelTextAdapter extends AbstractWheelAdapter {
         default:
             return inflater.inflate(resource, parent, false);    
         }
+    }
+    public ArrayList<View> getTestViews() {
+        return arrayList;
     }
 }

@@ -47,6 +47,7 @@
         android:orientation="vertical"
         android:background="#ffffff">
         <RelativeLayout
+            android:id="@+id/rl_wx"
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <TextView
@@ -74,6 +75,7 @@
             android:layout_height="0.5dp"
             android:background="#dfdfdf"/>
         <RelativeLayout
+            android:id="@+id/rl_apliay"
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <TextView

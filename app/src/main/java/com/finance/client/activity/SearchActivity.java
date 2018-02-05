@@ -118,11 +118,7 @@ public class SearchActivity extends BaseActivity{
         params.put("nowPage",""+nowPage);
         params.put("uid", UserUtil.uid);
         showLoading();
-        AsyncClient.Get()
-                .setParams(params)
-                .setReturnClass(MasterListDao.class)
-                .setHost(Content.DOMAIN)
-                .execute(new AsyncResponseHandler<MasterListDao>() {
+        AsyncClient.Get().setParams(params).setReturnClass(MasterListDao.class).setHost(Content.DOMAIN).execute(new AsyncResponseHandler<MasterListDao>() {
                     @Override
                     public void onResult(boolean success, MasterListDao result, ResponseError error) {
                         mListView.onRefreshComplete();
@@ -189,16 +185,5 @@ public class SearchActivity extends BaseActivity{
                     }
                 });
     }
-
-    private View.OnClickListener followListener = new View.OnClickListener(){
-
-        @Override
-        public void onClick(View v) {
-            int index = (int) v.getTag();
-//            follow(index);
-        }
-    };
-
-
 
 }

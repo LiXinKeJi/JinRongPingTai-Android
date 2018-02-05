@@ -32,24 +32,23 @@ import java.util.Map;
  */
 
 public class MineFragment extends BaseFragment implements View.OnClickListener{
+    private View view;
     public static UserInfoDao userInfo;
     private RoundedImageView headImg;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.mine_layout,null);
+        view = inflater.inflate(R.layout.mine_layout,null);
+        initView();
+        return view;
+    }
+
+    private void initView() {
         view.findViewById(R.id.SettingLayout).setOnClickListener(this);
         view.findViewById(R.id.WalletLayout).setOnClickListener(this);
         view.findViewById(R.id.XDLayout).setOnClickListener(this);
         view.findViewById(R.id.InfoLayout).setOnClickListener(this);
         headImg = (RoundedImageView) view.findViewById(R.id.mine_HeadImg);
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
     }
 
     @Override
@@ -63,16 +62,11 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
         Map<String,String> params = Maps.newHashMap();
         params.put("cmd","getUserInfo");
         params.put("uid", UserUtil.uid);
-        AsyncClient.Get()
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(UserInfoResultDao.class)
-                .execute(new AsyncResponseHandler<UserInfoResultDao>() {
+        AsyncClient.Get().setHost(Content.DOMAIN).setParams(params).setReturnClass(UserInfoResultDao.class).execute(new AsyncResponseHandler<UserInfoResultDao>() {
                     @Override
                     public void onResult(boolean success, UserInfoResultDao result, ResponseError error) {
                         dismissLoading();
                         if(!success){
-//                            Toast.makeText(MineFragment.this.getContext(), error.errorMsg, Toast.LENGTH_SHORT).show();
                             return;
                         }
                         userInfo = result.getUserInfo();

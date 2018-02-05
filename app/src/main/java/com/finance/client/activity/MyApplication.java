@@ -21,7 +21,7 @@ public class MyApplication extends MultiDexApplication {
     public static String uId = "";
     public static boolean isLogin = false;
     public static Context CONTEXT;
-
+    public static int temp = 0;
     private static MyApplication myApplication;
 
 

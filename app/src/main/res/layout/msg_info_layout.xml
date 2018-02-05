@@ -13,36 +13,30 @@
         android:layout_alignParentStart="true">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:padding="10dp">
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/Logo"
-                android:layout_height="60dp"
-                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:layout_width="50dp"
                 android:src="@drawable/ic_launcher"
                 android:scaleType="centerCrop"
-                app:riv_corner_radius="5dp"
-                android:layout_marginLeft="10dp"/>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp">
-                <ImageView
-                    android:id="@+id/DeleteIcon"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/del_icon"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:visibility="gone"/>
+                app:riv_corner_radius="5dp"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
                 <TextView
                     android:id="@+id/Title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="金融公司"
-                    android:layout_toLeftOf="@id/DeleteIcon"
-                    android:textSize="18sp"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="4dp"
                     android:textColor="#333333"
                     android:layout_alignParentTop="true"/>
                 <TextView
@@ -50,11 +44,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="2017-05-11 19:00"
-                    android:layout_toLeftOf="@id/DeleteIcon"
-                    android:textSize="15sp"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"
                     android:textColor="#999999"
                     android:layout_alignParentBottom="true"/>
-            </RelativeLayout>
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/DeleteIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/del_icon"
+                android:layout_gravity="top"
+                android:visibility="visible"/>
         </LinearLayout>
         <TextView
             android:id="@+id/Content"
@@ -62,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:textSize="17sp"
+            android:textSize="14sp"
             android:textColor="#333333"
             android:text="消息内容"/>
         <ImageView
@@ -98,7 +99,7 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:padding="10dp"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:textColor="#666666"
                 android:text="我来评分"/>
         </RelativeLayout>

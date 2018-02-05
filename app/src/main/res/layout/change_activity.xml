@@ -6,6 +6,10 @@
     android:background="#ffffff">
     <include
         layout="@layout/navigation_layout"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#dfdfdf"/>
     <com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView
         android:id="@+id/ListView"
         android:layout_width="match_parent"

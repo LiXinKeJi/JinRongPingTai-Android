@@ -4,22 +4,18 @@ import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.finance.client.R;
-import com.finance.client.adapter.ArrayWheelAdapter;
-import com.finance.client.util.RegionUtil;
 import com.finance.client.wheel.adapter.ListWheelAdapter4;
+import com.finance.client.wheel.wheelview.OnWheelChangedListener;
 import com.finance.client.wheel.wheelview.WheelView;
 import com.google.common.collect.Lists;
-import com.finance.client.wheel.wheelview.OnWheelChangedListener;
-import com.yhrun.alchemy.View.wheel.WheelAdapter;
-
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,13 +25,14 @@ import java.util.List;
 
 public class IndustryChooseDialog extends Dialog implements View.OnClickListener{
     private Context context;
-
     private int first_index =0;
     private int second_index =0;
     private int third_index = 0;
     private int fourth_index = 0;
     private WheelView firstView,secondView,thirdView,fourthView;
-    private WheelAdapter firstAdapter,secondAdapter,thirdAdapter;
+    private ListWheelAdapter4 firstAdapter;
+    private ListWheelAdapter4 secondAdapter;
+    private ListWheelAdapter4 thirdAdapter;
     private List<String> first = Lists.newArrayList();
     private List<String> second = Lists.newArrayList();
     private List<String> third = Lists.newArrayList();
@@ -48,7 +45,8 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
     private onCategoryChangeListener listener;
     private String info = "";
     private String id = "";
-
+    private int maxsize = 14;
+    private int minsize = 12;
     public IndustryChooseDialog(@NonNull Context context,JSONArray data) {
         super(context, R.style.RegionDialogTheme);
         this.cityData = data;
@@ -119,7 +117,8 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
         }catch (Exception e){
             e.printStackTrace();
         }
-        firstView.setViewAdapter(new ListWheelAdapter4(context,first));
+        firstAdapter = new ListWheelAdapter4(context,first,maxsize,minsize);
+        firstView.setViewAdapter(firstAdapter);
         Second();
     }
     private void Second(){
@@ -131,7 +130,7 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
                 JSONObject obj = array.getJSONObject(index);
                 second.add(obj.getString("name"));
             }
-            secondView.setViewAdapter(new ListWheelAdapter4(context,second));
+            secondView.setViewAdapter(new ListWheelAdapter4(context,second,maxsize,minsize));
             Third();
         }catch (Exception e){
             e.printStackTrace();
@@ -145,7 +144,7 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
                 JSONObject obj = array.getJSONObject(index);
                 third.add(obj.getString("name"));
             }
-            thirdView.setViewAdapter(new ListWheelAdapter4(context,third));
+            thirdView.setViewAdapter(new ListWheelAdapter4(context,third,maxsize,minsize));
             Fourth();
         }catch (Exception e){
             e.printStackTrace();
@@ -160,7 +159,7 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
                 JSONObject obj = array.getJSONObject(index);
                 fourth.add(obj.getString("name"));
             }
-            fourthView.setViewAdapter(new ListWheelAdapter4(context,fourth));
+            fourthView.setViewAdapter(new ListWheelAdapter4(context,fourth,maxsize,minsize));
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -170,13 +169,34 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
     public void show() {
         super.show();
     }
-
+    /**
+     * 设置字体大小
+     *
+     * @param curriteItemText
+     * @param adapter
+     */
+    public void setTextviewSize(String curriteItemText, ListWheelAdapter4 adapter) {
+        ArrayList<View> arrayList = adapter.getTestViews();
+        int size = arrayList.size();
+        String currentText;
+        for (int i = 0; i < size; i++) {
+            TextView textvew = (TextView) arrayList.get(i);
+            currentText = textvew.getText().toString();
+            if (curriteItemText.equals(currentText)) {
+                textvew.setTextSize(14);
+            } else {
+                textvew.setTextSize(12);
+            }
+        }
+    }
     private OnWheelChangedListener listener1 = new OnWheelChangedListener() {
         @Override
         public void onChanged(WheelView wheelView, int i, int newValue) {
+            String currentText = (String) firstAdapter.getItemText(wheelView.getCurrentItem());
             first_index = newValue;
             second_index = 0;
             third_index = 0;
+            setTextviewSize(currentText, firstAdapter);
             Second();
         }
     };
@@ -184,8 +204,10 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
     private OnWheelChangedListener listener2 = new OnWheelChangedListener() {
         @Override
         public void onChanged(WheelView wheelView, int i, int newValue) {
+            String currentText = (String) secondAdapter.getItemText(wheelView.getCurrentItem());
             second_index = newValue;
             third_index = 0;
+            setTextviewSize(currentText, secondAdapter);
             Third();
         }
     };
@@ -193,8 +215,10 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
     private OnWheelChangedListener listener3 = new OnWheelChangedListener() {
         @Override
         public void onChanged(WheelView wheelView, int i, int newValue) {
+            String currentText = (String) thirdAdapter.getItemText(wheelView.getCurrentItem());
             third_index = newValue;
             fourth_index = 0;
+            setTextviewSize(currentText, thirdAdapter);
             Fourth();
         }
     };

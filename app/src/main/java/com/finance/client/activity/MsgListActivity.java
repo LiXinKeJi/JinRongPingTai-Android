@@ -1,9 +1,12 @@
 package com.finance.client.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,21 +15,28 @@ import com.finance.client.adapter.MsgAdapter;
 import com.finance.client.model.MsgInfoDao;
 import com.finance.client.model.MsgInfoListDao;
 import com.finance.client.util.Content;
+import com.finance.client.util.ToastUtils;
 import com.finance.library.BaseActivity;
 import com.finance.library.Util.UserUtil;
 import com.finance.library.network.AsyncClient;
 import com.finance.library.network.AsyncResponseHandler;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import com.yhrun.alchemy.View.dialog.YHAlertDialog;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshBase;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -49,6 +59,11 @@ public class MsgListActivity extends BaseActivity{
         title = getIntent().getStringExtra("title");
         setContentView(R.layout.activity_msg_list);
         super.onCreate(savedInstanceState);
+        initView();
+        requestData();
+    }
+
+    private void initView() {
         delectIcon = (ImageView) findViewById(R.id.RightBtnImg);
         cancelBtn = (TextView) findViewById(R.id.RightBtnText);
         delectIcon.setOnClickListener(this);
@@ -60,33 +75,24 @@ public class MsgListActivity extends BaseActivity{
         mListView = (PullToRefreshListView) findViewById(R.id.ListView);
         mAdapter = new MsgAdapter(this,msgList);
         mListView.setAdapter(mAdapter);
-        //this.initData();
         mListView.setMode(PullToRefreshBase.Mode.BOTH);
-//        mListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
-//            @Override
-//            public void onPullDownToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
-//                msgList.clear();
-//                nowPage = 1;
-//                mAdapter.notifyDataSetChanged();
-//                requestData();
-//            }
-//
-//            @Override
-//            public void onPullUpToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
-//                nowPage += 1;
-//                if(nowPage>totalPage){
-//                    new Handler().post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            mListView.onRefreshComplete();
-//                        }
-//                    });
-//                }else{
-//                    requestData();
-//                }
-//            }
-//        });
-        this.requestData();
+        mListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
+                msgList.clear();
+                nowPage = 1;
+                mAdapter.notifyDataSetChanged();
+                requestData();
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
+                nowPage += 1;
+                requestData();
+            }
+        });
+
+
     }
 
     @Override
@@ -110,68 +116,51 @@ public class MsgListActivity extends BaseActivity{
         finish();
     }
 
-    private void initData(){
-        for(int i = 0 ;i < 10 ; ++i){
-            MsgInfoDao info = new MsgInfoDao();
-            info.setLogo("https://img1.jiemian.com/101/original/20170904/150451014738829600_a280x210.jpg");
-            info.setCategoryID("123");
-            info.setMerchantID("123");
-            info.setMessageID("123");
-            info.setName("金融");
-            info.setScore("3.5");
-            info.setTime("2017-09-02");
-            if(i % 2 == 0) {
-                info.setType("1");
-                info.setContent("https://img2.jiemian.com/101/original/20170902/150432406612353200_a640x360.jpg");
-            }else {
-                info.setType("0");
-                info.setContent("证监会对公募流动性管理祭新规 余额宝或另有专项规则");
-            }
-            msgList.add(info);
-        }
-        mAdapter.notifyDataSetChanged();
-    }
-
     private void requestData(){
+        if (nowPage > totalPage) {
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mListView.onRefreshComplete();
+                }
+            });
+            return;
+        }
         showLoading();
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","getMessagesDetail");
-        params.put("uid", UserUtil.uid);
-        params.put("categoryID",categoryId);
-        params.put("pageCount","10");
-        params.put("nowPage",""+nowPage);
-        AsyncClient.Get()
-                .setParams(params)
-                .setHost(Content.DOMAIN)
-                .setReturnClass(MsgInfoListDao.class)
-                .execute(new AsyncResponseHandler<MsgInfoListDao>() {
-                    @Override
-                    public void onResult(boolean success, MsgInfoListDao result, ResponseError error) {
-                        mListView.onRefreshComplete();
-                        dismissLoading();
-                        if(result.getResult().equals("1")){
-                            Toast.makeText(MsgListActivity.this,result.getResultNote(),Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        totalPage = Integer.parseInt(result.getTotalPage());
-                        msgList.addAll(result.getDataList());
-                        if(msgList.size() == 0){
-                            Toast.makeText(MsgListActivity.this, "暂无消息", Toast.LENGTH_SHORT).show();
-                        }
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
+        Map<String,String> params = new HashMap<>();
+        String json = "{\"cmd\":\"getMessagesDetail\",\"uid\":\""+UserUtil.uid+"\"" +
+                ",\"categoryID\":\""+categoryId+"\",\"pageCount\":\""+10+"\",\"nowPage\":\""+nowPage+"\"}";
+        params.put("json",json);
+        showLoading();
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(MsgListActivity.this,e.getMessage());
+                mListView.onRefreshComplete();
+            }
+            @Override
+            public void onResponse(String response, int id) {
+                Log.i("response", "onResponse: " + response);
+                Gson gson = new Gson();
+                dismissLoading();
+                MsgInfoListDao msgInfoListDao = gson.fromJson(response,MsgInfoListDao.class);
+                if (msgInfoListDao.getResult().equals("1")){
+                    ToastUtils.makeText(MsgListActivity.this,msgInfoListDao.getResultNote());
+                    mListView.onRefreshComplete();
+                    return;
+                }
+                List<MsgInfoDao> msgInfoDaos = msgInfoListDao.getDataList();
+                totalPage = Integer.parseInt(msgInfoListDao.getTotalPage());
+                msgList.addAll(msgInfoDaos);
+                if(msgList.size() == 0){
+                    ToastUtils.makeText(MsgListActivity.this, "暂无消息");
+                }
+                mListView.onRefreshComplete();
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        msgList.clear();
-//        this.requestData();
-//        if(mAdapter == null){
-//            mAdapter.notifyDataSetChanged();
-//        }
-//    }
 
     public void deleteMsg(final int index){
         YHAlertDialog dialog = new YHAlertDialog.Builder(this)

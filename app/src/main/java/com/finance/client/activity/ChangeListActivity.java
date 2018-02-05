@@ -3,6 +3,7 @@ package com.finance.client.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import com.finance.library.network.AsyncClient;
 import com.finance.library.network.AsyncResponseHandler;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshBase;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView;
 
@@ -28,7 +30,7 @@ import java.util.Map;
  * Date : 17/8/15
  */
 
-public class ChangeListActivity extends BaseActivity{
+public class ChangeListActivity extends BaseActivity {
     private List<ChangeInfoDao> mlists = Lists.newArrayList();
     private PullToRefreshListView mListView;
     private ChangeAdapter mAdapter;
@@ -41,7 +43,7 @@ public class ChangeListActivity extends BaseActivity{
         setContentView(R.layout.change_activity);
         super.onCreate(savedInstanceState);
         mListView = (PullToRefreshListView) findViewById(R.id.ListView);
-        mAdapter = new ChangeAdapter(this,mlists);
+        mAdapter = new ChangeAdapter(this, mlists);
         mListView.setAdapter(mAdapter);
         mListView.setMode(PullToRefreshBase.Mode.BOTH);
         mListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
@@ -56,14 +58,14 @@ public class ChangeListActivity extends BaseActivity{
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
                 nowPage += 1;
-                if(nowPage>totalPage){
+                if (nowPage > totalPage) {
                     new Handler().post(new Runnable() {
                         @Override
                         public void run() {
                             mListView.onRefreshComplete();
                         }
                     });
-                }else{
+                } else {
                     requestData();
                 }
             }
@@ -72,44 +74,36 @@ public class ChangeListActivity extends BaseActivity{
     }
 
 
-
-
     @Override
     public void onLeftIconClick() {
         finish();
     }
 
-    private void requestData(){
+    private void requestData() {
         showLoading();
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","getTransactions");
+        Map<String, String> params = Maps.newHashMap();
+        params.put("cmd", "getTransactions");
         params.put("uid", UserUtil.uid);
-        params.put("nowPage",""+nowPage);
-        params.put("pageCount","10");
+        params.put("nowPage", "" + nowPage);
+        params.put("pageCount", "10");
         showLoading();
-        AsyncClient.Get()
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(ChangeListResultDao.class)
-                .execute(new AsyncResponseHandler<ChangeListResultDao>(){
+        AsyncClient.Get().setHost(Content.DOMAIN).setParams(params).setReturnClass(ChangeListResultDao.class).execute(new AsyncResponseHandler<ChangeListResultDao>() {
 
-                    @Override
-                    public void onResult(boolean success, ChangeListResultDao result, ResponseError error) {
-                        mListView.onRefreshComplete();
-                        dismissLoading();
-                        if(success && result.getDataList() != null){
-                            mlists.addAll(result.getDataList());
-                            totalPage = result.getTotalPage();
-                            if(mlists.size() == 0){
-                                Toast.makeText(ChangeListActivity.this, "暂无消息", Toast.LENGTH_SHORT).show();
-                            }
-//                            DateComparator offlineUserComparator = new DateComparator();
-//
-//                            Collections.sort(mlists, offlineUserComparator);
-                            mAdapter.notifyDataSetChanged();
-                        }
+            @Override
+            public void onResult(boolean success, ChangeListResultDao result, ResponseError error) {
+                mListView.onRefreshComplete();
+                dismissLoading();
+                if (success && result.getDataList() != null) {
+                    Log.i("result", "onResult: " + new Gson().toJson(result.getDataList()));
+                    mlists.addAll(result.getDataList());
+                    totalPage = result.getTotalPage();
+                    if (mlists.size() == 0) {
+                        Toast.makeText(ChangeListActivity.this, "暂无消息", Toast.LENGTH_SHORT).show();
                     }
-                });
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
 }

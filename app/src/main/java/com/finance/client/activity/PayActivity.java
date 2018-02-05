@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ import java.util.Map;
 public class PayActivity extends BaseActivity{
     private String price;
     private ImageView img_weixin,img_alipay,img_wallet;
+    private RelativeLayout rl_wx,rl_apliay;
     private Drawable selectIcon;
     private Drawable unSelectIcon;
     private String channel="wx";
@@ -43,6 +45,7 @@ public class PayActivity extends BaseActivity{
     private TextView txtPay;
     private String projectId;
     private String merchantID;
+    private String selectIndex;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,11 +55,21 @@ public class PayActivity extends BaseActivity{
         price = getIntent().getStringExtra("price");
         projectId=getIntent().getStringExtra("projectId");
         merchantID=getIntent().getStringExtra("merchantID");
+        selectIndex=getIntent().getStringExtra("selectIndex");
         Log.e("projectId---",projectId);
-        ((TextView)findViewById(R.id.txt_price)).setText(price);
+        ((TextView)findViewById(R.id.txt_price)).setText("￥"+price);
         img_weixin= (ImageView) findViewById(R.id.img_weixin);
         img_alipay= (ImageView) findViewById(R.id.img_alipay);
         img_wallet= (ImageView) findViewById(R.id.img_wallet);
+        rl_wx = (RelativeLayout) findViewById(R.id.rl_wx);
+        rl_apliay = (RelativeLayout) findViewById(R.id.rl_apliay);
+        if (selectIndex.equals("0")){
+            rl_apliay.setVisibility(View.GONE);
+            rl_wx.setVisibility(View.GONE);
+        }else {
+            rl_apliay.setVisibility(View.VISIBLE);
+            rl_wx.setVisibility(View.VISIBLE);
+        }
         OrderId=(TextView)findViewById(R.id.OrderId);
         img_weixin.setOnClickListener(this);
         img_alipay.setOnClickListener(this);
@@ -67,7 +80,6 @@ public class PayActivity extends BaseActivity{
         selectIcon=getResources().getDrawable(R.drawable.choose_select);
         unSelectIcon=getResources().getDrawable(R.drawable.choose);
         requestOrderId();
-
     }
 
     @Override
@@ -100,14 +112,11 @@ public class PayActivity extends BaseActivity{
 
 
     private void requestOrderId() {
-
-
         Map<String, String> params = Maps.newHashMap();
         params.put("merchantID", merchantID);
         params.put("uid", UserUtil.uid);
         params.put("cmd", "createOrder");
         params.put("money",String.valueOf(Double.parseDouble(price)*100));
-        params.put("projectId", projectId);
         showLoading();
         AsyncClient.Get()
                 .setParams(params)
@@ -179,9 +188,6 @@ public class PayActivity extends BaseActivity{
                                 intent.putExtra("projectId", projectId);
                                 startActivity(intent);
                                 finish();
-
-
-
                             }else {
                                 charge = obj.getString("charge");
                                 runOnUiThread(new Runnable() {

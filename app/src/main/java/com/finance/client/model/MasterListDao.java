@@ -23,10 +23,7 @@ public class MasterListDao extends BaseResultDO{
     private String totalPage;
     private String nowPage;
     private List<MasterDao> dataList;
-    private String result;
-    private String resultNote;
     private String pageCount;
-
 
     public String getTotalPage() {
         return totalPage;
@@ -42,26 +39,6 @@ public class MasterListDao extends BaseResultDO{
 
     public void setNowPage(String nowPage) {
         this.nowPage = nowPage;
-    }
-
-    @Override
-    public String getResult() {
-        return result;
-    }
-
-    @Override
-    public void setResult(String result) {
-        this.result = result;
-    }
-
-    @Override
-    public String getResultNote() {
-        return resultNote;
-    }
-
-    @Override
-    public void setResultNote(String resultNote) {
-        this.resultNote = resultNote;
     }
 
     public String getPageCount() {

@@ -34,7 +34,7 @@ public class UpdateServiceActivity extends BaseActivity {
         edit_crowdfunding=(EditText)findViewById(R.id.edit_crowdfunding);
         if (TextUtils.isEmpty(guCoin))
         {
-            ((TextView)findViewById(R.id.txt_guCoin)).setText("您当前累计消费0.0元，当前累计积分0.0股币");
+            ((TextView)findViewById(R.id.txt_guCoin)).setText("您当前累计消费0.0元，当前累计股币0.0股币");
         }
         else {
             ((TextView) findViewById(R.id.txt_guCoin)).setText("您当前累计消费" + guCoin + "元，当前累计积分" + guCoin + "股币");

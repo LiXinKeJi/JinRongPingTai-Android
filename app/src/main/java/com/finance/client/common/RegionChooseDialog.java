@@ -5,17 +5,13 @@ import android.content.Context;
 import android.view.View;
 import android.widget.Toast;
 
-
-import com.alibaba.fastjson.JSON;
 import com.finance.client.R;
-import com.finance.client.adapter.ArrayWheelAdapter;
 import com.finance.client.util.RegionUtil;
 import com.finance.client.wheel.adapter.ListWheelAdapter4;
+import com.finance.client.wheel.wheelview.OnWheelChangedListener;
 import com.finance.client.wheel.wheelview.WheelView;
 import com.google.common.collect.Lists;
-import com.finance.client.wheel.wheelview.OnWheelChangedListener;
 import com.yhrun.alchemy.View.wheel.WheelAdapter;
-
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +30,8 @@ public class RegionChooseDialog extends Dialog implements View.OnClickListener{
     private List<String> first = Lists.newArrayList();
     private List<String> second = Lists.newArrayList();
     private List<String> third = Lists.newArrayList();
-
+    private int maxsize = 14;
+    private int minsize = 12;
     private JSONArray cityData;
     private String cityId;
     private JSONArray third_array;
@@ -81,7 +78,7 @@ public class RegionChooseDialog extends Dialog implements View.OnClickListener{
         }catch (Exception e){
             e.printStackTrace();
         }
-        firstView.setViewAdapter(new ListWheelAdapter4(context,first));
+        firstView.setViewAdapter(new ListWheelAdapter4(context,first,maxsize,minsize));
     }
     private void Second(){
         second.clear();
@@ -92,7 +89,7 @@ public class RegionChooseDialog extends Dialog implements View.OnClickListener{
                 JSONObject obj = array.getJSONObject(index);
                 second.add(obj.getString("name"));
             }
-            secondView.setViewAdapter(new ListWheelAdapter4(context,second));
+            secondView.setViewAdapter(new ListWheelAdapter4(context,second,maxsize,minsize));
             if(array.length() >0 && array.length() > second_index){
                 Third(array.getJSONObject(second_index).getJSONArray("child"));
             }
@@ -111,7 +108,7 @@ public class RegionChooseDialog extends Dialog implements View.OnClickListener{
                     cityId = obj.getString("id");
                 }
             }
-            thirdView.setViewAdapter(new ListWheelAdapter4(context,third));
+            thirdView.setViewAdapter(new ListWheelAdapter4(context,third,maxsize,minsize));
         }catch (Exception e){
             e.printStackTrace();
         }

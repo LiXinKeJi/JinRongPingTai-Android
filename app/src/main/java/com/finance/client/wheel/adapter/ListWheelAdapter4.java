@@ -16,6 +16,10 @@
 package com.finance.client.wheel.adapter;
 
 import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.finance.client.R;
 
 import java.util.List;
 
@@ -24,37 +28,32 @@ import java.util.List;
  */
 public class ListWheelAdapter4 extends AbstractWheelTextAdapter {
 
-    // items
     private List<String> CategoryList;
 
     /**
      * Constructor
-     *
-     * @param context      the current context
+     * @param context the current context
      * @param CategoryList the list
      */
-    public ListWheelAdapter4(Context context, List<String> CategoryList) {
-        super(context);
-
-        //setEmptyItemResource(TEXT_VIEW_ITEM_RESOURCE);
+    public ListWheelAdapter4(Context context, List<String> CategoryList, int maxsize, int minsize) {
+        super(context, R.layout.item_add_year, NO_RESOURCE, maxsize, minsize);
         this.CategoryList = CategoryList;
+        setItemTextResource(R.id.tempValue);
     }
 
-
     @Override
-    public CharSequence getItemText(int index) {
-        if (index >= 0 && index < CategoryList.size()) {
-            String item = CategoryList.get(index);
-            if (item instanceof CharSequence) {
-                return (CharSequence) item;
-            }
-            return item.toString();
-        }
-        return null;
+    public View getItem(int index, View cachedView, ViewGroup parent) {
+        View view = super.getItem(index, cachedView, parent);
+        return view;
     }
 
     @Override
     public int getItemsCount() {
         return CategoryList.size();
+    }
+
+    @Override
+    public CharSequence getItemText(int index) {
+        return CategoryList.get(index) + "";
     }
 }

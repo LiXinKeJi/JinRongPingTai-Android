@@ -1,6 +1,7 @@
 package com.finance.client.adapter;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -39,11 +40,28 @@ public class ChangeAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = View.inflate(mContext, R.layout.change_item_layout,null);
+        ViewHolder viewHolder;
+        if (convertView == null){
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.change_item_layout,null);
+            viewHolder = new ViewHolder();
+            viewHolder.mMoney = (TextView) convertView.findViewById(R.id.Money);
+            viewHolder.mType = (TextView) convertView.findViewById(R.id.Type);
+            viewHolder.mDate = (TextView) convertView.findViewById(R.id.Date);
+            convertView.setTag(viewHolder);
+        }else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
         ChangeInfoDao info = lists.get(position);
-        ((TextView)view.findViewById(R.id.Money)).setText(info.getMoney());
-        ((TextView)view.findViewById(R.id.Type)).setText(info.getType());
-        ((TextView)view.findViewById(R.id.Date)).setText(info.getTime());
-        return view;
+        viewHolder.mType.setText(info.getType());
+        viewHolder.mDate.setText(info.getTime());
+        if (info.getType().equals("充值")){
+            viewHolder.mMoney.setText("+￥" + info.getMoney());
+        }else {
+            viewHolder.mMoney.setText("-￥" + info.getMoney());
+        }
+        return convertView;
+    }
+    class ViewHolder{
+        TextView mMoney,mType,mDate;
     }
 }

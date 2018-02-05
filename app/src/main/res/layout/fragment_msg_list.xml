@@ -19,7 +19,7 @@
         android:layout_marginTop="10dp"
         android:background="#dfdfdf"/>
     <com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView
-        android:id="@+id/ListView"
+        android:id="@+id/msg_listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         ptr:ptrDrawable="@drawable/default_ptr_flip"

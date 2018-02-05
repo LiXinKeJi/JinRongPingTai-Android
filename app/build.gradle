@@ -17,13 +17,13 @@ android {
         release {
             keyAlias 'client'
             keyPassword '123456'
-            storeFile file('./android.keystore')
+            storeFile file('D:/FinanceClient/app/android.keystore')
             storePassword '123456'
         }
         debug {
             keyAlias 'client'
             keyPassword '123456'
-            storeFile file('./android.keystore')
+            storeFile file('D:/FinanceClient/app/android.keystore')
             storePassword '123456'
         }
     }
