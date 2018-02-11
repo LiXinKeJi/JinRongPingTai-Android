@@ -47,7 +47,7 @@ public class MsgListActivity extends BaseActivity{
     private PullToRefreshListView mListView;
     private MsgAdapter mAdapter;
     private List<MsgInfoDao> msgList = new ArrayList<>();
-    private String categoryId;
+    private String categoryId,type;
     private ImageView delectIcon;
     private TextView cancelBtn;
     private int nowPage = 1;
@@ -60,7 +60,6 @@ public class MsgListActivity extends BaseActivity{
         setContentView(R.layout.activity_msg_list);
         super.onCreate(savedInstanceState);
         initView();
-        requestData();
     }
 
     private void initView() {
@@ -72,8 +71,9 @@ public class MsgListActivity extends BaseActivity{
         delectIcon.setImageResource(R.drawable.delete_icon);
         delectIcon.setVisibility(View.VISIBLE);
         categoryId = getIntent().getStringExtra("categoryId");
+        type = getIntent().getStringExtra("type");
         mListView = (PullToRefreshListView) findViewById(R.id.ListView);
-        mAdapter = new MsgAdapter(this,msgList);
+        mAdapter = new MsgAdapter(this,msgList,type);
         mListView.setAdapter(mAdapter);
         mListView.setMode(PullToRefreshBase.Mode.BOTH);
         mListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
@@ -91,8 +91,15 @@ public class MsgListActivity extends BaseActivity{
                 requestData();
             }
         });
+    }
 
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        msgList.clear();
+        nowPage = 1;
+        mAdapter.notifyDataSetChanged();
+        requestData();
     }
 
     @Override
@@ -129,7 +136,8 @@ public class MsgListActivity extends BaseActivity{
         showLoading();
         Map<String,String> params = new HashMap<>();
         String json = "{\"cmd\":\"getMessagesDetail\",\"uid\":\""+UserUtil.uid+"\"" +
-                ",\"categoryID\":\""+categoryId+"\",\"pageCount\":\""+10+"\",\"nowPage\":\""+nowPage+"\"}";
+                ",\"categoryID\":\""+categoryId+"\",\"pageCount\":\""+10+"\",\"nowPage\":\""+nowPage+"\"" +
+                ",\"type\":\""+type+"\"}";
         params.put("json",json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
@@ -188,14 +196,8 @@ public class MsgListActivity extends BaseActivity{
         Map<String,String> params = Maps.newHashMap();
         params.put("cmd","deleteMessageDetail");
         params.put("uid",UserUtil.uid);
-        params.put("messageID",item.getMessageID());
-        if (item.getContent().equals("系统消息"))
-        {
-            params.put("type","0");
-        }else
-        {
-            params.put("type","1");
-        }
+        params.put("messageID",item.getMessageId());
+        params.put("type",type);
         AsyncClient.Get()
                 .setParams(params)
                 .setReturnClass(String.class)

@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.activity.ModifyUserInfoActivity;
@@ -18,13 +20,16 @@ import com.finance.client.model.UserInfoDao;
 import com.finance.client.model.UserInfoResultDao;
 import com.finance.client.util.Content;
 import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.yhrun.alchemy.Util.ImageLoaderUtil;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -58,35 +63,42 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
     }
 
     private void requestInfo(){
-        showLoading();
         Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","getUserInfo");
-        params.put("uid", UserUtil.uid);
-        AsyncClient.Get().setHost(Content.DOMAIN).setParams(params).setReturnClass(UserInfoResultDao.class).execute(new AsyncResponseHandler<UserInfoResultDao>() {
-                    @Override
-                    public void onResult(boolean success, UserInfoResultDao result, ResponseError error) {
-                        dismissLoading();
-                        if(!success){
-                            return;
-                        }
-                        userInfo = result.getUserInfo();
-                        updateView();
-                    }
-                });
+        String json = "{\"cmd\":\"getUserInfo\",\"uid\":\""+UserUtil.uid+"\"}";
+        params.put("json",json);
+        showLoading();
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                dismissLoading();
+            }
 
-    }
-    private void updateView(){
-        if (userInfo!=null&&!TextUtils.isEmpty(userInfo.getNickName())) {
-            ((TextView) getView().findViewById(R.id.Name)).setText(userInfo.getNickName());
-        }
-        if (userInfo!=null&&!TextUtils.isEmpty(userInfo.getUid())) {
-            ((TextView) getView().findViewById(R.id.ID)).setText("ID号: " + userInfo.getUid());
-        }
-        if (userInfo!=null&&!TextUtils.isEmpty(userInfo.getAvatar())) {
-            ImageLoaderUtil.getInstance().displayImage(userInfo.getAvatar(),headImg);
-        }else {
-            headImg.setImageResource(R.drawable.ic_launcher);
-        }
+            @Override
+            public void onResponse(String response, int id) {
+                Log.i("6666", "onResponse: " + response);
+                Gson gson = new Gson();
+                dismissLoading();
+                UserInfoResultDao userInfoResultDao = gson.fromJson(response,UserInfoResultDao.class);
+                if (userInfoResultDao.getResult().equals("1")){
+                    Toast.makeText(getActivity(),userInfoResultDao.getResultNote(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                userInfo = userInfoResultDao.getUserInfo();
+                if (userInfo != null && !TextUtils.isEmpty(userInfo.getNickName())) {
+                    ((TextView) getView().findViewById(R.id.Name)).setText(userInfo.getNickName());
+                }
+                if (userInfo != null && !TextUtils.isEmpty(userInfo.getUid())) {
+                    ((TextView) getView().findViewById(R.id.ID)).setText("ID号: " + userInfo.getUid());
+                }
+                if (userInfo != null && !TextUtils.isEmpty(userInfo.getAvatar())) {
+                    ImageLoaderUtil.getInstance().displayImage(userInfo.getAvatar(),headImg);
+                }else {
+                    headImg.setImageResource(R.drawable.ic_launcher);
+                }
+            }
+        });
+
     }
 
     @Override

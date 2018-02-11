@@ -6,6 +6,4 @@ package com.finance.library;
  */
 
 public class Content {
-    public static String DOMAIN = "http://116.255.239.201:8080/bankService/service.action";
-    public static String WXID = "wxf33600c85feaf21b";
 }

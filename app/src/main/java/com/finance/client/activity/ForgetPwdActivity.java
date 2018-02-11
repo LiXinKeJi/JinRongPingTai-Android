@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.library.BaseActivity;
-import com.finance.library.Content;
+import com.finance.client.util.Content;
 import com.finance.library.Util.SmsUtil;
 import com.finance.library.Util.ToolUtil;
 import com.finance.library.network.AsyncClient;
@@ -82,7 +82,7 @@ public class ForgetPwdActivity extends BaseActivity{
             return;
         }
         Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","findPassword");
+        params.put("cmd","forgetPassword");
         params.put("phoneNum",phoneNum);
         params.put("password", ToolUtil.md5(password));
         showLoading();

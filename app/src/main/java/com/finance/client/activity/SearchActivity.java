@@ -17,7 +17,7 @@ import com.finance.client.common.IndustryChooseDialog;
 import com.finance.client.model.MasterDao;
 import com.finance.client.model.MasterListDao;
 import com.finance.library.BaseActivity;
-import com.finance.library.Content;
+import com.finance.client.util.Content;
 import com.finance.library.Util.UserUtil;
 import com.finance.library.network.AsyncClient;
 import com.finance.library.network.AsyncResponseHandler;

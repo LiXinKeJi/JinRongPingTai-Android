@@ -78,6 +78,7 @@ public class RemarkActivity extends BaseActivity{
                     return;
                 }
                 ToastUtils.makeText(RemarkActivity.this, baseResultDO.getResultNote());
+                MyApplication.temp = 1;
                 finish();
             }
         });

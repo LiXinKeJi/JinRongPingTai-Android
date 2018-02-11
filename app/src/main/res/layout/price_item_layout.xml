@@ -8,24 +8,24 @@
         android:layout_width="match_parent"
         android:layout_height="50dp">
         <ImageView
-            android:id="@+id/ChooseBtn"
+            android:id="@+id/iv_choose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:src="@drawable/unselect_icon"/>
         <TextView
-            android:id="@+id/Title"
+            android:id="@+id/text_type_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/ChooseBtn"
+            android:layout_toRightOf="@id/iv_choose"
             android:textSize="16sp"
             android:textColor="#333333"
             android:text="试订购一个月"
             android:layout_centerVertical="true"
             android:layout_marginLeft="30dp"/>
         <TextView
-            android:id="@+id/Price"
+            android:id="@+id/text_type_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"

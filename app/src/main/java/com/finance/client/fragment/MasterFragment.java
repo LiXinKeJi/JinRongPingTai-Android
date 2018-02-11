@@ -96,6 +96,8 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
         });
     }
 
+
+
     private void requestData(){
         Map<String,String> params = Maps.newHashMap();
         String json = "{\"cmd\":\"getAuthorList\",\"uid\":\""+UserUtil.uid+"\"" +

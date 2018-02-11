@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 
+import com.finance.client.util.CrashHandler;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
 
@@ -23,15 +24,10 @@ public class MyApplication extends MultiDexApplication {
     public static Context CONTEXT;
     public static int temp = 0;
     private static MyApplication myApplication;
-
-
     public static MyApplication getInstance() {
-        // if语句下是不会走的，Application本身已单例
         if (myApplication == null) {
             synchronized (MyApplication.class) {
-                if (myApplication == null) {
-                    myApplication = new MyApplication();
-                }
+                if (myApplication == null) myApplication = new MyApplication();
             }
         }
         return myApplication;
@@ -46,11 +42,15 @@ public class MyApplication extends MultiDexApplication {
         PlatformConfig.setWeixin("wxf33600c85feaf21b", "32f799126ed76ccfa08aa6005b4fb816");
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
+        //崩溃错误日志写入本地文档
+        CrashHandler catchExcep = new CrashHandler(this);
+        Thread.setDefaultUncaughtExceptionHandler(catchExcep);
     }
 
 
     /**
      * 检查是否已经登录 true 已登录
+     *
      * @return
      */
     public static boolean isLogined() {
@@ -122,6 +122,5 @@ public class MyApplication extends MultiDexApplication {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
-
 
 }

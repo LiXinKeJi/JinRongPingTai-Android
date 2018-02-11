@@ -9,7 +9,10 @@ import android.widget.TextView;
 import com.finance.client.R;
 import com.finance.library.BaseActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * User : yh
@@ -23,22 +26,21 @@ public class UpdateServiceSuccessActivity extends BaseActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-//        title = "提现申请";
         setContentView(R.layout.activity_update_success);
         super.onCreate(savedInstanceState);
-        long time=System.currentTimeMillis();
-        final Calendar mCalendar=Calendar.getInstance();
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH)+1;
-        int day = c.get(Calendar.DAY_OF_MONTH);
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int minute = c.get(Calendar.MINUTE);
-        int second=c.get(Calendar.SECOND);
         price= getIntent().getStringExtra("amount");
         projectId=getIntent().getStringExtra("projectId");
         findViewById(R.id.FinishLayout).setOnClickListener(this);
-        ((TextView)findViewById(R.id.txt_time)).setText("时间："+year+"-"+month+"-"+day+" "+hour+":"+minute+":"+second);
+        Date date = new Date();//取时间
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        calendar.add(calendar.DATE, 0);
+        date = calendar.getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy" + "-" + "MM" + "-" + "dd" + " " + "hh"+ ":" + "mm" + ":" + "ss");
+        String  dateString = formatter.format(date);
+
+
+        ((TextView)findViewById(R.id.txt_time)).setText("时间："+dateString);
         if (projectId.equals("100"))
         {
             ((TextView)findViewById(R.id.txt_update_paerson)).setText("恭喜您，已成功试订1个月");
@@ -66,10 +68,6 @@ public class UpdateServiceSuccessActivity extends BaseActivity {
             }
         }
 
-
-
-//        ((TextView)findViewById(R.id.txt_update_paerson)).setText("恭喜您，已成功增加订购人数"+numOfPerson+"人，当前可订购人数至599人");
-//        ((TextView)findViewById(R.id.Content)).setText(content);
     }
 
     @Override

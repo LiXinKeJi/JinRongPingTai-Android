@@ -16,7 +16,7 @@ import com.finance.client.activity.MyApplication;
 import com.finance.client.activity.PaySelectActivity;
 import com.finance.client.common.LogOutDialog;
 import com.finance.client.model.MasterDao;
-import com.finance.library.Content;
+import com.finance.client.util.Content;
 import com.finance.library.Util.UserUtil;
 import com.finance.library.network.AsyncClient;
 import com.finance.library.network.AsyncResponseHandler;
@@ -122,19 +122,19 @@ public class MasterAdapter extends BaseAdapter {
                     viewHolder.StatusInfo.setText("已订购");
                     viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
                     viewHolder.StatusInfo.setEnabled(true);
-                    viewHolder.StatusInfo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (dialog1 == null)
-                                dialog1 = new LogOutDialog(mContext, R.string.are_you_sure_cancel, new LogOutDialog.OnSureBtnClickListener() {
-                                    @Override
-                                    public void sure() {
-                                        cancel(position);
-                                    }
-                                });
-                            dialog1.show();
-                        }
-                    });
+//                    viewHolder.StatusInfo.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            if (dialog1 == null)
+//                                dialog1 = new LogOutDialog(mContext, R.string.are_you_sure_cancel, new LogOutDialog.OnSureBtnClickListener() {
+//                                    @Override
+//                                    public void sure() {
+//                                        cancel(position);
+//                                    }
+//                                });
+//                            dialog1.show();
+//                        }
+//                    });
                     break;
                 case "1":
                     viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);

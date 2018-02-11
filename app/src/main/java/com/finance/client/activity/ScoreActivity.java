@@ -2,21 +2,24 @@ package com.finance.client.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.finance.client.R;
+import com.finance.client.model.BaseBean;
+import com.finance.client.util.Content;
 import com.finance.library.BaseActivity;
-import com.finance.library.Content;
 import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
-import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
-import org.json.JSONObject;
-
+import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -32,11 +35,13 @@ public class ScoreActivity extends BaseActivity{
         title = "我来评分";
         setContentView(R.layout.activity_score);
         super.onCreate(savedInstanceState);
+        messageID = getIntent().getStringExtra("msgId");
         for(int id : ids){
             findViewById(id).setOnClickListener(this);
         }
         findViewById(R.id.LoginBtn).setOnClickListener(this);
-        messageID = getIntent().getStringExtra("msgId");
+
+        Log.i("6666", "submit: " + messageID);
     }
 
     @Override
@@ -74,39 +79,31 @@ public class ScoreActivity extends BaseActivity{
     }
 
     private void submit(){
-        Map<String,Object> params = Maps.newHashMap();
-        params.put("cmd","comment");
-        params.put("uid", UserUtil.uid);
-        params.put("messageID",messageID);
-        params.put("score",score);
+        Map<String,String> params = new HashMap<>();
+        String json = "{\"cmd\":\"comment\",\"uid\":\""+UserUtil.uid+"\",\"messageID\":\""+messageID+"\"" +
+                ",\"score\":\""+score+"\"}";
+        params.put("json",json );
+        Log.i("6666", "submit: " + json);
         showLoading();
-        AsyncClient.Get()
-                .setParams(params)
-                .setHost(Content.DOMAIN)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        if(!success){
-                            Toast.makeText(ScoreActivity.this, "评分失败", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        try {
-                            JSONObject obj = new JSONObject(result);
-                            if(obj.getString("result").equals("0")){
-                                Toast.makeText(ScoreActivity.this, "评分成功", Toast.LENGTH_SHORT).show();
-                                finish();
-                                return;
-                            }else{
-                                Toast.makeText(ScoreActivity.this, ""+obj.getString("resultNote"), Toast.LENGTH_SHORT).show();
-                            }
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                        setResult(0xff);
-                        finish();
-                    }
-                });
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                Toast.makeText(ScoreActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onResponse(String response, int id) {
+                Gson gson = new Gson();
+                dismissLoading();
+                BaseBean baseBean = gson.fromJson(response,BaseBean.class);
+                if (baseBean.getResult().equals("1")){
+                    Toast.makeText(ScoreActivity.this, baseBean.getResultNote(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Toast.makeText(ScoreActivity.this, "评分成功", Toast.LENGTH_SHORT).show();
+                setResult(0xff);
+                finish();
+            }
+        });
     }
 }

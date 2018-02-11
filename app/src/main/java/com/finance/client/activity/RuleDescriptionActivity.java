@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.library.BaseActivity;
-import com.finance.library.Content;
+import com.finance.client.util.Content;
 import com.finance.library.network.AsyncClient;
 import com.finance.library.network.AsyncResponseHandler;
 import com.google.common.collect.Maps;

@@ -119,8 +119,10 @@ public class MsgFragment extends BaseFragment {
                     return;
                 }
                 List<MeassageBean.DataList> dataLists = meassageBean.getDataList();
-                msgList.addAll(dataLists);
-                mAdapter.notifyDataSetChanged();
+                if (dataLists != null && !dataLists.isEmpty() && dataLists.size() >0){
+                    msgList.addAll(dataLists);
+                    mAdapter.notifyDataSetChanged();
+                }
                 totalPage =  Integer.parseInt(meassageBean.getTotalPage());
                 mListView.onRefreshComplete();
             }
@@ -138,6 +140,7 @@ public class MsgFragment extends BaseFragment {
         params.put("cmd", "readMessage");
         params.put("uid", UserUtil.uid);
         params.put("categoryID", item.getCategoryId());
+        params.put("type", item.getType());
         item.setUnreadMessages("0");
         AsyncClient.Get().setParams(params).setHost(Content.DOMAIN).setReturnClass(String.class).execute(new AsyncResponseHandler<String>() {
             @Override
@@ -154,6 +157,7 @@ public class MsgFragment extends BaseFragment {
         Intent intent = new Intent(getActivity(), MsgListActivity.class);
         intent.putExtra("categoryId", item.getCategoryId());
         intent.putExtra("title", item.getTitle());
+        intent.putExtra("type", item.getType());
         startActivity(intent);
     }
 }

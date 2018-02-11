@@ -78,6 +78,7 @@
             android:background="#e6e6e6"
             android:layout_marginTop="10dp"/>
         <RelativeLayout
+            android:id="@+id/rl_msg_score"
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <TextView

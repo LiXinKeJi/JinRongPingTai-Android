@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,16 +19,19 @@ import com.finance.client.common.IndustryChooseDialog;
 import com.finance.client.common.RegionChooseDialog;
 import com.finance.client.model.ModifyAvatarResultDao;
 import com.finance.client.model.UserInfoDao;
+import com.finance.client.util.Content;
 import com.finance.client.util.ImageUtil;
 import com.finance.client.util.PermissionUtil;
 import com.finance.library.BaseActivity;
-import com.finance.library.Content;
 import com.finance.library.Util.UserUtil;
 import com.finance.library.network.AsyncClient;
 import com.finance.library.network.AsyncResponseHandler;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import com.lling.photopicker.PhotoPickerActivity;
 import com.yhrun.alchemy.Util.ImageLoaderUtil;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +41,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
+import okhttp3.Call;
+
 /**
  * User : yh
  * Date : 17/9/13
@@ -45,12 +50,10 @@ import java.util.Map;
 
 public class ModifyUserInfoActivity extends BaseActivity{
     private TextView rightBtn;
-    private String avatar,categoryInfo,address;
+    private String avatar = "",categoryInfo = "",address;
     private JSONArray category;
     private TextView txtSign;
     private UserInfoDao userinfo;
-    private String avatarFlag="0",nicknameFlag="0",signatureFlag="0",tradeFlag="0",areaFlag="0",wechatFlag="0";
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         title = "编辑个人信息";
@@ -66,11 +69,11 @@ public class ModifyUserInfoActivity extends BaseActivity{
         findViewById(R.id.CityLayout).setOnClickListener(this);
         findViewById(R.id.SignLayout).setOnClickListener(this);
         rightBtn.setOnClickListener(this);
-        updateView();
+        updateView(userinfo);
         requestCategory();
     }
 
-    private void updateView() {
+    private void updateView(UserInfoDao userinfo) {
         if (userinfo!=null) {
             ImageLoaderUtil.getInstance().displayImage(userinfo.getAvatar(), (ImageView) findViewById(R.id.HeadImg));
             ((TextView) findViewById(R.id.nickName)).setText(userinfo.getNickName());
@@ -82,7 +85,6 @@ public class ModifyUserInfoActivity extends BaseActivity{
             ((TextView) findViewById(R.id.Sign)).setText(userinfo.getSignature());
         }
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -116,195 +118,52 @@ public class ModifyUserInfoActivity extends BaseActivity{
                 startActivityForResult(intent,1000);
                 break;
             case R.id.RightBtnText:
-                if (!TextUtils.isEmpty(avatar)) {
-                    modifyUserAvatar();
-                }else
-                {
-                    avatarFlag="1";
-                }
-                if (!TextUtils.isEmpty(((TextView)findViewById(R.id.City)).getText().toString())) {
-                    modifyAddress();
-                }else
-                {
-                    areaFlag="1";
-                }
-                if (!TextUtils.isEmpty(((TextView)findViewById(R.id.Trade)).getText().toString())) {
-                    modifyIndustry();
-                }else
-                {
-                    tradeFlag="1";
-                }
-                if (!TextUtils.isEmpty(((TextView)findViewById(R.id.nickName)).getText().toString())) {
-                    modifyNickName();
-                }
-                else
-                {
-                    nicknameFlag="1";
-                }
-                if (!TextUtils.isEmpty(((TextView)findViewById(R.id.Sign)).getText().toString())) {
-                    modifysignature();
-                }else
-                {
-                    signatureFlag="1";
-                }
-                if (!TextUtils.isEmpty(((TextView)findViewById(R.id.Wechat)).getText().toString())) {
-                    modifyWeChat();
-                }else
-                {
-                    wechatFlag="1";
-                }
+               submit();
                 break;
             default:break;
         }
     }
 
-
-
-    private void modifyUserAvatar(){
-        showLoading();
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","changeAvatar");
-        params.put("uid", UserUtil.uid);
-        params.put("avatar",avatar);
-        AsyncClient.Post()
-                .setContext(this)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(ModifyAvatarResultDao.class)
-                .execute(new AsyncResponseHandler<ModifyAvatarResultDao>() {
-                    @Override
-                    public void onResult(boolean success, ModifyAvatarResultDao result, ResponseError error) {
-                        dismissLoading();
-                        if (success) {
-                            if (result.getResult().equals("1")) {
-                                Toast.makeText(ModifyUserInfoActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            avatarFlag="1";
-                            userinfo = result.getUserInfo();
-                            if (avatarFlag.equals("1")&&signatureFlag.equals("1")&&wechatFlag.equals("1")&&areaFlag.equals("1")&&tradeFlag.equals("1")&&nicknameFlag.equals("1"))
-                            {
-                                Toast.makeText(ModifyUserInfoActivity.this,"编辑个人信息成功" , Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
-                        }
-//                            updateView();
-                    }
-                });
-
+    private void submit() {
+        String nickName = ((TextView)findViewById(R.id.nickName)).getText().toString().trim();
+        String address = ((TextView)findViewById(R.id.City)).getText().toString().trim();
+        String industry = ((TextView)findViewById(R.id.Trade)).getText().toString().trim();
+        String weChat = ((TextView)findViewById(R.id.Wechat)).getText().toString().trim();
+        String signature = ((TextView)findViewById(R.id.Sign)).getText().toString().trim();
+        editUserInfo(nickName,address,industry,weChat,signature);
     }
 
-
-    private void modifyNickName(){
-        if(TextUtils.isEmpty(((TextView)findViewById(R.id.nickName)).getText().toString())){
-            Toast.makeText(this, "请输入昵称", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void editUserInfo(String nickName, String address, String industry, String weChat,String signature) {
         showLoading();
         Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","changeNickName");
-        params.put("uid", UserUtil.uid);
-        params.put("nickName",((TextView)findViewById(R.id.nickName)).getText().toString());
-        AsyncClient.Post()
-                .setContext(this)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(ModifyAvatarResultDao.class)
-                .execute(new AsyncResponseHandler<ModifyAvatarResultDao>() {
-                    @Override
-                    public void onResult(boolean success, ModifyAvatarResultDao result, ResponseError error) {
-                        dismissLoading();
+        String json = "{\"cmd\":\"editUserInfo\",\"uid\":\""+UserUtil.uid+"\",\"avatar\":\""+avatar+"\"" +
+                ",\"address\":\""+address+"\",\"nickName\":\""+nickName+"\",\"industry\":\""+categoryInfo+"\"" +
+                ",\"weChat\":\""+weChat+"\",\"signature\":\""+signature+"\"}";
+        params.put("json",json);
+        Log.i("666", "editUserInfo: " + avatar);
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                Toast.makeText(ModifyUserInfoActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                dismissLoading();
+            }
 
-                        if (result.getResult().equals("1")) {
-                            Toast.makeText(ModifyUserInfoActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        nicknameFlag="1";
-                        userinfo=result.getUserInfo();
-                        if (avatarFlag.equals("1")&&signatureFlag.equals("1")&&wechatFlag.equals("1")&&areaFlag.equals("1")&&tradeFlag.equals("1")&&nicknameFlag.equals("1"))
-                        {
-                            Toast.makeText(ModifyUserInfoActivity.this,"编辑个人信息成功", Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-//                            updateView();
-
-                    }
-                });
-
+            @Override
+            public void onResponse(String response, int id) {
+                Log.i("6666", "onResponse: " + response);
+                Gson gson = new Gson();
+                dismissLoading();
+                ModifyAvatarResultDao modifyAvatarResultDao = gson.fromJson(response,ModifyAvatarResultDao.class);
+                if (modifyAvatarResultDao.getResult().equals("1")){
+                    Toast.makeText(ModifyUserInfoActivity.this,modifyAvatarResultDao.getResultNote(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Toast.makeText(ModifyUserInfoActivity.this,"编辑个人信息成功" , Toast.LENGTH_SHORT).show();
+                UserInfoDao userinfo = modifyAvatarResultDao.getUserInfo();
+                updateView(userinfo);
+            }
+        });
     }
-    private void modifyIndustry(){
-        if(TextUtils.isEmpty(((TextView)findViewById(R.id.Trade)).getText().toString())){
-            Toast.makeText(this, "请选择行业", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        showLoading();
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","changeIndustry");
-        params.put("uid", UserUtil.uid);
-        params.put("industry",((TextView)findViewById(R.id.Trade)).getText().toString());
-        AsyncClient.Post()
-                .setContext(this)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(ModifyAvatarResultDao.class)
-                .execute(new AsyncResponseHandler<ModifyAvatarResultDao>() {
-                    @Override
-                    public void onResult(boolean success, ModifyAvatarResultDao result, ResponseError error) {
-                        dismissLoading();
-                        if (result.getResult().equals("1")) {
-                            Toast.makeText(ModifyUserInfoActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        tradeFlag="1";
-                        userinfo=result.getUserInfo();
-                        if (avatarFlag.equals("1")&&signatureFlag.equals("1")&&wechatFlag.equals("1")&&areaFlag.equals("1")&&tradeFlag.equals("1")&&nicknameFlag.equals("1"))
-                        {
-                            Toast.makeText(ModifyUserInfoActivity.this,"编辑个人信息成功" , Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-//                            updateView();
-
-                    }
-                });
-
-    }
-    private void modifyAddress(){
-        if(TextUtils.isEmpty(((TextView)findViewById(R.id.Trade)).getText().toString())){
-            Toast.makeText(this, "请选择城市", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        showLoading();
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","changeAddress");
-        params.put("uid", UserUtil.uid);
-        params.put("address",((TextView)findViewById(R.id.City)).getText().toString());
-        AsyncClient.Post()
-                .setContext(this)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(ModifyAvatarResultDao.class)
-                .execute(new AsyncResponseHandler<ModifyAvatarResultDao>() {
-                    @Override
-                    public void onResult(boolean success, ModifyAvatarResultDao result, ResponseError error) {
-                        dismissLoading();
-
-                        if (result.getResult().equals("1")) {
-                            Toast.makeText(ModifyUserInfoActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        areaFlag="1";
-                        userinfo=result.getUserInfo();
-                        if (avatarFlag.equals("1")&&signatureFlag.equals("1")&&wechatFlag.equals("1")&&areaFlag.equals("1")&&tradeFlag.equals("1")&&nicknameFlag.equals("1"))
-                        {
-                            Toast.makeText(ModifyUserInfoActivity.this,"编辑个人信息成功" , Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-
-                    }
-                });
-
-    }
-
 
     private void requestCategory(){
         showLoading();
@@ -330,80 +189,7 @@ public class ModifyUserInfoActivity extends BaseActivity{
                     }
                 });
     }
-    private void modifyWeChat(){
-        if(TextUtils.isEmpty(((TextView)findViewById(R.id.Trade)).getText().toString())){
-            Toast.makeText(this, "请填写微信号", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        showLoading();
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","changeWeChat");
-        params.put("uid", UserUtil.uid);
-        params.put("weChat",((TextView)findViewById(R.id.Wechat)).getText().toString());
-        AsyncClient.Post()
-                .setContext(this)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(ModifyAvatarResultDao.class)
-                .execute(new AsyncResponseHandler<ModifyAvatarResultDao>() {
-                    @Override
-                    public void onResult(boolean success, ModifyAvatarResultDao result, ResponseError error) {
-                        dismissLoading();
 
-                        if (result.getResult().equals("1")) {
-                            Toast.makeText(ModifyUserInfoActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        wechatFlag="1";
-                        userinfo=result.getUserInfo();
-                        if (avatarFlag.equals("1")&&signatureFlag.equals("1")&&wechatFlag.equals("1")&&areaFlag.equals("1")&&tradeFlag.equals("1")&&nicknameFlag.equals("1"))
-                        {
-                            Toast.makeText(ModifyUserInfoActivity.this,"编辑个人信息成功" , Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-//                            updateView();
-
-                    }
-                });
-
-    }
-    private void modifysignature(){
-        if(TextUtils.isEmpty(((TextView)findViewById(R.id.Trade)).getText().toString())){
-            Toast.makeText(this, "请填写微信号", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        showLoading();
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","changeSignature");
-        params.put("uid", UserUtil.uid);
-        params.put("signature",((TextView)findViewById(R.id.Sign)).getText().toString());
-        AsyncClient.Post()
-                .setContext(this)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(ModifyAvatarResultDao.class)
-                .execute(new AsyncResponseHandler<ModifyAvatarResultDao>() {
-                    @Override
-                    public void onResult(boolean success, ModifyAvatarResultDao result, ResponseError error) {
-                        dismissLoading();
-
-                        if (result.getResult().equals("1")) {
-                            Toast.makeText(ModifyUserInfoActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        signatureFlag="1";
-                        userinfo=result.getUserInfo();
-                        if (avatarFlag.equals("1")&&signatureFlag.equals("1")&&wechatFlag.equals("1")&&areaFlag.equals("1")&&tradeFlag.equals("1")&&nicknameFlag.equals("1"))
-                        {
-                            Toast.makeText(ModifyUserInfoActivity.this,"编辑个人信息成功" , Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-//                            updateView();
-
-                    }
-                });
-
-    }
 
     private void chooseRegion(){
         RegionChooseDialog dialog = new RegionChooseDialog(this);
@@ -436,7 +222,6 @@ public class ModifyUserInfoActivity extends BaseActivity{
                 ((TextView)findViewById(R.id.Trade)).setText(info);
             }
         });
-//        dialog.setData(category);
         dialog.show();
         WindowManager windowManager = getWindowManager();
         Display display = windowManager.getDefaultDisplay();
@@ -463,7 +248,7 @@ public class ModifyUserInfoActivity extends BaseActivity{
             if (result == null || result.isEmpty()) {
                 return;
             }
-            this.UploadImage(result.get(0));
+            UploadImage(result.get(0));
         }
         if (requestCode==1000&resultCode==1002)
         {
@@ -474,7 +259,6 @@ public class ModifyUserInfoActivity extends BaseActivity{
 
 
     private void UploadImage(String path){
-        //ImageLoaderUtil.getInstance().displayImage("file://"+path, (ImageView) findViewById(R.id.HeadImg));
         ((ImageView)findViewById(R.id.HeadImg)).setImageURI(Uri.fromFile(new File(path)));
         avatar = ImageUtil.imageFile2Base64(path);
     }

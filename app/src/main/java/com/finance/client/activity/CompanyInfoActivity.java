@@ -44,7 +44,7 @@ public class CompanyInfoActivity extends BaseActivity{
         setContentView(R.layout.activity_company_layout);
         super.onCreate(savedInstanceState);
         rightBtn = (TextView) findViewById(R.id.RightBtnText);
-        statusInfo = (TextView) findViewById(R.id.StatusInfo);
+        statusInfo = (TextView) findViewById(R.id.company_statusInfo);
         rightBtn.setText("设置备注");
         rightBtn.setVisibility(View.VISIBLE);
         rightBtn.setOnClickListener(this);
@@ -57,7 +57,7 @@ public class CompanyInfoActivity extends BaseActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        this.requestData();
+        requestData();
     }
 
     @Override
@@ -68,10 +68,12 @@ public class CompanyInfoActivity extends BaseActivity{
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        if(v.getId() == R.id.RightBtnText){
-            Intent intent = new Intent(this,RemarkActivity.class);
-            intent.putExtra("id",info.getMerchantId());
-            startActivity(intent);
+        switch (v.getId()){
+            case R.id.RightBtnText:
+                Intent intent = new Intent(this,RemarkActivity.class);
+                intent.putExtra("id",info.getMerchantId());
+                startActivity(intent);
+                break;
         }
     }
 
@@ -103,55 +105,49 @@ public class CompanyInfoActivity extends BaseActivity{
     }
 
     private void UpdateView() {
-        if (info != null && !TextUtils.isEmpty(info.getLogo())) {
-            ImageLoaderUtil.getInstance().displayImage(info.getLogo(), (ImageView) findViewById(R.id.Logo));
-        }else
-        {
-            ((ImageView) findViewById(R.id.Logo)).setImageResource(R.drawable.ic_launcher);
-        }
-        if (info != null ) {
-            if (TextUtils.isEmpty(info.getNickName())) {
-                ((TextView) findViewById(R.id.Name)).setText(info.getName());
-            }else
-            {
-                ((TextView) findViewById(R.id.Name)).setText(info.getName() + "(" + info.getNickName() + ")");
+        if (info != null){
+            if (!TextUtils.isEmpty(info.getLogo())) ImageLoaderUtil.getInstance().displayImage(info.getLogo(), (ImageView) findViewById(R.id.Logo));
+            else ((ImageView) findViewById(R.id.Logo)).setImageResource(R.drawable.ic_launcher);
+            if (TextUtils.isEmpty(info.getNickName())) ((TextView) findViewById(R.id.Name)).setText(info.getName());
+            else ((TextView) findViewById(R.id.Name)).setText(info.getName() + "(" + info.getNickName() + ")");
+            if (!TextUtils.isEmpty(info.getMerchantId())) ((TextView) findViewById(R.id.ID)).setText("ID号: " + info.getMerchantId());
+            if (!TextUtils.isEmpty(info.getCategory())) ((TextView) findViewById(R.id.Category)).setText("分类: " + info.getCategory());
+            if (!TextUtils.isEmpty(info.getFansNumber())) ((TextView) findViewById(R.id.Fans)).setText(info.getFansNumber() + "人订阅");
+            if (!TextUtils.isEmpty(info.getIntroduction())) {
+                ((TextView) findViewById(R.id.Desc)).setText(info.getIntroduction());
+                ((TextView) findViewById(R.id.Info)).setText(info.getIntroduction());
             }
-        }
-        if (info != null && !TextUtils.isEmpty(info.getMerchantId())) {
-            ((TextView) findViewById(R.id.ID)).setText("ID号: " + info.getMerchantId());
-        }
-        if (info != null && !TextUtils.isEmpty(info.getCategory())) {
-            ((TextView) findViewById(R.id.Category)).setText("分类: " + info.getCategory());
-        }
-        if (info != null && !TextUtils.isEmpty(info.getFansNumber())) {
-            ((TextView) findViewById(R.id.Fans)).setText(info.getFansNumber() + "人订阅");
-        }
-        if (info != null && !TextUtils.isEmpty(info.getIntroduction())) {
-            ((TextView) findViewById(R.id.Desc)).setText(info.getIntroduction());
-            ((TextView) findViewById(R.id.Info)).setText(info.getIntroduction());
-        }
-        if (info != null && !TextUtils.isEmpty(info.getAddress())) {
-            ((TextView) findViewById(R.id.Address)).setText(info.getAddress());
-        }
-        if (info != null && !TextUtils.isEmpty(info.getScore())) {
-            ratingBar.setRating(Float.valueOf(info.getScore()));
-        }
-        if (info != null && !TextUtils.isEmpty(info.getScore())) {
-            tv_score.setText(info.getScore());
-        }
-        if (info != null && !TextUtils.isEmpty(info.getStatus())) {
-            if (info.getStatus().equals("0")) {
-                statusInfo.setBackgroundResource(R.drawable.black_15);
-                statusInfo.setText("已订购");
-                statusInfo.setTextColor(Color.parseColor("#ffffff"));
-            } else if (info.getStatus().equals("1")) {
-                statusInfo.setBackgroundResource(R.drawable.black_15);
-                statusInfo.setText("订购");
-                statusInfo.setTextColor(Color.parseColor("#ffffff"));
-            } else if (info.getStatus().equals("2")) {
-                statusInfo.setBackgroundResource(R.drawable.gray_15);
-                statusInfo.setText("订购已满");
-                statusInfo.setTextColor(Color.parseColor("#777777"));
+            if (!TextUtils.isEmpty(info.getAddress()))((TextView) findViewById(R.id.Address)).setText(info.getAddress());
+            if (!TextUtils.isEmpty(info.getScore()))ratingBar.setRating(Float.valueOf(info.getScore()));
+            if (!TextUtils.isEmpty(info.getScore())) tv_score.setText(info.getScore());
+
+            if (!TextUtils.isEmpty(info.getStatus())) {
+                switch (info.getStatus()){
+                    case "0":
+                        statusInfo.setBackgroundResource(R.drawable.black_15);
+                        statusInfo.setText("已订购");
+                        statusInfo.setTextColor(Color.parseColor("#ffffff"));
+                        break;
+                    case "1":
+                        statusInfo.setBackgroundResource(R.drawable.black_15);
+                        statusInfo.setText("订购");
+                        statusInfo.setTextColor(Color.parseColor("#ffffff"));
+                        statusInfo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(CompanyInfoActivity.this, PaySelectActivity.class);
+                                intent.putExtra("merchantID", info.getMerchantId());
+                                intent.putExtra("isOrder", "0");
+                                startActivity(intent);
+                            }
+                        });
+                        break;
+                    case "2":
+                        statusInfo.setBackgroundResource(R.drawable.gray_15);
+                        statusInfo.setText("订购已满");
+                        statusInfo.setTextColor(Color.parseColor("#777777"));
+                        break;
+                }
             }
         }
     }

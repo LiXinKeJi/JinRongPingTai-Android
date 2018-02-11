@@ -50,7 +50,6 @@ public class ReNewActivity extends BaseActivity{
         adapter = new ReNewAdapter(this,lists);
         mListView.setAdapter(adapter);
         mListView.setMode(PullToRefreshBase.Mode.BOTH);
-        //this.initData();
         this.requestData();
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

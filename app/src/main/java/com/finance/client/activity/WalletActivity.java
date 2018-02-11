@@ -88,9 +88,9 @@ public class WalletActivity extends BaseActivity {
                                 Toast.makeText(WalletActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            amount=obj.getString("amount");
+                            amount = obj.getString("amount");
                             MineFragment.userInfo.setAmount(obj.getString("amount"));
-                            guCoin=obj.getString("guCoin");
+                            guCoin = obj.getString("guCoin");
                             updateView();
                         }catch (Exception e){
                             e.printStackTrace();

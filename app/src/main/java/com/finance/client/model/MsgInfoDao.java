@@ -6,28 +6,38 @@ package com.finance.client.model;
  */
 
 public class MsgInfoDao {
-    public String getMerchantID() {
-        return merchantID;
+    private String merchantId;
+    private String categoryId;
+    private String messageId;
+    private String type;
+    private String logo;
+    private String name;
+    private String time;
+    private String content;
+    private String score;
+
+    public String getMerchantId() {
+        return merchantId;
     }
 
-    public void setMerchantID(String merchantID) {
-        this.merchantID = merchantID;
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
     }
 
-    public String getCategoryID() {
-        return categoryID;
+    public String getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategoryID(String categoryID) {
-        this.categoryID = categoryID;
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public String getMessageID() {
-        return messageID;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setMessageID(String messageID) {
-        this.messageID = messageID;
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     public String getType() {
@@ -78,15 +88,7 @@ public class MsgInfoDao {
         this.score = score;
     }
 
-    private String merchantID;
-    private String categoryID;
-    private String messageID;
-    private String type;
-    private String logo;
-    private String name;
-    private String time;
-    private String content;
-    private String score;
+
 
     public int getIsComment() {
         return isComment;

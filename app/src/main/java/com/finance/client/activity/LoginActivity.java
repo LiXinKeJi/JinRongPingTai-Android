@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.library.BaseActivity;
-import com.finance.library.Content;
+import com.finance.client.util.Content;
 import com.finance.library.Util.ToolUtil;
 import com.finance.library.Util.UserUtil;
 import com.finance.library.common.WechatTokenDO;
@@ -261,53 +261,46 @@ public class LoginActivity extends BaseActivity {
         }
         showLoading();
         Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","login");
-        params.put("phoneNum",phone);
-        params.put("password", ToolUtil.md5(password));
-        params.put("token", JPushInterface.getRegistrationID(this));
+        String json = "{\"cmd\":\"login\",\"phoneNum\":\""+phone+"\",\"password\":\""+ToolUtil.md5(password)+"\"" +
+                ",\"token\":\""+JPushInterface.getRegistrationID(this)+"\"}";
+        params.put("json",json);
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                dismissLoading();
+            }
 
-        AsyncClient.Get()
-                .setContext(this)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        if(!success){
-                            Toast.makeText(LoginActivity.this, "登录失败", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                Log.i("666", "onResponse: " +response);
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    if(obj.getString("result").equals("1")){
+                        Toast.makeText(LoginActivity.this, ""+obj.getString("resultNote"), Toast.LENGTH_SHORT).show();
+                        return ;
+                    }
+                    if(obj.has("userInfo")) {
+                        int completeInfo = obj.getJSONObject("userInfo").getInt("completeInfo");
+                        if (completeInfo  == 0) {
+                            Intent intent = new Intent(LoginActivity.this, ActivityBaseInfo.class);
+                            intent.putExtra("uid", obj.getJSONObject("userInfo").getString("uid"));
+                            startActivity(intent);
                             return;
                         }
-                        try {
-                            JSONObject obj = new JSONObject(result);
-                            if(obj.getString("result").equals("1")){
-                                Toast.makeText(LoginActivity.this, ""+obj.getString("resultNote"), Toast.LENGTH_SHORT).show();
-                                return ;
-                            }
-                            if(obj.has("userInfo")) {
-                                int completeInfo = obj.getJSONObject("userInfo").getInt("completeInfo");
-                                if (completeInfo  == 0) {
-                                    Intent intent = new Intent(LoginActivity.this, ActivityBaseInfo.class);
-                                    intent.putExtra("uid", obj.getJSONObject("userInfo").getString("uid"));
-                                    startActivity(intent);
-                                    return;
-                                }
-                            }
-                            String info = obj.getString("userInfo");
-                            UserInfo userInfo = (UserInfo) FastJsonUtil.parseObject(info, UserInfo.class);
-//                            UserUtil.uid = "2";
-                            UserUtil.saveUid(LoginActivity.this,userInfo.getUid());
-                            //userInfo.getUid();
-//                            UserUtil.uid = userInfo.getUid();
-                            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                     }
-                });
+                    String info = obj.getString("userInfo");
+                    UserInfo userInfo = (UserInfo) FastJsonUtil.parseObject(info, UserInfo.class);
+                    UserUtil.saveUid(LoginActivity.this,userInfo.getUid());
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void wechatLogin(String code){

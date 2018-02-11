@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.finance.client.R;
+import com.finance.client.util.Content;
 import com.finance.library.BaseActivity;
 import com.finance.library.Util.UserUtil;
 import com.finance.library.network.AsyncClient;
@@ -49,7 +50,7 @@ public class FeedbackActivity extends BaseActivity {
         showLoading();
         AsyncClient.Post()
                 .setContext(this)
-                .setHost(com.finance.library.Content.DOMAIN)
+                .setHost(Content.DOMAIN)
                 .setParams(params)
                 .setReturnClass(String.class)
                 .execute(new AsyncResponseHandler<String>() {
