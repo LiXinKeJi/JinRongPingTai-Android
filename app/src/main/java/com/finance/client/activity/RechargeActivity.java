@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -14,17 +13,19 @@ import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.util.Content;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
-import com.google.common.collect.Maps;
+import com.finance.client.util.ToastUtils;
+import com.finance.client.util.UserUtil;
 import com.pingplusplus.android.Pingpp;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -38,7 +39,7 @@ public class RechargeActivity extends BaseActivity {
     private Drawable unSelectIcon;
     private EditText editPrice;
     private String orderId;
-    private String channel = "alipay", charge;
+    private String channel = "alipay", charge,body = "充值";
     private TextView txtAlipay, txtWx;
 
     @Override
@@ -96,24 +97,31 @@ public class RechargeActivity extends BaseActivity {
     }
 
     private void requestOrderId() {
-        Map<String, String> params = Maps.newHashMap();
-        params.put("uid", UserUtil.uid);
-        params.put("cmd", "depositOrder");
-        params.put("money", editPrice.getText().toString());
+        Map<String, String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"depositOrder\",\"uid\":\""+UserUtil.uid+"\",\"money\":\""+editPrice.getText().toString()+"\"}";
+        params.put("json",json);
         showLoading();
-        AsyncClient.Get().setParams(params).setHost(Content.DOMAIN).setReturnClass(String.class).execute(new AsyncResponseHandler<String>() {
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
-            public void onResult(boolean success, String result, ResponseError error) {
-                Log.e("获取订单号........", result);
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(RechargeActivity.this,e.getMessage());
+            }
+            @Override
+            public void onResponse(String response, int id) {
                 dismissLoading();
                 try {
-                    JSONObject obj = new JSONObject(result);
+                    JSONObject obj = new JSONObject(response);
                     if (obj.getString("result").equals("1")) {
-                        Toast.makeText(RechargeActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
+                        ToastUtils.makeText(RechargeActivity.this, obj.getString("resultNote"));
                         return;
                     }
                     orderId = obj.getString("orderNo");
-                    recharge();
+                    if (!TextUtils.isEmpty(orderId)){
+                        recharge();
+                    }else {
+                        ToastUtils.makeText(RechargeActivity.this, "生成订单失败，请重试！");
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -124,21 +132,25 @@ public class RechargeActivity extends BaseActivity {
     private void recharge() {
         double amount = Double.parseDouble(editPrice.getText().toString()) * 100;
         DecimalFormat decimalFormat = new DecimalFormat("###################.###########");
-        Map<String, String> params = Maps.newHashMap();
-        params.put("cmd", "getCharge");
-        params.put("orderNo", orderId);
-        params.put("amount", decimalFormat.format(amount));
-        params.put("channel", channel);
-        params.put("body", "备注");
+        Map<String, String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"getCharge\",\"orderNo\":\""+orderId+"\",\"amount\":\""+decimalFormat.format(amount)+"\"" +
+                ",\"channel\":\""+channel+"\",\"body\":\""+body+"\"}";
+        params.put("json",json);
         showLoading();
-        AsyncClient.Get().setParams(params).setHost(Content.DOMAIN).setReturnClass(String.class).execute(new AsyncResponseHandler<String>() {
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
-            public void onResult(boolean success, String result, ResponseError error) {
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(RechargeActivity.this,e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
                 dismissLoading();
                 try {
-                    JSONObject obj = new JSONObject(result);
+                    JSONObject obj = new JSONObject(response);
                     if (obj.getString("result").equals("1")) {
-                        Toast.makeText(RechargeActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
+                        ToastUtils.makeText(RechargeActivity.this, obj.getString("resultNote"));
                         return;
                     }
                     charge = obj.getString("charge");

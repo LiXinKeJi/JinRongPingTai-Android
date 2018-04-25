@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.finance.client.R;
-import com.finance.library.BaseActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

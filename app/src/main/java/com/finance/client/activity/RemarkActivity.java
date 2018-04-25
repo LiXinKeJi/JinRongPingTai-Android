@@ -8,11 +8,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.finance.client.R;
+import com.finance.client.model.BaseResultDO;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.model.BaseResultDO;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -58,7 +57,7 @@ public class RemarkActivity extends BaseActivity{
             return;
         }
         Map<String,String> params = Maps.newHashMap();
-        String json = "{\"cmd\":\"setAuthorNoet\",\"merchantID\":\""+id+"\",\"nickName\":\""+text+"\",\"uid\":\""+UserUtil.uid+"\"}";
+        String json = "{\"cmd\":\"setAuthorNoet\",\"merchantID\":\""+id+"\",\"nickName\":\""+text+"\",\"uid\":\""+ UserUtil.uid+"\"}";
         params.put("json",json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {

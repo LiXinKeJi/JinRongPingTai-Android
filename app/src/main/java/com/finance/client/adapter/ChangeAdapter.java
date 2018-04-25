@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.finance.client.R;
-import com.finance.client.model.ChangeInfoDao;
+import com.finance.client.activity.ChangeListActivity;
+import com.finance.client.model.ChangeListResultDao;
+
 import java.util.List;
 
 /**
@@ -17,8 +19,8 @@ import java.util.List;
 
 public class ChangeAdapter extends BaseAdapter{
     private Context mContext;
-    private List<ChangeInfoDao> lists;
-    public ChangeAdapter(Context mContext,List<ChangeInfoDao> lists){
+    private List<ChangeListResultDao.ChangeInfoDao> lists;
+    public ChangeAdapter(ChangeListActivity mContext, List<ChangeListResultDao.ChangeInfoDao> mlists) {
         this.mContext = mContext;
         this.lists = lists;
     }
@@ -51,7 +53,7 @@ public class ChangeAdapter extends BaseAdapter{
         }else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        ChangeInfoDao info = lists.get(position);
+        ChangeListResultDao.ChangeInfoDao info = lists.get(position);
         viewHolder.mType.setText(info.getType());
         viewHolder.mDate.setText(info.getTime());
         if (info.getType().equals("充值")){

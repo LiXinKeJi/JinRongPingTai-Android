@@ -9,24 +9,26 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.adapter.ReNewAdapter;
 import com.finance.client.model.ConcernedPublishersDao;
 import com.finance.client.model.RenewResultDao;
 import com.finance.client.util.Content;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.client.util.ToastUtils;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshBase;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -90,46 +92,43 @@ public class ReNewActivity extends BaseActivity{
 
     private void requestData(){
         Map<String,String> params = Maps.newHashMap();
+        final String json = "{\"cmd\":\"getAuthorList\",\"uid\":\""+ UserUtil.uid+"\"" +
+                ",\"pageCount\":\""+10+"\",\"nowPage\":\""+nowPage+"\"}";
+        params.put("json", json);
         showLoading();
-        params.put("cmd","getAuthorList");
-        params.put("uid", UserUtil.uid);
-        params.put("pageCount","10");
-        params.put("nowPage",""+nowPage);
-        AsyncClient.Get()
-                .setHost(Content.DOMAIN)
-                .setReturnClass(RenewResultDao.class)
-                .setContext(this)
-                .setParams(params)
-                .execute(new AsyncResponseHandler<RenewResultDao>() {
-                    @Override
-                    public void onResult(boolean success, RenewResultDao result, ResponseError error) {
-                        dismissLoading();
-                        mListView.onRefreshComplete();
-                        if(!success){
-                            Toast.makeText(ReNewActivity.this,error.errorMsg,Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        if(result.getResult().equals("1")){
-                            Toast.makeText(ReNewActivity.this,result.getResultNote(),Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-//                        Toast.makeText(ReNewActivity.this,result.getResultNote(),Toast.LENGTH_SHORT).show();
-//
-                        if (result.getTotalPage()!=null) {
-                            totalPage = Integer.parseInt(result.getTotalPage());
-                            Log.e("totalpage---",result.getTotalPage());
-                        }
-                        if(result.getDataList() != null) {
-                            for(int i=0;i<result.getDataList().size();i++)
-                            {
-                                if (!TextUtils.isEmpty(result.getDataList().get(i).getStatus())&&result.getDataList().get(i).getStatus().equals("0")) {
-                                    lists.add(result.getDataList().get(i));
-                                }
-                            }
-                            adapter.notifyDataSetChanged();
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(ReNewActivity.this,e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                Gson gson = new Gson();
+                RenewResultDao renewResultDao = gson.fromJson(response,RenewResultDao.class);
+                mListView.onRefreshComplete();
+                if (renewResultDao.getResult().equals("1")){
+                    ToastUtils.makeText(ReNewActivity.this,renewResultDao.getResultNote());
+                    return;
+                }
+                if (renewResultDao.getTotalPage()!=null) {
+                    totalPage = Integer.parseInt(renewResultDao.getTotalPage());
+                    Log.e("totalpage---",renewResultDao.getTotalPage());
+                }
+
+                if(renewResultDao.getDataList() != null) {
+                    for(int i=0;i<renewResultDao.getDataList().size();i++)
+                    {
+                        if (!TextUtils.isEmpty(renewResultDao.getDataList().get(i).getStatus())&&renewResultDao.getDataList().get(i).getStatus().equals("0")) {
+                            lists.add(renewResultDao.getDataList().get(i));
                         }
                     }
-                });
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     @Override

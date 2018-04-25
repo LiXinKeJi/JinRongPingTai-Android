@@ -26,13 +26,19 @@ public class PaySelectBean {
 
     public class Other{
         private String price;
+        private String id;
+        private String project;
 
         public String getPrice() {
             return price;
         }
 
-        public void setPrice(String price) {
-            this.price = price;
+        public String getId() {
+            return id;
+        }
+
+        public String getProject() {
+            return project;
         }
     }
     public String getIsSetPassword() {

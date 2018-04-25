@@ -18,16 +18,18 @@ import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.util.Content;
+import com.finance.client.util.ToastUtils;
+import com.finance.client.util.UserUtil;
 import com.finance.client.util.Utils;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
-import com.google.common.collect.Maps;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -114,42 +116,38 @@ public class SettingActivity extends BaseActivity{
     }
 
     private void getUpdata() {
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd", "getUpdata");
-        params.put("type", "1");
+        Map<String,String> params = new HashMap<>();
+        String json = "{\"cmd\":\"getUpdata\",\"type\":\""+1+"\"}";
+        params.put("json",json);
         showLoading();
-        AsyncClient.Post()
-                .setContext(this)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        if (success) {
-                            try {
-                                JSONObject obj = new JSONObject(result);
-                                if (obj.getString("result").equals("1")) {
-                                    Toast.makeText(SettingActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-//                                Toast.makeText(SettingActivity.this, obj.getString("resultNote"), Toast.LENGTH_SHORT).show();
-                                version_name=obj.getString("versionName");
-                                version_code = Integer.valueOf(obj.getString("versionNumber"));
-                                if (!TextUtils.isEmpty(String.valueOf(version_code))&&version_code > Utils.getVersionCode(SettingActivity.this)) {
-                                    updata_url=obj.getString("updataAddress");
-                                    ic_spot.setVisibility(View.VISIBLE);
-                                    isDown = true;
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(SettingActivity.this,e.getMessage());
+            }
 
-                        }
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    if (obj.getString("result").equals("1")) {
+                        ToastUtils.makeText(SettingActivity.this, obj.getString("resultNote"));
+                        return;
                     }
-                });
-
+                    version_name=obj.getString("versionName");
+                    version_code = Integer.valueOf(obj.getString("versionNumber"));
+                    if (!TextUtils.isEmpty(String.valueOf(version_code))&&version_code > Utils.getVersionCode(SettingActivity.this)) {
+                        updata_url=obj.getString("updataAddress");
+                        ic_spot.setVisibility(View.VISIBLE);
+                        isDown = true;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override

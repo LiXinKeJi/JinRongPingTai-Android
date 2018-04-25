@@ -18,15 +18,16 @@ import com.finance.client.adapter.HomeMsgAdapter;
 import com.finance.client.model.MeassageBean;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshBase;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,7 +97,7 @@ public class MsgFragment extends BaseFragment {
             return;
         }
         Map<String, String> params = new HashMap<>();
-        String json = "{\"cmd\":\"getMessageList\",\"uid\":\""+UserUtil.uid+"\"," +
+        String json = "{\"cmd\":\"getMessageList\",\"uid\":\""+ UserUtil.uid+"\"," +
                 "\"nowPage\":\""+nowPage+"\",\"pageCount\":\""+10+"\"}";
         params.put("json", json);
         showLoading();
@@ -135,18 +136,32 @@ public class MsgFragment extends BaseFragment {
             RouterMsgList(index);
             return;
         }
-        showLoading();
         Map<String, String> params = Maps.newHashMap();
-        params.put("cmd", "readMessage");
-        params.put("uid", UserUtil.uid);
-        params.put("categoryID", item.getCategoryId());
-        params.put("type", item.getType());
+        final String json = "{\"cmd\":\"readMessage\",\"uid\":\""+UserUtil.uid+"\"" +
+                ",\"categoryID\":\""+item.getCategoryId()+"\",\"type\":\""+item.getType()+"\"}";
+        params.put("json",json);
         item.setUnreadMessages("0");
-        AsyncClient.Get().setParams(params).setHost(Content.DOMAIN).setReturnClass(String.class).execute(new AsyncResponseHandler<String>() {
+        showLoading();
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
-            public void onResult(boolean success, String result, ResponseError error) {
+            public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                RouterMsgList(index);
+                ToastUtils.makeText(getActivity(),e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.getString("result").equals("1")){
+                        ToastUtils.makeText(getActivity(),jsonObject.getString("resultNote"));
+                        return;
+                    }
+                    RouterMsgList(index);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
         mAdapter.notifyDataSetChanged();

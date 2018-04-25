@@ -15,8 +15,7 @@ import com.finance.client.model.CompanyInfoBean;
 import com.finance.client.model.MasterDao;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.yhrun.alchemy.Util.ImageLoaderUtil;
@@ -79,7 +78,7 @@ public class CompanyInfoActivity extends BaseActivity{
 
     private void requestData(){
         Map<String,String> params = Maps.newHashMap();
-        String json = "{\"cmd\":\"getAuthorDetail\",\"uid\":\""+UserUtil.uid+"\",\"merchantID\":\""+id+"\"}";
+        String json = "{\"cmd\":\"getAuthorDetail\",\"uid\":\""+ UserUtil.uid+"\",\"merchantID\":\""+id+"\"}";
         params.put("json",json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {

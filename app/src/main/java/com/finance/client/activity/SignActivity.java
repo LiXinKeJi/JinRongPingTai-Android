@@ -8,7 +8,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.finance.client.R;
-import com.finance.library.BaseActivity;
 
 /**
  * User : yh

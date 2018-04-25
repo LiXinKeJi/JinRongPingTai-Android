@@ -10,8 +10,7 @@ import android.widget.Toast;
 import com.finance.client.R;
 import com.finance.client.model.BaseBean;
 import com.finance.client.util.Content;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
+import com.finance.client.util.UserUtil;
 import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -80,7 +79,7 @@ public class ScoreActivity extends BaseActivity{
 
     private void submit(){
         Map<String,String> params = new HashMap<>();
-        String json = "{\"cmd\":\"comment\",\"uid\":\""+UserUtil.uid+"\",\"messageID\":\""+messageID+"\"" +
+        String json = "{\"cmd\":\"comment\",\"uid\":\""+ UserUtil.uid+"\",\"messageID\":\""+messageID+"\"" +
                 ",\"score\":\""+score+"\"}";
         params.put("json",json );
         Log.i("6666", "submit: " + json);

@@ -22,10 +22,8 @@ import com.finance.client.model.UserInfoDao;
 import com.finance.client.util.Content;
 import com.finance.client.util.ImageUtil;
 import com.finance.client.util.PermissionUtil;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.client.util.ToastUtils;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.lling.photopicker.PhotoPickerActivity;
@@ -39,6 +37,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -65,7 +64,6 @@ public class ModifyUserInfoActivity extends BaseActivity{
         userinfo= (UserInfoDao) getIntent().getSerializableExtra("userinfo");
         txtSign=(TextView)findViewById(R.id.Sign);
         findViewById(R.id.HeadImg).setOnClickListener(this);
-        findViewById(R.id.HYLayout).setOnClickListener(this);
         findViewById(R.id.CityLayout).setOnClickListener(this);
         findViewById(R.id.SignLayout).setOnClickListener(this);
         rightBtn.setOnClickListener(this);
@@ -79,6 +77,7 @@ public class ModifyUserInfoActivity extends BaseActivity{
             ((TextView) findViewById(R.id.nickName)).setText(userinfo.getNickName());
             ((TextView) findViewById(R.id.ID)).setText(userinfo.getUid());
             ((TextView) findViewById(R.id.Trade)).setText(userinfo.getIndustry());
+            Log.i("ssss", "updateView: " + userinfo.getIndustry());
             ((TextView) findViewById(R.id.City)).setText(userinfo.getAddress());
             ((TextView) findViewById(R.id.Phone)).setText(userinfo.getPhoneNum());
             ((TextView) findViewById(R.id.Wechat)).setText(userinfo.getWeChat());
@@ -105,9 +104,6 @@ public class ModifyUserInfoActivity extends BaseActivity{
                 if (PermissionUtil.ApplyPermissionAlbum(this, 0)) {
                     this.takePhoto();
                 }
-                break;
-            case R.id.HYLayout:
-                this.chooseCategory();
                 break;
             case R.id.CityLayout:
                 chooseRegion();
@@ -136,7 +132,7 @@ public class ModifyUserInfoActivity extends BaseActivity{
     private void editUserInfo(String nickName, String address, String industry, String weChat,String signature) {
         showLoading();
         Map<String,String> params = Maps.newHashMap();
-        String json = "{\"cmd\":\"editUserInfo\",\"uid\":\""+UserUtil.uid+"\",\"avatar\":\""+avatar+"\"" +
+        String json = "{\"cmd\":\"editUserInfo\",\"uid\":\""+ UserUtil.uid+"\",\"avatar\":\""+avatar+"\"" +
                 ",\"address\":\""+address+"\",\"nickName\":\""+nickName+"\",\"industry\":\""+categoryInfo+"\"" +
                 ",\"weChat\":\""+weChat+"\",\"signature\":\""+signature+"\"}";
         params.put("json",json);
@@ -166,28 +162,33 @@ public class ModifyUserInfoActivity extends BaseActivity{
     }
 
     private void requestCategory(){
+        Map<String,String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"getIndustryCategory\",\"uid\":\""+ UserUtil.uid +"\"}";
+        params.put("json",json);
         showLoading();
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","getIndustryCategory");
-        params.put("uid", UserUtil.uid);
-        AsyncClient.Get()
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        if(success){
-//                            Toast.makeText(ModifyUserInfoActivity.this, "获取分类数据成功", Toast.LENGTH_SHORT).show();
-                            try {
-                                category = new JSONObject(result).getJSONArray("flist");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(ModifyUserInfoActivity.this,e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    if (obj.getString("result").equals("1")) {
+                        ToastUtils.makeText(ModifyUserInfoActivity.this,"" + obj.getString("resultNote"));
+                        return;
                     }
-                });
+                    category = obj.getJSONArray("flist");
+                    ToastUtils.makeText(ModifyUserInfoActivity.this,"获取分类数据成功");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 

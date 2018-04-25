@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.adapter.MsgAdapter;
@@ -16,10 +15,7 @@ import com.finance.client.model.MsgInfoDao;
 import com.finance.client.model.MsgInfoListDao;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.yhrun.alchemy.View.dialog.YHAlertDialog;
@@ -135,7 +131,7 @@ public class MsgListActivity extends BaseActivity{
         }
         showLoading();
         Map<String,String> params = new HashMap<>();
-        String json = "{\"cmd\":\"getMessagesDetail\",\"uid\":\""+UserUtil.uid+"\"" +
+        String json = "{\"cmd\":\"getMessagesDetail\",\"uid\":\""+ UserUtil.uid+"\"" +
                 ",\"categoryID\":\""+categoryId+"\",\"pageCount\":\""+10+"\",\"nowPage\":\""+nowPage+"\"" +
                 ",\"type\":\""+type+"\"}";
         params.put("json",json);
@@ -180,7 +176,7 @@ public class MsgListActivity extends BaseActivity{
         dialog.setOnDialogClickListener(new YHAlertDialog.OnDialogClickListener() {
             @Override
             public void onConfirm() {
-                _deleteMsg(index);
+                delete(index);
             }
 
             @Override
@@ -190,41 +186,35 @@ public class MsgListActivity extends BaseActivity{
         });
     }
 
-    private void _deleteMsg(final int index){
+    private void delete(final int index){
         showLoading();
         MsgInfoDao item = msgList.get(index);
         Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","deleteMessageDetail");
-        params.put("uid",UserUtil.uid);
-        params.put("messageID",item.getMessageId());
-        params.put("type",type);
-        AsyncClient.Get()
-                .setParams(params)
-                .setReturnClass(String.class)
-                .setHost(Content.DOMAIN)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        if(success){
-                            try {
-                                JSONObject jsonObject=new JSONObject(result);
-                                if (jsonObject.getString("result").equals("1")) {
-                                    Toast.makeText(MsgListActivity.this, jsonObject.getString("resultNote"), Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-                                Toast.makeText(MsgListActivity.this, "消息详情已删除", Toast.LENGTH_SHORT).show();
-                                msgList.remove(index);
-                                mAdapter.notifyDataSetChanged();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+        final String json = "{\"cmd\":\"deleteMessageDetail\",\"uid\":\""+UserUtil.uid+"\",\"messageID\":\""+item.getMessageId()+"\",\"type\":\""+type+"\"}";
+        params.put("json",json);
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+           @Override
+           public void onError(Call call, Exception e, int id) {
+               dismissLoading();
+               ToastUtils.makeText(MsgListActivity.this, e.getMessage());
+           }
 
-                        }else{
-                            Toast.makeText(MsgListActivity.this,"删除失败",Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
+           @Override
+           public void onResponse(String response, int id) {
+               dismissLoading();
+               try {
+                   JSONObject jsonObject=new JSONObject(response);
+                   if (jsonObject.getString("result").equals("1")) {
+                       ToastUtils.makeText(MsgListActivity.this, jsonObject.getString("resultNote"));
+                       return;
+                   }
+                   ToastUtils.makeText(MsgListActivity.this, "消息详情已删除");
+                   msgList.remove(index);
+                   mAdapter.notifyDataSetChanged();
+               } catch (JSONException e) {
+                   e.printStackTrace();
+               }
+           }
+       });
     }
 }

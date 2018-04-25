@@ -9,14 +9,19 @@ import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.util.Content;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.ToolUtil;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
-import com.google.common.collect.Maps;
+import com.finance.client.util.ToastUtils;
+import com.finance.client.util.ToolUtil;
+import com.finance.client.util.UserUtil;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -57,26 +62,36 @@ public class ModifyPwdActivity extends BaseActivity{
             Toast.makeText(this, "请输入新密码", Toast.LENGTH_SHORT).show();
             return;
         }
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","changePassword");
-        params.put("uid", UserUtil.uid);
-        params.put("oldPassword", ToolUtil.md5(oldPwd));
-        params.put("newPassword",ToolUtil.md5(newPwd));
+        sumbitChangePassword(ToolUtil.md5(oldPwd),ToolUtil.md5(newPwd));
+    }
+
+    private void sumbitChangePassword(String oldPassword, String newPassword) {
+        Map<String,String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"changePassword\",\"uid\":\""+ UserUtil.uid+"\",\"oldPassword\":\""+oldPassword+"\",\"newPassword\":\""+newPassword+"\"}";
+        params.put("json",json);
         showLoading();
-        AsyncClient.Get()
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .execute(new AsyncResponseHandler() {
-                    @Override
-                    public void onResult(boolean success, Object result, ResponseError error) {
-                        dismissLoading();
-                        if(success){
-                            Toast.makeText(ModifyPwdActivity.this, "修改成功", Toast.LENGTH_SHORT).show();
-                            finish();
-                        }else{
-                            Toast.makeText(ModifyPwdActivity.this, "操作失败", Toast.LENGTH_SHORT).show();
-                        }
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(ModifyPwdActivity.this,e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.getString("result").equals("1")){
+                        ToastUtils.makeText(ModifyPwdActivity.this, jsonObject.getString("resultNote"));
+                        return;
                     }
-                });
+                    ToastUtils.makeText(ModifyPwdActivity.this, "修改成功");
+                    finish();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

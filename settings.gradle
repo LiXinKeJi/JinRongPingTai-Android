@@ -1,1 +1,1 @@
-include ':app', ':publicmodule', ':pingpp', ':okhttputils'
+include ':app', ':pingpp', ':okhttputils'

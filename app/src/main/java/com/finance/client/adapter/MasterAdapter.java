@@ -17,15 +17,21 @@ import com.finance.client.activity.PaySelectActivity;
 import com.finance.client.common.LogOutDialog;
 import com.finance.client.model.MasterDao;
 import com.finance.client.util.Content;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.client.util.ToastUtils;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.yhrun.alchemy.Util.ImageLoaderUtil;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -170,17 +176,28 @@ public class MasterAdapter extends BaseAdapter {
     private void follow(int index) {
         final MasterDao info = lists.get(index);
         Map<String, String> params = Maps.newHashMap();
-        params.put("cmd", "attention");
-        params.put("uid", UserUtil.uid);
-        params.put("merchantID", info.getMerchantId());
-        AsyncClient.Get().setHost(Content.DOMAIN).setParams(params).execute(new AsyncResponseHandler() {
+        final String json = "{\"cmd\":\"attention\",\"uid\":\""+ UserUtil.uid+"\",\"merchantID\":\""+info.getMerchantId()+"\"}";
+        params.put("json", json);
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
-            public void onResult(boolean success, Object result, ResponseError error) {
-                if (success) {
+            public void onError(Call call, Exception e, int id) {
+                ToastUtils.makeText(mContext,e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if(jsonObject.getString("result").equals("1")){
+                        ToastUtils.makeText(mContext, ""+jsonObject.getString("resultNote"));
+                        return ;
+                    }
                     Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
                     info.setAttention("1");
                     MyApplication.temp = 1;
                     notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -189,16 +206,27 @@ public class MasterAdapter extends BaseAdapter {
     private void cancel(int index) {
         final MasterDao info = lists.get(index);
         Map<String, String> params = Maps.newHashMap();
-        params.put("cmd", "cancleOrder");
-        params.put("uid", UserUtil.uid);
-        params.put("merchantID", info.getMerchantId());
-        AsyncClient.Get().setHost(Content.DOMAIN).setParams(params).execute(new AsyncResponseHandler() {
+        final String json = "{\"cmd\":\"cancleOrder\",\"uid\":\""+UserUtil.uid+"\",\"merchantID\":\""+info.getMerchantId()+"\"}";
+        params.put("json", json);
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
-            public void onResult(boolean success, Object result, ResponseError error) {
-                if (success) {
+            public void onError(Call call, Exception e, int id) {
+                ToastUtils.makeText(mContext,e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if(jsonObject.getString("result").equals("1")){
+                        ToastUtils.makeText(mContext, ""+jsonObject.getString("resultNote"));
+                        return ;
+                    }
                     Toast.makeText(mContext, "取消订购成功", Toast.LENGTH_SHORT).show();
                     info.setStatus("1");
                     notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
         });

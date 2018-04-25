@@ -3,27 +3,27 @@ package com.finance.client.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.adapter.ChangeAdapter;
-import com.finance.client.model.ChangeInfoDao;
 import com.finance.client.model.ChangeListResultDao;
 import com.finance.client.util.Content;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.client.util.ToastUtils;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshBase;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 
 public class ChangeListActivity extends BaseActivity {
-    private List<ChangeInfoDao> mlists = Lists.newArrayList();
+    private List<ChangeListResultDao.ChangeInfoDao> mlists = Lists.newArrayList();
     private PullToRefreshListView mListView;
     private ChangeAdapter mAdapter;
     private int nowPage = 1;
@@ -73,37 +73,42 @@ public class ChangeListActivity extends BaseActivity {
         this.requestData();
     }
 
-
     @Override
     public void onLeftIconClick() {
         finish();
     }
 
     private void requestData() {
+        Map<String, String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"getTransactions\",\"uid\":\""+ UserUtil.uid+"\",\"nowPage\":\""+nowPage+"\",\"pageCount\":\""+10+"\"}";
+        params.put("json",json);
         showLoading();
-        Map<String, String> params = Maps.newHashMap();
-        params.put("cmd", "getTransactions");
-        params.put("uid", UserUtil.uid);
-        params.put("nowPage", "" + nowPage);
-        params.put("pageCount", "10");
-        showLoading();
-        AsyncClient.Get().setHost(Content.DOMAIN).setParams(params).setReturnClass(ChangeListResultDao.class).execute(new AsyncResponseHandler<ChangeListResultDao>() {
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(ChangeListActivity.this,e.getMessage());
+            }
 
             @Override
-            public void onResult(boolean success, ChangeListResultDao result, ResponseError error) {
-                mListView.onRefreshComplete();
+            public void onResponse(String response, int id) {
+                Gson gson = new Gson();
                 dismissLoading();
-                if (success && result.getDataList() != null) {
-                    Log.i("result", "onResult: " + new Gson().toJson(result.getDataList()));
-                    mlists.addAll(result.getDataList());
-                    totalPage = result.getTotalPage();
-                    if (mlists.size() == 0) {
-                        Toast.makeText(ChangeListActivity.this, "暂无消息", Toast.LENGTH_SHORT).show();
-                    }
-                    mAdapter.notifyDataSetChanged();
+                ChangeListResultDao changeListResultDao = gson.fromJson(response,ChangeListResultDao.class);
+                if (changeListResultDao.getResult().equals("1")){
+                    ToastUtils.makeText(ChangeListActivity.this, changeListResultDao.getResultNote());
+                    return;
                 }
+                totalPage = changeListResultDao.getTotalPage();
+                List<ChangeListResultDao.ChangeInfoDao> changeInfoDaos = changeListResultDao.getDataList();
+                if (changeInfoDaos != null && !changeInfoDaos.isEmpty() && changeInfoDaos.size()>0){
+                    mlists.addAll(changeInfoDaos);
+                    mAdapter.notifyDataSetChanged();
+                }else {
+                    Toast.makeText(ChangeListActivity.this, "暂无消息", Toast.LENGTH_SHORT).show();
+                }
+                mListView.onRefreshComplete();
             }
         });
     }
-
 }

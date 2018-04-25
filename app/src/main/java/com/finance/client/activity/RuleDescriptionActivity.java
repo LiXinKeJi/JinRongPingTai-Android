@@ -7,16 +7,18 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.finance.client.R;
-import com.finance.library.BaseActivity;
 import com.finance.client.util.Content;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.client.util.ToastUtils;
 import com.google.common.collect.Maps;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * Created by Administrator on 2017/9/14 0014.
@@ -56,33 +58,32 @@ public class RuleDescriptionActivity extends BaseActivity {
     private void requestData(){
         showLoading();
         Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","ruleDescription");
-        AsyncClient.Post()
-                .setContext(this)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        try {
-                            JSONObject jsonObject=new JSONObject(result);
-                            if (jsonObject.getString("result").equals("1")) {
-                                Toast.makeText(RuleDescriptionActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            Toast.makeText(RuleDescriptionActivity.this,jsonObject.getString("resultNote") , Toast.LENGTH_SHORT).show();
-                            ruleDescriptionUrl=jsonObject.getString("ruleDescriptionUrl");
-                            myWebView.loadUrl(ruleDescriptionUrl);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+        final String json = "{\"cmd\":\"ruleDescription\"}";
+        params.put("json",json);
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(RuleDescriptionActivity.this,e.getMessage());
+            }
 
-//                            updateView();
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.getString("result").equals("1")) {
+                        ToastUtils.makeText(RuleDescriptionActivity.this, "获取失败");
+                        return;
                     }
-                });
-
+                    Toast.makeText(RuleDescriptionActivity.this,jsonObject.getString("resultNote") , Toast.LENGTH_SHORT).show();
+                    ruleDescriptionUrl=jsonObject.getString("ruleDescriptionUrl");
+                    myWebView.loadUrl(ruleDescriptionUrl);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
     @Override
     public void onLeftIconClick() {

@@ -21,12 +21,11 @@ import com.finance.client.common.RegionChooseDialog;
 import com.finance.client.util.Content;
 import com.finance.client.util.ImageUtil;
 import com.finance.client.util.PermissionUtil;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
-import com.google.common.collect.Maps;
+import com.finance.client.util.ToastUtils;
+import com.finance.client.util.UserUtil;
 import com.lling.photopicker.PhotoPickerActivity;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +33,10 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
 
 
 /**
@@ -53,7 +55,7 @@ public class ActivityBaseInfo extends BaseActivity{
         title = "完善资料";
         setContentView(R.layout.activity_base_info);
         super.onCreate(savedInstanceState);
-        uid=getIntent().getStringExtra("uid");
+        uid = getIntent().getStringExtra("uid");
         findViewById(R.id.CityLayout).setOnClickListener(this);
         findViewById(R.id.HeadImg).setOnClickListener(this);
         findViewById(R.id.SubmitBtn).setOnClickListener(this);
@@ -181,54 +183,68 @@ public class ActivityBaseInfo extends BaseActivity{
             Toast.makeText(this, "请输入昵称", Toast.LENGTH_SHORT).show();
             return;
         }
-        showLoading();
-//        String uid = getIntent().getStringExtra("uid");
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","completeUserInfo");
-        params.put("uid",uid);
-        params.put("avatar",avatar);
-        params.put("nickName",nickName);
-        params.put("industry",categoryInfo);
-        params.put("address",address);
-        AsyncClient.Post()
-                .setContext(this)
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        UserUtil.saveUid(ActivityBaseInfo.this,uid);
-                        startActivity(new Intent(ActivityBaseInfo.this,MainActivity.class));
-                        finish();
-                    }
-                });
+        sumbitBaseInfo(nickName);
+    }
 
+    private void sumbitBaseInfo(String nickName) {
+        Map<String,String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"completeUserInfo\",\"uid\":\""+uid+"\",\"avatar\":\""+avatar+"\"" +
+                ",\"nickName\":\""+nickName+"\",\"industry\":\""+categoryInfo+"\",\"address\":\""+address+"\"}";
+        params.put("json",json);
+        showLoading();
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(ActivityBaseInfo.this,e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    if (obj.getString("result").equals("1")) {
+                        ToastUtils.makeText(ActivityBaseInfo.this,"" + obj.getString("resultNote"));
+                        return;
+                    }
+                    UserUtil.saveUid(ActivityBaseInfo.this,uid);
+                    startActivity(new Intent(ActivityBaseInfo.this,MainActivity.class));
+                    finish();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void requestCategory(){
+        Map<String,String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"getIndustryCategory\",\"uid\":\""+ uid +"\"}";
+        params.put("json",json);
         showLoading();
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","getIndustryCategory");
-        params.put("uid", UserUtil.uid);
-        AsyncClient.Get()
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        if(success){
-                            Toast.makeText(ActivityBaseInfo.this, "获取分类数据成功", Toast.LENGTH_SHORT).show();
-                            try {
-                                category = new JSONObject(result).getJSONArray("flist");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(ActivityBaseInfo.this,e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    if (obj.getString("result").equals("1")) {
+                        ToastUtils.makeText(ActivityBaseInfo.this,"" + obj.getString("resultNote"));
+                        return;
                     }
-                });
+                    category = obj.getJSONArray("flist");
+                    ToastUtils.makeText(ActivityBaseInfo.this,"获取分类数据成功");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

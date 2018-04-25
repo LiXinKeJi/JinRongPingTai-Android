@@ -5,20 +5,21 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.fragment.MineFragment;
 import com.finance.client.util.Content;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
-import com.google.common.collect.Maps;
+import com.finance.client.util.ToastUtils;
+import com.finance.client.util.UserUtil;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -70,33 +71,35 @@ public class WalletActivity extends BaseActivity {
     }
 
     private void requestData(){
-        Map<String,String> params = Maps.newHashMap();
-        params.put("uid", UserUtil.uid);
-        params.put("cmd","getUserAmount");
+        Map<String,String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"getUserAmount\",\"uid\":\""+ UserUtil.uid+"\"}";
+        params.put("json",json);
         showLoading();
-        AsyncClient.Get()
-                .setParams(params)
-                .setHost(Content.DOMAIN)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        try{
-                            JSONObject obj = new JSONObject(result);
-                            if(obj.getString("result").equals("1")){
-                                Toast.makeText(WalletActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            amount = obj.getString("amount");
-                            MineFragment.userInfo.setAmount(obj.getString("amount"));
-                            guCoin = obj.getString("guCoin");
-                            updateView();
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(WalletActivity.this,e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                try{
+                    JSONObject obj = new JSONObject(response);
+                    if(obj.getString("result").equals("1")){
+                        ToastUtils.makeText(WalletActivity.this,obj.getString("resultNote"));
+                        return;
                     }
-                });
+                    amount = obj.getString("amount");
+                    MineFragment.userInfo.setAmount(obj.getString("amount"));
+                    guCoin = obj.getString("guCoin");
+                    updateView();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void updateView(){
@@ -106,6 +109,5 @@ public class WalletActivity extends BaseActivity {
         }else {
             ((TextView) findViewById(R.id.Money)).setText("" + amount);
         }
-
     }
 }

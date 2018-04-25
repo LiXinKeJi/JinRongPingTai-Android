@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.widget.TextView;
 
 import com.finance.client.R;
-import com.finance.library.BaseActivity;
 
 /**
  * User : yh

@@ -19,7 +19,7 @@ import com.finance.client.activity.WalletActivity;
 import com.finance.client.model.UserInfoDao;
 import com.finance.client.model.UserInfoResultDao;
 import com.finance.client.util.Content;
-import com.finance.library.Util.UserUtil;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -64,7 +64,7 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
 
     private void requestInfo(){
         Map<String,String> params = Maps.newHashMap();
-        String json = "{\"cmd\":\"getUserInfo\",\"uid\":\""+UserUtil.uid+"\"}";
+        String json = "{\"cmd\":\"getUserInfo\",\"uid\":\""+ UserUtil.uid+"\"}";
         params.put("json",json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {

@@ -5,43 +5,44 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.util.Content;
-import com.finance.library.BaseActivity;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.client.util.ToastUtils;
 import com.google.common.collect.Maps;
 import com.pingplusplus.android.Pingpp;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.Map;
 
+import okhttp3.Call;
+
 /**
  * User : yh
  * Date : 17/9/3
  */
 
-public class PayActivity extends BaseActivity{
+public class PayActivity extends BaseActivity {
     private String price;
-    private ImageView img_weixin,img_alipay,img_wallet;
-    private RelativeLayout rl_wx,rl_apliay;
+    private ImageView img_weixin, img_alipay, img_wallet;
+    private RelativeLayout rl_wx, rl_apliay;
     private Drawable selectIcon;
     private Drawable unSelectIcon;
-    private String channel="wx";
+    private String channel = "wx",body = "备注";
     private String orderId;
     private TextView OrderId;
     private String charge;
     private TextView txtPay;
     private String projectId;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,25 +50,25 @@ public class PayActivity extends BaseActivity{
         setContentView(R.layout.activity_pay);
         super.onCreate(savedInstanceState);
         price = getIntent().getStringExtra("price");
-        orderId=getIntent().getStringExtra("orderNo");
-        projectId=getIntent().getStringExtra("projectId");
-        ((TextView)findViewById(R.id.txt_price)).setText("￥"+price);
+        orderId = getIntent().getStringExtra("orderNo");
+        projectId = getIntent().getStringExtra("projectId");
+        ((TextView) findViewById(R.id.txt_price)).setText("￥" + price);
 
-        img_weixin= (ImageView) findViewById(R.id.img_weixin);
-        img_alipay= (ImageView) findViewById(R.id.img_alipay);
-        img_wallet= (ImageView) findViewById(R.id.img_wallet);
+        img_weixin = (ImageView) findViewById(R.id.img_weixin);
+        img_alipay = (ImageView) findViewById(R.id.img_alipay);
+        img_wallet = (ImageView) findViewById(R.id.img_wallet);
         rl_wx = (RelativeLayout) findViewById(R.id.rl_wx);
         rl_apliay = (RelativeLayout) findViewById(R.id.rl_apliay);
-        OrderId=(TextView)findViewById(R.id.OrderId);
+        OrderId = (TextView) findViewById(R.id.OrderId);
         OrderId.setText("订单号：" + orderId);
         img_weixin.setOnClickListener(this);
         img_alipay.setOnClickListener(this);
         img_wallet.setOnClickListener(this);
-        txtPay=(TextView)findViewById(R.id.txt_pay);
-        txtPay.setText("确认支付"+price+"元");
+        txtPay = (TextView) findViewById(R.id.txt_pay);
+        txtPay.setText("确认支付" + price + "元");
         findViewById(R.id.SubmitBtn).setOnClickListener(this);
-        selectIcon=getResources().getDrawable(R.drawable.choose_select);
-        unSelectIcon=getResources().getDrawable(R.drawable.choose);
+        selectIcon = getResources().getDrawable(R.drawable.choose_select);
+        unSelectIcon = getResources().getDrawable(R.drawable.choose);
 
     }
 
@@ -79,21 +80,21 @@ public class PayActivity extends BaseActivity{
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.img_weixin:
-                channel="wx";
+                channel = "wx";
                 img_weixin.setImageDrawable(selectIcon);
                 img_alipay.setImageDrawable(unSelectIcon);
                 img_wallet.setImageDrawable(unSelectIcon);
                 break;
             case R.id.img_alipay:
-                channel="alipay";
+                channel = "alipay";
                 img_weixin.setImageDrawable(unSelectIcon);
                 img_alipay.setImageDrawable(selectIcon);
                 img_wallet.setImageDrawable(unSelectIcon);
                 break;
             case R.id.img_wallet:
-                channel="balancePay";
+                channel = "balancePay";
                 img_weixin.setImageDrawable(unSelectIcon);
                 img_alipay.setImageDrawable(unSelectIcon);
                 img_wallet.setImageDrawable(selectIcon);
@@ -104,60 +105,59 @@ public class PayActivity extends BaseActivity{
         }
     }
 
-    private void recharge(){
+    private void recharge() {
         double amount = Double.parseDouble(price);
         DecimalFormat decimalFormat = new DecimalFormat("###################.###########");
-        Map<String,String> params = Maps.newHashMap();
+        Map<String, String> params = Maps.newHashMap();
         if (channel.equals("balancePay")) {
-            params.put("cmd", "balancePay");
-            params.put("amount",decimalFormat.format(amount));
-        }else{
-            params.put("cmd", "getCharge");
-            params.put("amount",decimalFormat.format(amount*100));
+            final String json = "{\"cmd\":\"balancePay\",\"amount\":\""+decimalFormat.format(amount)+"\"" +
+                    ",\"orderNo\":\""+orderId+"\",\"channel\":\""+channel+"\",\"body\":\""+body+"\"}";
+            params.put("json",json);
+        } else {
+            final String json = "{\"cmd\":\"getCharge\",\"amount\":\""+decimalFormat.format(amount * 100)+"\"" +
+                    ",\"orderNo\":\""+orderId+"\",\"channel\":\""+channel+"\",\"body\":\""+body+"\"}";
+            params.put("json",json);
         }
-        params.put("orderNo",orderId);
-        params.put("channel",channel);
-        params.put("body","备注");
         showLoading();
-        AsyncClient.Get()
-                .setParams(params)
-                .setHost(Content.DOMAIN)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        try{
-                            JSONObject obj = new JSONObject(result);
-                            if(obj.getString("result").equals("1")){
-                                Toast.makeText(PayActivity.this, obj.getString("resultNote"), Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            if (channel.equals("balancePay"))
-                            {
+        Log.i("sadf", "recharge: " + params);
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(PayActivity.this,e.getMessage());
+            }
 
-                                Toast.makeText(PayActivity.this, obj.getString("resultNote"), Toast.LENGTH_SHORT).show();
-                                Intent intent=new Intent(PayActivity.this,UpdateServiceSuccessActivity.class);
-                                intent.putExtra("amount", price);
-                                intent.putExtra("projectId", projectId);
-                                startActivity(intent);
-                                finish();
-                            }else {
-                                charge = obj.getString("charge");
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Pingpp.createPayment(PayActivity.this, charge);
-                                    }
-                                });
-                            }
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    if (obj.getString("result").equals("1")) {
+                        ToastUtils.makeText(PayActivity.this, obj.getString("resultNote"));
+                        return;
                     }
-                });
+                    if (channel.equals("balancePay")) {
+                        ToastUtils.makeText(PayActivity.this, obj.getString("resultNote"));
+                        Intent intent = new Intent(PayActivity.this, UpdateServiceSuccessActivity.class);
+                        intent.putExtra("amount", price);
+                        intent.putExtra("projectId", projectId);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        charge = obj.getString("charge");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Pingpp.createPayment(PayActivity.this, charge);
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
-
 
 
     @Override

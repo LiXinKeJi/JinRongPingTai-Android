@@ -62,7 +62,7 @@
             android:singleLine="true"
             android:background="@null"
             android:id="@+id/nickName"
-            android:layout_width="80dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:textColor="#888888"

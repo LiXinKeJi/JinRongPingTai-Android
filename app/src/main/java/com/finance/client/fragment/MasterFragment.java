@@ -21,7 +21,7 @@ import com.finance.client.model.MasterDao;
 import com.finance.client.model.MasterListDao;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
-import com.finance.library.Util.UserUtil;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshBase;
@@ -100,7 +100,7 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
 
     private void requestData(){
         Map<String,String> params = Maps.newHashMap();
-        String json = "{\"cmd\":\"getAuthorList\",\"uid\":\""+UserUtil.uid+"\"" +
+        String json = "{\"cmd\":\"getAuthorList\",\"uid\":\""+ UserUtil.uid+"\"" +
                 ",\"pageCount\":\""+10+"\",\"nowPage\":\""+nowPage+"\"}";
         params.put("json",json);
         showLoading();

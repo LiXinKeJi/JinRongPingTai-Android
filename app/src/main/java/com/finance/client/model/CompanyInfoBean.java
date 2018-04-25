@@ -1,6 +1,5 @@
 package com.finance.client.model;
 
-import com.finance.library.model.BaseResultDO;
 
 /**
  * Created by 小火

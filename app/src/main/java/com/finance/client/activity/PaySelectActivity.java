@@ -20,12 +20,14 @@ import com.finance.client.adapter.PaySelectAdapter;
 import com.finance.client.model.BaseBean;
 import com.finance.client.model.PaySelectBean;
 import com.finance.client.util.Content;
-import com.finance.library.BaseActivity;
-import com.finance.library.Util.UserUtil;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -204,9 +206,16 @@ public class PaySelectActivity extends BaseActivity {
                     PayBtnA.setVisibility(View.GONE);
                     PayBtnBLayout.setVisibility(View.GONE);
                 }
-                pricePhone = other.getPrice();
-                tv_publisher_phone.setText("￥" + pricePhone);
-
+                try {
+                    JSONObject object = new JSONObject(response);
+                    JSONObject object1 = object.getJSONObject("other");
+                    if (object1.has("price") && !object1.isNull("price")) {
+                        pricePhone = other.getPrice();
+                        tv_publisher_phone.setText("￥" + pricePhone);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

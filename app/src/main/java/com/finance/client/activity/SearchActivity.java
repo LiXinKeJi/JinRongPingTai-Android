@@ -3,6 +3,7 @@ package com.finance.client.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,22 +17,26 @@ import com.finance.client.adapter.MasterAdapter;
 import com.finance.client.common.IndustryChooseDialog;
 import com.finance.client.model.MasterDao;
 import com.finance.client.model.MasterListDao;
-import com.finance.library.BaseActivity;
 import com.finance.client.util.Content;
-import com.finance.library.Util.UserUtil;
-import com.finance.library.network.AsyncClient;
-import com.finance.library.network.AsyncResponseHandler;
+import com.finance.client.util.ToastUtils;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshBase;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshListView;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
@@ -111,32 +116,37 @@ public class SearchActivity extends BaseActivity{
         }
     }
     private void Search(){
-        Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","searchAuthor");
-        params.put("industryId",industryId);
-        params.put("pageCount","10");
-        params.put("nowPage",""+nowPage);
-        params.put("uid", UserUtil.uid);
+        Map<String,String> params = new HashMap<>();
+        String json = "{\"cmd\":\"searchAuthor\",\"uid\":\""+ UserUtil.uid+"\",\"industryId\":\""+industryId+"\"" +
+                ",\"pageCount\":\""+10+"\",\"nowPage\":\""+nowPage+"\",\"uid\":\""+UserUtil.uid+"\"}";
+        params.put("json",json);
         showLoading();
-        AsyncClient.Get().setParams(params).setReturnClass(MasterListDao.class).setHost(Content.DOMAIN).execute(new AsyncResponseHandler<MasterListDao>() {
-                    @Override
-                    public void onResult(boolean success, MasterListDao result, ResponseError error) {
-                        mListView.onRefreshComplete();
-                        dismissLoading();
-                        if(!success){
-                            Toast.makeText(SearchActivity.this, ""+error.errorMsg, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        if (result.getResult().equals("1"))
-                        {
-                            Toast.makeText(SearchActivity.this, result.getResultNote(), Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        totalPage =Integer.parseInt(result.getTotalPage()) ;
-                        lists.addAll(result.getDataList());
-                        adapter.notifyDataSetChanged();
-                    }
-                });
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                ToastUtils.makeText(SearchActivity.this, e.getMessage());
+                dismissLoading();
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                Log.i("666", "onResponse: " +response);
+                dismissLoading();
+                Gson gson = new Gson();
+                MasterListDao masterListDao = gson.fromJson(response,MasterListDao.class);
+                mListView.onRefreshComplete();
+                if (masterListDao.getResult().equals("1")){
+                    ToastUtils.makeText(SearchActivity.this, ""+masterListDao.getResultNote());
+                    return;
+                }
+                totalPage =Integer.parseInt(masterListDao.getTotalPage()) ;
+                List<MasterDao> masterDaos = masterListDao.getDataList();
+                if (masterDaos != null && !masterDaos.isEmpty() && masterDaos.size() > 0){
+                    lists.addAll(masterDaos);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     private void chooseCategory(){
@@ -163,27 +173,31 @@ public class SearchActivity extends BaseActivity{
     private void requestCategory(){
         showLoading();
         Map<String,String> params = Maps.newHashMap();
-        params.put("cmd","getIndustryCategory");
-        params.put("uid", UserUtil.uid);
-        AsyncClient.Get()
-                .setHost(Content.DOMAIN)
-                .setParams(params)
-                .setReturnClass(String.class)
-                .execute(new AsyncResponseHandler<String>() {
-                    @Override
-                    public void onResult(boolean success, String result, ResponseError error) {
-                        dismissLoading();
-                        if(success){
-//                            Toast.makeText(SearchActivity.this, "获取分类数据成功", Toast.LENGTH_SHORT).show();
-                            try {
-                                category = new JSONObject(result).getJSONArray("flist");
-                                chooseCategory();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
+        String json = "{\"cmd\":\"getIndustryCategory\",\"uid\":\""+UserUtil.uid+"\"}";
+        params.put("json",json);
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                Toast.makeText(SearchActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                dismissLoading();
+            }
+            @Override
+            public void onResponse(String response, int id) {
+                Log.i("666", "onResponse: " +response);
+                dismissLoading();
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    if (obj.getString("result").equals("1")) {
+                        ToastUtils.makeText(SearchActivity.this,"" + obj.getString("resultNote"));
+                        return;
                     }
-                });
+                    category = obj.getJSONArray("flist");
+                    chooseCategory();
+                    ToastUtils.makeText(SearchActivity.this,"获取分类数据成功");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
-
 }
