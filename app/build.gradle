@@ -14,16 +14,11 @@ android {
 
 
     signingConfigs {
-        release {
-            keyAlias 'client'
-            keyPassword '123456'
-            storeFile file('D:/FinanceClient/app/android.keystore')
-            storePassword '123456'
-        }
+
         debug {
             keyAlias 'client'
             keyPassword '123456'
-            storeFile file('D:/FinanceClient/app/android.keystore')
+            storeFile file('android.keystore')
             storePassword '123456'
         }
     }
@@ -33,14 +28,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
         }
-        debug{
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-            signingConfig signingConfigs.debug
-        }
-
     }
 }
 
