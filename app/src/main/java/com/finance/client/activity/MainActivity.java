@@ -119,9 +119,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         for (int i = 0; i < mLinearLayout.length; i++) {
             if (i != position) {
                 mLinearLayout[i].setSelected(false);
-                mTextView[i].setTextColor(csl1);
-            } else {
                 mTextView[i].setTextColor(csl2);
+            } else {
+                mTextView[i].setTextColor(csl1);
             }
         }
         current = position;

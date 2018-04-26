@@ -6,7 +6,7 @@ package com.finance.client.util;
  */
 
 public class Content {
-    public static final String DOMAIN = "http://116.255.239.201:9080/bankService/service.action";
-    public static String WXID = "wxf33600c85feaf21b";
-//    public static final String DOMAIN = "http://192.168.3.59:8080/bankService/service.action";
+//    public static final String DOMAIN = "http://116.255.239.201:9080/bankService/service.action";
+    public static final String DOMAIN = "http://192.168.3.190:8080/bankService/service.action";
+public static String WXID = "wxf33600c85feaf21b";
 }
