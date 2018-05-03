@@ -22,7 +22,7 @@ public class ChangeAdapter extends BaseAdapter{
     private List<ChangeListResultDao.ChangeInfoDao> lists;
     public ChangeAdapter(ChangeListActivity mContext, List<ChangeListResultDao.ChangeInfoDao> mlists) {
         this.mContext = mContext;
-        this.lists = lists;
+        this.lists = mlists;
     }
 
     @Override

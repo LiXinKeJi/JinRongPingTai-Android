@@ -1,8 +1,10 @@
 package com.finance.client.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -70,7 +72,8 @@ public class ChangeListActivity extends BaseActivity {
                 }
             }
         });
-        this.requestData();
+
+        requestData();
     }
 
     @Override
@@ -92,8 +95,8 @@ public class ChangeListActivity extends BaseActivity {
 
             @Override
             public void onResponse(String response, int id) {
-                Gson gson = new Gson();
                 dismissLoading();
+                Gson gson = new Gson();
                 ChangeListResultDao changeListResultDao = gson.fromJson(response,ChangeListResultDao.class);
                 if (changeListResultDao.getResult().equals("1")){
                     ToastUtils.makeText(ChangeListActivity.this, changeListResultDao.getResultNote());
