@@ -37,7 +37,7 @@ public class PayActivity extends BaseActivity {
     private RelativeLayout rl_wx, rl_apliay;
     private Drawable selectIcon;
     private Drawable unSelectIcon;
-    private String channel = "wx",body = "备注";
+    private String channel = "wx", body = "备注";
     private String orderId;
     private TextView OrderId;
     private String charge;
@@ -100,6 +100,10 @@ public class PayActivity extends BaseActivity {
                 img_wallet.setImageDrawable(selectIcon);
                 break;
             case R.id.SubmitBtn:
+                if (Double.valueOf(price) <= 0.0) {
+                    ToastUtils.showMessageShort(this, "支付金额错误");
+                    return;
+                }
                 recharge();
                 break;
         }
@@ -110,13 +114,13 @@ public class PayActivity extends BaseActivity {
         DecimalFormat decimalFormat = new DecimalFormat("###################.###########");
         Map<String, String> params = Maps.newHashMap();
         if (channel.equals("balancePay")) {
-            final String json = "{\"cmd\":\"balancePay\",\"amount\":\""+decimalFormat.format(amount)+"\"" +
-                    ",\"orderNo\":\""+orderId+"\",\"channel\":\""+channel+"\",\"body\":\""+body+"\"}";
-            params.put("json",json);
+            final String json = "{\"cmd\":\"balancePay\",\"amount\":\"" + decimalFormat.format(amount) + "\"" +
+                    ",\"orderNo\":\"" + orderId + "\",\"channel\":\"" + channel + "\",\"body\":\"" + body + "\"}";
+            params.put("json", json);
         } else {
-            final String json = "{\"cmd\":\"getCharge\",\"amount\":\""+decimalFormat.format(amount * 100)+"\"" +
-                    ",\"orderNo\":\""+orderId+"\",\"channel\":\""+channel+"\",\"body\":\""+body+"\"}";
-            params.put("json",json);
+            final String json = "{\"cmd\":\"getCharge\",\"amount\":\"" + decimalFormat.format(amount * 100) + "\"" +
+                    ",\"orderNo\":\"" + orderId + "\",\"channel\":\"" + channel + "\",\"body\":\"" + body + "\"}";
+            params.put("json", json);
         }
         showLoading();
         Log.i("sadf", "recharge: " + params);
@@ -124,7 +128,7 @@ public class PayActivity extends BaseActivity {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(PayActivity.this,e.getMessage());
+                ToastUtils.makeText(PayActivity.this, e.getMessage());
             }
 
             @Override

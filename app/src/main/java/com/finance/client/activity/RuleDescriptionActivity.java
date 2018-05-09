@@ -2,6 +2,8 @@ package com.finance.client.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -32,6 +34,14 @@ public class RuleDescriptionActivity extends BaseActivity {
         title="规则说明";
         setContentView(R.layout.activity_rule_description);
         super.onCreate(savedInstanceState);
+
+        findViewById(R.id.BackImgBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         requestData();
         myWebView = (WebView) findViewById(R.id.webview);
         WebSettings settings = myWebView.getSettings();
@@ -70,13 +80,13 @@ public class RuleDescriptionActivity extends BaseActivity {
             @Override
             public void onResponse(String response, int id) {
                 dismissLoading();
+                Log.e("获取规则说明...........",response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (jsonObject.getString("result").equals("1")) {
-                        ToastUtils.makeText(RuleDescriptionActivity.this, "获取失败");
+                        Toast.makeText(RuleDescriptionActivity.this,jsonObject.getString("resultNote") , Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    Toast.makeText(RuleDescriptionActivity.this,jsonObject.getString("resultNote") , Toast.LENGTH_SHORT).show();
                     ruleDescriptionUrl=jsonObject.getString("ruleDescriptionUrl");
                     myWebView.loadUrl(ruleDescriptionUrl);
                 } catch (JSONException e) {

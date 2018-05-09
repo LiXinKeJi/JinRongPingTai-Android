@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.finance.client.R;
+import com.finance.client.util.CashierInputFilter;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
 import com.finance.client.util.UserUtil;
@@ -50,6 +52,8 @@ public class RechargeActivity extends BaseActivity {
         aliBtn = (TextView) findViewById(R.id.ali);
         wechatBtn = (TextView) findViewById(R.id.Wechat);
         editPrice = (EditText) findViewById(R.id.edit_price);
+        InputFilter[] filter = {new CashierInputFilter()};
+        editPrice.setFilters(filter);
         txtAlipay = (TextView) findViewById(R.id.ali);
         txtWx = (TextView) findViewById(R.id.Wechat);
         txtAlipay.setOnClickListener(this);

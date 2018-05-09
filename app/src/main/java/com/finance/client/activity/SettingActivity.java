@@ -36,14 +36,14 @@ import okhttp3.Call;
  * Date : 17/8/17
  */
 
-public class SettingActivity extends BaseActivity{
+public class SettingActivity extends BaseActivity {
     private ImageView ic_spot;
 
-    private boolean isDown=false;
+    private boolean isDown = false;
     private String version_name, updata_url;//获取的版本名,下载地址
     private int version_code;//获取的版本号
-    private ImageView PushBtn,MsgBtn,SysBtn;
-    private boolean push=true,msg=true,sys=true;
+    private ImageView PushBtn, MsgBtn, SysBtn;
+    private boolean push = true, msg = true, sys = true;
 //    private SwitchButton PushBtn;
 
     @Override
@@ -51,7 +51,7 @@ public class SettingActivity extends BaseActivity{
         title = "设置";
         setContentView(R.layout.activity_setting);
         super.onCreate(savedInstanceState);
-        ic_spot=(ImageView)findViewById(R.id.ic_spot);
+        ic_spot = (ImageView) findViewById(R.id.ic_spot);
         findViewById(R.id.ModifyPwdLayout).setOnClickListener(this);
         findViewById(R.id.PhoneBindLayout).setOnClickListener(this);
         findViewById(R.id.RuleLayout).setOnClickListener(this);
@@ -62,13 +62,11 @@ public class SettingActivity extends BaseActivity{
         findViewById(R.id.UpdateLayout).setOnClickListener(this);
         findViewById(R.id.AboutLayout).setOnClickListener(this);
         findViewById(R.id.LogoutBtn).setOnClickListener(this);
-        PushBtn=(ImageView) findViewById(R.id.PushBtn);
-        MsgBtn=(ImageView)findViewById(R.id.MsgBtn);
-        SysBtn=(ImageView)findViewById(R.id.SysBtn);
+        PushBtn = (ImageView) findViewById(R.id.PushBtn);
+        MsgBtn = (ImageView) findViewById(R.id.MsgBtn);
+        SysBtn = (ImageView) findViewById(R.id.SysBtn);
         getUpdata();
     }
-
-
 
 
     private void showUpdateDialog() {
@@ -116,15 +114,15 @@ public class SettingActivity extends BaseActivity{
     }
 
     private void getUpdata() {
-        Map<String,String> params = new HashMap<>();
-        String json = "{\"cmd\":\"getUpdata\",\"type\":\""+1+"\"}";
-        params.put("json",json);
+        Map<String, String> params = new HashMap<>();
+        String json = "{\"cmd\":\"getUpdata\",\"type\":\"" + 1 + "\"}";
+        params.put("json", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(SettingActivity.this,e.getMessage());
+                ToastUtils.makeText(SettingActivity.this, e.getMessage());
             }
 
             @Override
@@ -136,10 +134,10 @@ public class SettingActivity extends BaseActivity{
                         ToastUtils.makeText(SettingActivity.this, obj.getString("resultNote"));
                         return;
                     }
-                    version_name=obj.getString("versionName");
+                    version_name = obj.getString("versionName");
                     version_code = Integer.valueOf(obj.getString("versionNumber"));
-                    if (!TextUtils.isEmpty(String.valueOf(version_code))&&version_code > Utils.getVersionCode(SettingActivity.this)) {
-                        updata_url=obj.getString("updataAddress");
+                    if (!TextUtils.isEmpty(String.valueOf(version_code)) && version_code > Utils.getVersionCode(SettingActivity.this)) {
+                        updata_url = obj.getString("updataAddress");
                         ic_spot.setVisibility(View.VISIBLE);
                         isDown = true;
                     }
@@ -158,64 +156,58 @@ public class SettingActivity extends BaseActivity{
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        if(v.getId() == R.id.ModifyPwdLayout){
-            Intent intent = new Intent(this,ModifyPwdActivity.class);
+        if (v.getId() == R.id.ModifyPwdLayout) {
+            Intent intent = new Intent(this, ModifyPwdActivity.class);
             startActivity(intent);
-        }else if(v.getId() == R.id.PhoneBindLayout){
-            Intent intent = new Intent(this,PhoneBindActivity.class);
+        } else if (v.getId() == R.id.PhoneBindLayout) {
+            Intent intent = new Intent(this, PhoneBindActivity.class);
             startActivity(intent);
-        }else if(v.getId() == R.id.RuleLayout){
-            Intent intent = new Intent(this,RuleDescriptionActivity.class);
+        } else if (v.getId() == R.id.RuleLayout) {
+            Intent intent = new Intent(this, RuleDescriptionActivity.class);
             startActivity(intent);
 
-        }else if(v.getId() == R.id.PushBtn){
-            push=!push;
-            if (push)
-            {
+        } else if (v.getId() == R.id.PushBtn) {
+            push = !push;
+            if (push) {
                 PushBtn.setImageResource(R.drawable.kai);
-            }else
-            {
+            } else {
                 PushBtn.setImageResource(R.drawable.off);
             }
 
-        }else if(v.getId() == R.id.MsgBtn){
-            msg=!msg;
-            if (msg)
-            {
+        } else if (v.getId() == R.id.MsgBtn) {
+            msg = !msg;
+            if (msg) {
                 MsgBtn.setImageResource(R.drawable.kai);
-            }else
-            {
+            } else {
                 MsgBtn.setImageResource(R.drawable.off);
             }
 
-        }else if(v.getId() == R.id.SysBtn){
-            sys=!sys;
-            if (sys)
-            {
+        } else if (v.getId() == R.id.SysBtn) {
+            sys = !sys;
+            if (sys) {
                 SysBtn.setImageResource(R.drawable.kai);
-            }else
-            {
+            } else {
                 SysBtn.setImageResource(R.drawable.off);
             }
 
-        }else if(v.getId() == R.id.SuggestLayout){
-            Intent intent = new Intent(this,FeedbackActivity.class);
+        } else if (v.getId() == R.id.SuggestLayout) {
+            Intent intent = new Intent(this, FeedbackActivity.class);
             startActivity(intent);
 
-        }else if(v.getId() == R.id.UpdateLayout){
+        } else if (v.getId() == R.id.UpdateLayout) {
             //版本更新
             if (isDown) {
                 showUpdateDialog();
             } else {
-                Toast.makeText(this,"已是最新版本",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "已是最新版本", Toast.LENGTH_SHORT).show();
             }
-        }else if(v.getId() == R.id.AboutLayout){
-            Intent intent = new Intent(this,AboutActivity.class);
+        } else if (v.getId() == R.id.AboutLayout) {
+            Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
-        }else if(v.getId() == R.id.LogoutBtn){
+        } else if (v.getId() == R.id.LogoutBtn) {
             UserUtil.logout(this);
-            Intent intent = new Intent(SettingActivity.this,LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent intent = new Intent(SettingActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         }

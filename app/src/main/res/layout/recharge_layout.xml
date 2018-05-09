@@ -81,7 +81,7 @@
             android:text="充值金额"
             />
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="20dp"
@@ -95,14 +95,15 @@
                 android:layout_marginLeft="10dp"/>
             <EditText
                 android:id="@+id/edit_price"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
-                android:textSize="12sp"
+                android:textSize="16sp"
+                android:singleLine="true"
                 android:textColor="#666666"
                 android:hint="请输入金额"
                 android:layout_marginLeft="10dp"
-                android:inputType="numberDecimal"/>
+                android:inputType="number|numberDecimal"/>
         </LinearLayout>
         <View
             android:layout_width="match_parent"

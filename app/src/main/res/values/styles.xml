@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
     <style name="RegionDialogTheme" parent="android:Theme.Dialog">
         <item name="android:windowFrame">@null</item><!--边框-->
         <item name="android:windowIsFloating">true</item><!--是否浮现在activity之上-->
@@ -17,12 +18,12 @@
         <item name="android:backgroundDimEnabled">true</item><!--模糊-->
         <item name="android:backgroundDimAmount">0.8</item>
     </style>
+
     <style name="Theme.UMDefault" parent="android:style/Theme.NoTitleBar"></style>
 
     <style name="MyRatingBar" parent="@android:style/Widget.RatingBar">
         <item name="android:progressDrawable">@drawable/ratingbar</item>
-        <item name="android:maxHeight">32dp</item>
-        <item name="android:isIndicator">false</item>
-        <item name="android:minHeight">16dp</item>
+        <item name="android:maxHeight">25dp</item>
+        <item name="android:minHeight">25dp</item>
     </style>
 </resources>
