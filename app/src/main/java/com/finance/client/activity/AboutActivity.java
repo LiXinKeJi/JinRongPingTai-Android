@@ -2,27 +2,106 @@ package com.finance.client.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
+import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.finance.client.R;
+import com.finance.client.util.Content;
+import com.finance.client.util.ToastUtils;
+import com.google.common.collect.Maps;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Map;
+
+import okhttp3.Call;
 
 /**
  * User : yh
  * Date : 17/9/5
  */
 
-public class AboutActivity extends BaseActivity{
-    private String content = "本APP旨在提供一个单项的信息发送和订阅的共享平台，发布者提供个性话的文字内容、照片等信息，订阅者可以根据个人喜好选择关注多个发布者的信息；使用APP可以发布行业内有价值的内容，也可以作为团队内部、或者老师向学员发送通知消息使用的APP。本APP由两个组成：一个共享发布者APP，用户注册后可以选择关注感兴趣的发布者；另一个是共享推送端APP，任何人都可以注册为发布者，认证通过后的发布者可以在这里发布大象共享信息，还可以获得预先设定的酬金。";
+public class AboutActivity extends BaseActivity {
+    private String ruleDescriptionUrl;
+    private WebView myWebView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        title = "关于我们";
-        setContentView(R.layout.activity_about_layout);
+        title = "规则说明";
+        setContentView(R.layout.activity_rule_description);
         super.onCreate(savedInstanceState);
-        ((TextView)findViewById(R.id.Content)).setText(content);
+
+        findViewById(R.id.BackImgBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        requestData();
+        myWebView = (WebView) findViewById(R.id.webview);
+        WebSettings settings = myWebView.getSettings();
+        // 设置可以支持缩放
+        settings.setSupportZoom(true);
+        // 设置支持js
+        settings.setJavaScriptEnabled(true);
+        // 关闭缓存
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        // 支持自动加载图片
+        settings.setLoadsImagesAutomatically(true);
+        // 设置出现缩放工具
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
+        // 扩大比例的缩放
+        settings.setUseWideViewPort(true);
+        // 自适应屏幕
+        settings.setLoadWithOverviewMode(true);
+//        myWebView.loadUrl(ruleDescriptionUrl);
+    }
+
+
+    private void requestData() {
+        showLoading();
+        Map<String, String> params = Maps.newHashMap();
+        final String json = "{\"cmd\":\"ruleDescription\",\"nid\":\"" + "6" + "\"}";
+
+        params.put("json", json);
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(AboutActivity.this, e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                Log.e("获取关于我们...........", response);
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    if (jsonObject.getString("result").equals("1")) {
+                        Toast.makeText(AboutActivity.this, jsonObject.getString("resultNote"), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    ruleDescriptionUrl = jsonObject.getString("detailUrl");
+                    myWebView.loadUrl(ruleDescriptionUrl);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
     public void onLeftIconClick() {
-        finish();
+
     }
 }

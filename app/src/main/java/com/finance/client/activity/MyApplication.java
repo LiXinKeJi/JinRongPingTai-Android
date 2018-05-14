@@ -33,6 +33,10 @@ public class MyApplication extends MultiDexApplication {
         return myApplication;
     }
 
+
+  //  String json = "{\"cmd\":\"upPrize\",\"prizeId\":\"" + prizeId  + "\",\"userNme\":\"" + MyApplication.getUserName() + "\"}";
+
+
     @Override
     public void onCreate() {
         super.onCreate();

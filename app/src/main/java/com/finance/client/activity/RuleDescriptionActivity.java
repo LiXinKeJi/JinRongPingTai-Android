@@ -29,9 +29,10 @@ import okhttp3.Call;
 public class RuleDescriptionActivity extends BaseActivity {
     private String ruleDescriptionUrl;
     private WebView myWebView;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        title="规则说明";
+        title = "规则说明";
         setContentView(R.layout.activity_rule_description);
         super.onCreate(savedInstanceState);
 
@@ -42,8 +43,8 @@ public class RuleDescriptionActivity extends BaseActivity {
             }
         });
 
-        requestData();
         myWebView = (WebView) findViewById(R.id.webview);
+        requestData();
         WebSettings settings = myWebView.getSettings();
         // 设置可以支持缩放
         settings.setSupportZoom(true);
@@ -65,29 +66,30 @@ public class RuleDescriptionActivity extends BaseActivity {
     }
 
 
-    private void requestData(){
+    private void requestData() {
         showLoading();
-        Map<String,String> params = Maps.newHashMap();
-        final String json = "{\"cmd\":\"ruleDescription\"}";
-        params.put("json",json);
+        Map<String, String> params = Maps.newHashMap();
+        final String json = "{\"cmd\":\"ruleDescription\",\"nid\":\"" + "6" + "\"}";
+        Log.e("获取规则说明...........", json);
+        params.put("json", json);
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(RuleDescriptionActivity.this,e.getMessage());
+                ToastUtils.makeText(RuleDescriptionActivity.this, e.getMessage());
             }
 
             @Override
             public void onResponse(String response, int id) {
                 dismissLoading();
-                Log.e("获取规则说明...........",response);
+                Log.e("获取规则说明...........", response);
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     if (jsonObject.getString("result").equals("1")) {
-                        Toast.makeText(RuleDescriptionActivity.this,jsonObject.getString("resultNote") , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RuleDescriptionActivity.this, jsonObject.getString("resultNote"), Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    ruleDescriptionUrl=jsonObject.getString("ruleDescriptionUrl");
+                    ruleDescriptionUrl = jsonObject.getString("detailUrl");
                     myWebView.loadUrl(ruleDescriptionUrl);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -95,6 +97,7 @@ public class RuleDescriptionActivity extends BaseActivity {
             }
         });
     }
+
     @Override
     public void onLeftIconClick() {
 
