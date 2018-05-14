@@ -34,7 +34,7 @@ public class AboutActivity extends BaseActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        title = "规则说明";
+        title = "关于我们";
         setContentView(R.layout.activity_rule_description);
         super.onCreate(savedInstanceState);
 
