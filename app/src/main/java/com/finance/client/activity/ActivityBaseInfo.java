@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -44,12 +45,13 @@ import okhttp3.Call;
  * Date : 17/8/16
  */
 
-public class ActivityBaseInfo extends BaseActivity{
+public class ActivityBaseInfo extends BaseActivity {
     private String avatar;
     private String address;
-    private String categoryInfo;
+    private String categoryInfo, categoryId;
     private JSONArray category;
     private String uid;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         title = "完善资料";
@@ -71,36 +73,35 @@ public class ActivityBaseInfo extends BaseActivity{
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        if(v.getId() == R.id.CityLayout){
+        if (v.getId() == R.id.CityLayout) {
             chooseRegion();
-        }else if(v.getId() == R.id.HeadImg){
+        } else if (v.getId() == R.id.HeadImg) {
             if (PermissionUtil.ApplyPermissionAlbum(this, 0)) {
                 this.takePhoto();
             }
-        }else if(v.getId() == R.id.SubmitBtn){
+        } else if (v.getId() == R.id.SubmitBtn) {
             this.modifyUserInfo();
-        }else if(v.getId() == R.id.HYLayout){
+        } else if (v.getId() == R.id.HYLayout) {
             this.chooseCategory();
         }
     }
 
-    private void chooseRegion(){
+    private void chooseRegion() {
         RegionChooseDialog dialog = new RegionChooseDialog(this);
         dialog.setOnRegionChangeListener(new RegionChooseDialog.onRegionChangeListener() {
             @Override
             public void onChange(String info, String cityId) {
                 address = info;
-                ((TextView)findViewById(R.id.City)).setText(address);
+                ((TextView) findViewById(R.id.City)).setText(address);
             }
         });
         dialog.show();
         WindowManager windowManager = getWindowManager();
         Display display = windowManager.getDefaultDisplay();
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-        lp.width = (int)(display.getWidth()); //设置宽度
+        lp.width = (int) (display.getWidth()); //设置宽度
         dialog.getWindow().setAttributes(lp);
     }
-
 
 
     @Override
@@ -109,21 +110,23 @@ public class ActivityBaseInfo extends BaseActivity{
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED && requestCode == 0) {//询问结果
             this.takePhoto();
         } else {//禁止使用权限，询问是否设置允许
-            Toast.makeText(this,"需要访问内存卡和拍照权限",Toast.LENGTH_SHORT).show();;
+            Toast.makeText(this, "需要访问内存卡和拍照权限", Toast.LENGTH_SHORT).show();
+            ;
         }
     }
 
-    private void chooseCategory(){
-        if(category == null){
+    private void chooseCategory() {
+        if (category == null) {
             Toast.makeText(this, "无法获取分类数据", Toast.LENGTH_SHORT).show();
             return;
         }
-        IndustryChooseDialog dialog = new IndustryChooseDialog(this,category);
+        IndustryChooseDialog dialog = new IndustryChooseDialog(this, category);
         dialog.setOnCategoryChangeListener(new IndustryChooseDialog.onCategoryChangeListener() {
             @Override
-            public void onChange(String info,String id) {
+            public void onChange(String info, String id) {
                 categoryInfo = info;
-                ((TextView)findViewById(R.id.Trade)).setText(categoryInfo);
+                categoryId=id;
+                ((TextView) findViewById(R.id.Trade)).setText(categoryInfo);
             }
         });
 //        dialog.setData(category);
@@ -131,16 +134,16 @@ public class ActivityBaseInfo extends BaseActivity{
         WindowManager windowManager = getWindowManager();
         Display display = windowManager.getDefaultDisplay();
         WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-        lp.width = (int)(display.getWidth()); //设置宽度
+        lp.width = (int) (display.getWidth()); //设置宽度
         dialog.getWindow().setAttributes(lp);
     }
 
-    private void takePhoto(){
+    private void takePhoto() {
         Intent intent = new Intent(this, PhotoPickerActivity.class);
         intent.putExtra(PhotoPickerActivity.EXTRA_SHOW_CAMERA, true);
         intent.putExtra(PhotoPickerActivity.EXTRA_SELECT_MODE, PhotoPickerActivity.MODE_MULTI);
-        intent.putExtra(PhotoPickerActivity.EXTRA_MAX_MUN,1 );
-        startActivityForResult(intent,5);
+        intent.putExtra(PhotoPickerActivity.EXTRA_MAX_MUN, 1);
+        startActivityForResult(intent, 5);
     }
 
     @Override
@@ -156,30 +159,30 @@ public class ActivityBaseInfo extends BaseActivity{
         this.UploadImage(result.get(0));
     }
 
-    private void UploadImage(String path){
+    private void UploadImage(String path) {
         //ImageLoaderUtil.getInstance().displayImage("file://"+path, (ImageView) findViewById(R.id.HeadImg));
-        ((ImageView)findViewById(R.id.HeadImg)).setImageURI(Uri.fromFile(new File(path)));
+        ((ImageView) findViewById(R.id.HeadImg)).setImageURI(Uri.fromFile(new File(path)));
 
         avatar = ImageUtil.imageFile2Base64(path);
         //base64 encode
 
     }
 
-    private void modifyUserInfo(){
-        if(TextUtils.isEmpty(avatar)){
+    private void modifyUserInfo() {
+        if (TextUtils.isEmpty(avatar)) {
             Toast.makeText(this, "请选择上传头像", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(TextUtils.isEmpty(address)){
+        if (TextUtils.isEmpty(address)) {
             Toast.makeText(this, "请选择地址信息", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(TextUtils.isEmpty(categoryInfo)){
+        if (TextUtils.isEmpty(categoryInfo)) {
             Toast.makeText(this, "请选择行业分类", Toast.LENGTH_SHORT).show();
             return;
         }
-        String nickName = ((EditText)findViewById(R.id.nickName)).getText().toString();
-        if(TextUtils.isEmpty(nickName)){
+        String nickName = ((EditText) findViewById(R.id.nickName)).getText().toString();
+        if (TextUtils.isEmpty(nickName)) {
             Toast.makeText(this, "请输入昵称", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -187,16 +190,16 @@ public class ActivityBaseInfo extends BaseActivity{
     }
 
     private void sumbitBaseInfo(String nickName) {
-        Map<String,String> params = new HashMap<>();
-        final String json = "{\"cmd\":\"completeUserInfo\",\"uid\":\""+uid+"\",\"avatar\":\""+avatar+"\"" +
-                ",\"nickName\":\""+nickName+"\",\"industry\":\""+categoryInfo+"\",\"address\":\""+address+"\"}";
-        params.put("json",json);
+        Map<String, String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"completeUserInfo\",\"uid\":\"" + uid + "\",\"avatar\":\"" + avatar + "\"" +
+                ",\"nickName\":\"" + nickName + "\",\"industry\":\"" + categoryId + "\",\"address\":\"" + address + "\"}";
+        params.put("json", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(ActivityBaseInfo.this,e.getMessage());
+                ToastUtils.makeText(ActivityBaseInfo.this, e.getMessage());
             }
 
             @Override
@@ -205,11 +208,11 @@ public class ActivityBaseInfo extends BaseActivity{
                 try {
                     JSONObject obj = new JSONObject(response);
                     if (obj.getString("result").equals("1")) {
-                        ToastUtils.makeText(ActivityBaseInfo.this,"" + obj.getString("resultNote"));
+                        ToastUtils.makeText(ActivityBaseInfo.this, "" + obj.getString("resultNote"));
                         return;
                     }
-                    UserUtil.saveUid(ActivityBaseInfo.this,uid);
-                    startActivity(new Intent(ActivityBaseInfo.this,MainActivity.class));
+                    UserUtil.saveUid(ActivityBaseInfo.this, uid);
+                    startActivity(new Intent(ActivityBaseInfo.this, MainActivity.class));
                     finish();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -218,16 +221,16 @@ public class ActivityBaseInfo extends BaseActivity{
         });
     }
 
-    private void requestCategory(){
-        Map<String,String> params = new HashMap<>();
-        final String json = "{\"cmd\":\"getIndustryCategory\",\"uid\":\""+ uid +"\"}";
-        params.put("json",json);
+    private void requestCategory() {
+        Map<String, String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"getIndustryCategory\",\"uid\":\"" + uid + "\"}";
+        params.put("json", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(ActivityBaseInfo.this,e.getMessage());
+                ToastUtils.makeText(ActivityBaseInfo.this, e.getMessage());
             }
 
             @Override
@@ -236,11 +239,11 @@ public class ActivityBaseInfo extends BaseActivity{
                 try {
                     JSONObject obj = new JSONObject(response);
                     if (obj.getString("result").equals("1")) {
-                        ToastUtils.makeText(ActivityBaseInfo.this,"" + obj.getString("resultNote"));
+                        ToastUtils.makeText(ActivityBaseInfo.this, "" + obj.getString("resultNote"));
                         return;
                     }
                     category = obj.getJSONArray("flist");
-                    ToastUtils.makeText(ActivityBaseInfo.this,"获取分类数据成功");
+                    ToastUtils.makeText(ActivityBaseInfo.this, "获取分类数据成功");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

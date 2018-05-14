@@ -36,7 +36,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="杭州深宙信息科技有限公司"
+            android:text="郑州立信科技"
             android:layout_marginTop="4dp"
             android:textColor="#999999"
             android:textSize="15sp"/>
