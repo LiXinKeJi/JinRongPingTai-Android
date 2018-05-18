@@ -81,6 +81,11 @@ public class RechargeActivity extends BaseActivity {
                     Toast.makeText(this, "请输入金额", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                if(Double.valueOf(editPrice.getText().toString())<=0){
+                    ToastUtils.showMessageShort(this,"充值金额不能小于等于0");
+                    return;
+                }
                 if (TextUtils.isEmpty(UserUtil.uid)){
                     Toast.makeText(this, "请登录", Toast.LENGTH_SHORT).show();
                     return;

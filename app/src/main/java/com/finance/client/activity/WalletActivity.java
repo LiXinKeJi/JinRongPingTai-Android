@@ -3,6 +3,7 @@ package com.finance.client.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,6 +86,7 @@ public class WalletActivity extends BaseActivity {
             @Override
             public void onResponse(String response, int id) {
                 dismissLoading();
+                Log.e("钱包余额...........", response);
                 try {
                     JSONObject obj = new JSONObject(response);
                     if (obj.getString("result").equals("1")) {
@@ -92,7 +95,7 @@ public class WalletActivity extends BaseActivity {
                     }
                     amount = obj.getString("amount");
                     MineFragment.userInfo.setAmount(obj.getString("amount"));
-                    guCoin = obj.getString("guCoin");
+                    guCoin = KeepDecimal(Double.valueOf(obj.getString("guCoin")));
                     updateView();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -108,4 +111,10 @@ public class WalletActivity extends BaseActivity {
             ((TextView) findViewById(R.id.Money)).setText("" + amount);
         }
     }
+
+    public String KeepDecimal(Double d) {
+        DecimalFormat decimal = new DecimalFormat("#0.00");
+        return decimal.format(Double.valueOf(d));
+    }
+
 }
