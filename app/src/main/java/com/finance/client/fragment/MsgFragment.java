@@ -74,7 +74,11 @@ public class MsgFragment extends BaseFragment {
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
-                nowPage += 1;
+                if (nowPage >= totalPage) {
+                    mListView.onRefreshComplete();
+                    return;
+                }
+                nowPage++;
                 RequestData();
             }
         });
@@ -87,44 +91,36 @@ public class MsgFragment extends BaseFragment {
     }
 
     private void RequestData() {
-        if (nowPage > totalPage) {
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    mListView.onRefreshComplete();
-                }
-            });
-            return;
-        }
         Map<String, String> params = new HashMap<>();
-        String json = "{\"cmd\":\"getMessageList\",\"uid\":\""+ UserUtil.uid+"\"," +
-                "\"nowPage\":\""+nowPage+"\",\"pageCount\":\""+10+"\"}";
+        String json = "{\"cmd\":\"getMessageList\",\"uid\":\"" + UserUtil.uid + "\"," +
+                "\"nowPage\":\"" + nowPage + "\",\"pageCount\":\"" + 10 + "\"}";
         params.put("json", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(getActivity(),e.getMessage());
+                ToastUtils.makeText(getActivity(), e.getMessage());
                 mListView.onRefreshComplete();
             }
+
             @Override
             public void onResponse(String response, int id) {
-                Log.i("response", "onResponse:" +response);
+                Log.i("获取首页消息.........", "onResponse:" + response);
                 Gson gson = new Gson();
                 dismissLoading();
-                MeassageBean meassageBean = gson.fromJson(response,MeassageBean.class);
-                if (meassageBean.getResult().equals("1")){
-                    ToastUtils.makeText(getActivity(),meassageBean.getResultNote());
+                MeassageBean meassageBean = gson.fromJson(response, MeassageBean.class);
+                if (meassageBean.getResult().equals("1")) {
+                    ToastUtils.makeText(getActivity(), meassageBean.getResultNote());
                     mListView.onRefreshComplete();
                     return;
                 }
                 List<MeassageBean.DataList> dataLists = meassageBean.getDataList();
-                if (dataLists != null && !dataLists.isEmpty() && dataLists.size() >0){
+                if (dataLists != null && !dataLists.isEmpty() && dataLists.size() > 0) {
                     msgList.addAll(dataLists);
                     mAdapter.notifyDataSetChanged();
                 }
-                totalPage =  Integer.parseInt(meassageBean.getTotalPage());
+                totalPage = Integer.parseInt(meassageBean.getTotalPage());
                 mListView.onRefreshComplete();
             }
         });
@@ -137,16 +133,16 @@ public class MsgFragment extends BaseFragment {
             return;
         }
         Map<String, String> params = Maps.newHashMap();
-        final String json = "{\"cmd\":\"readMessage\",\"uid\":\""+UserUtil.uid+"\"" +
-                ",\"categoryID\":\""+item.getCategoryId()+"\",\"type\":\""+item.getType()+"\"}";
-        params.put("json",json);
+        final String json = "{\"cmd\":\"readMessage\",\"uid\":\"" + UserUtil.uid + "\"" +
+                ",\"categoryID\":\"" + item.getCategoryId() + "\",\"type\":\"" + item.getType() + "\"}";
+        params.put("json", json);
         item.setUnreadMessages("0");
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(getActivity(),e.getMessage());
+                ToastUtils.makeText(getActivity(), e.getMessage());
             }
 
             @Override
@@ -154,8 +150,8 @@ public class MsgFragment extends BaseFragment {
                 dismissLoading();
                 try {
                     JSONObject jsonObject = new JSONObject(response);
-                    if (jsonObject.getString("result").equals("1")){
-                        ToastUtils.makeText(getActivity(),jsonObject.getString("resultNote"));
+                    if (jsonObject.getString("result").equals("1")) {
+                        ToastUtils.makeText(getActivity(), jsonObject.getString("resultNote"));
                         return;
                     }
                     RouterMsgList(index);

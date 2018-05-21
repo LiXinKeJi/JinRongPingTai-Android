@@ -52,7 +52,6 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_master_layout,null);
         initView();
-        requestData();
         return view;
     }
 
@@ -114,7 +113,7 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
 
             @Override
             public void onResponse(String response, int id) {
-                Log.i("response", "onResponse: " + response);
+                Log.e("首页消息", "onResponse: " + response);
                 Gson gson = new Gson();
                 dismissLoading();
                 MasterListDao masterListDao = gson.fromJson(response,MasterListDao.class);
@@ -146,11 +145,9 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
     @Override
     public void onResume() {
         super.onResume();
-        if (MyApplication.temp == 1){
             lists.clear();
             nowPage = 1;
             requestData();
-        }
     }
 }
 
