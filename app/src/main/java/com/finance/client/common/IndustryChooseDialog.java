@@ -130,7 +130,8 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
                 JSONObject obj = array.getJSONObject(index);
                 second.add(obj.getString("name"));
             }
-            secondView.setViewAdapter(new ListWheelAdapter4(context,second,maxsize,minsize));
+            secondAdapter=new ListWheelAdapter4(context,second,maxsize,minsize);
+            secondView.setViewAdapter(secondAdapter);
             Third();
         }catch (Exception e){
             e.printStackTrace();
@@ -144,7 +145,8 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
                 JSONObject obj = array.getJSONObject(index);
                 third.add(obj.getString("name"));
             }
-            thirdView.setViewAdapter(new ListWheelAdapter4(context,third,maxsize,minsize));
+            thirdAdapter=new ListWheelAdapter4(context,third,maxsize,minsize);
+            thirdView.setViewAdapter(thirdAdapter);
             Fourth();
         }catch (Exception e){
             e.printStackTrace();
@@ -204,7 +206,7 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
     private OnWheelChangedListener listener2 = new OnWheelChangedListener() {
         @Override
         public void onChanged(WheelView wheelView, int i, int newValue) {
-            String currentText = (String) secondAdapter.getItemText(wheelView.getCurrentItem());
+            String currentText = second.get(wheelView.getCurrentItem());
             second_index = newValue;
             third_index = 0;
             setTextviewSize(currentText, secondAdapter);
@@ -215,7 +217,7 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
     private OnWheelChangedListener listener3 = new OnWheelChangedListener() {
         @Override
         public void onChanged(WheelView wheelView, int i, int newValue) {
-            String currentText = (String) thirdAdapter.getItemText(wheelView.getCurrentItem());
+            String currentText = third.get(wheelView.getCurrentItem());
             third_index = newValue;
             fourth_index = 0;
             setTextviewSize(currentText, thirdAdapter);

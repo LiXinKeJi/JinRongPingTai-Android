@@ -106,7 +106,7 @@ public class MsgFragment extends BaseFragment {
 
             @Override
             public void onResponse(String response, int id) {
-                Log.i("获取首页消息.........", "onResponse:" + response);
+                Log.e("获取首页消息.........", "onResponse:" + response);
                 Gson gson = new Gson();
                 dismissLoading();
                 MeassageBean meassageBean = gson.fromJson(response, MeassageBean.class);

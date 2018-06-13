@@ -44,6 +44,8 @@ public class RegistActivity extends BaseActivity{
         findViewById(R.id.SubmitBtn).setOnClickListener(this);
         findViewById(R.id.CaptchaBtn).setOnClickListener(this);
         CaptchaText = (TextView) findViewById(R.id.CaptchaText);
+        CaptchaText.setOnClickListener(this);
+        mTimerUtil = new TimerUtil(CaptchaText);
     }
 
     @Override
@@ -58,21 +60,21 @@ public class RegistActivity extends BaseActivity{
             finish();
         }else if(v.getId() == R.id.SubmitBtn){
             Regist();
-        }else if(v.getId() == R.id.CaptchaBtn){
+        }else if(v.getId() == R.id.CaptchaText){
             getCaptcha();
         }
     }
 
+    TimerUtil mTimerUtil;
     public void getCaptcha(){
         String phone = ((EditText)findViewById(R.id.PhoneEdit)).getText().toString();
         if(Strings.isNullOrEmpty(phone)){
             Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
             return;
         }
-        captcha = TimerUtil.getNum();
-        sendSMS(phone,captcha);
-        TimerUtil mTimerUtil = new TimerUtil(CaptchaText);
+        captcha = mTimerUtil.getNum();
         mTimerUtil.timers();
+        sendSMS(phone,captcha);
     }
 
     /**

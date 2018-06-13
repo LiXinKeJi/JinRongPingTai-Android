@@ -2,21 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#f5f5f5">
-    <include layout="@layout/navigation_layout"/>
+    android:background="#f5f5f5"
+    android:orientation="vertical">
+
+    <include layout="@layout/navigation_layout" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#dfdfdf"/>
+        android:background="#dfdfdf" />
+
     <ListView
         android:id="@+id/select_price_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@null"
-        android:scrollbars="none">
-    </ListView>
-
+        android:layout_marginBottom="15dp"
+        android:scrollbars="none"/>
 
 
 </LinearLayout>

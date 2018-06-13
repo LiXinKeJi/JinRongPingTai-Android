@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -90,6 +91,7 @@ public class CompanyInfoActivity extends BaseActivity{
 
             @Override
             public void onResponse(String response, int id) {
+                Log.e("订购人信息",response);
                 Gson gson = new Gson();
                 dismissLoading();
                 CompanyInfoBean companyInfoBean = gson.fromJson(response,CompanyInfoBean.class);

@@ -44,6 +44,7 @@ public class ForgetPwdActivity extends BaseActivity {
         findViewById(R.id.SubmitBtn).setOnClickListener(this);
         findViewById(R.id.CaptchaBtn).setOnClickListener(this);
         CaptchaText = (TextView) findViewById(R.id.CaptchaText);
+          mTimerUtil = new TimerUtil(CaptchaText);
     }
 
     @Override
@@ -118,7 +119,7 @@ public class ForgetPwdActivity extends BaseActivity {
         });
     }
 
-
+    TimerUtil mTimerUtil;
     public void getCaptcha() {
 
         String phone = ((EditText) findViewById(R.id.PhoneEdit)).getText().toString();
@@ -126,9 +127,9 @@ public class ForgetPwdActivity extends BaseActivity {
             Toast.makeText(this, "请输入手机号", Toast.LENGTH_SHORT).show();
             return;
         }
-        captcha = TimerUtil.getNum();
+        captcha = mTimerUtil.getNum();
         sendSMS(phone, captcha);
-        TimerUtil mTimerUtil = new TimerUtil(CaptchaText);
+
         mTimerUtil.timers();
     }
 

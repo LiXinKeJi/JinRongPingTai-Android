@@ -14,24 +14,14 @@ import java.util.Random;
  */
 public class TimerUtil {
 
-    private TextView tv;
-    private CountDownListener mCountDownListener;
+    private static TextView tv;
 
     public TimerUtil(TextView tv) {
         this.tv = tv;
     }
 
-    public TimerUtil(TextView tv, CountDownListener mCountDownListener) {
-        this.tv = tv;
-        this.mCountDownListener = mCountDownListener;
-    }
-
     public void timers() {
         timer.start();
-    }
-
-    public void countDown() {
-        count.start();
     }
 
 
@@ -39,44 +29,34 @@ public class TimerUtil {
         @Override
         public void onTick(long millisUntilFinished) {
             tv.setEnabled(false);
-            tv.setText((millisUntilFinished / 1000) + "秒");
+            tv.setText((millisUntilFinished / 1000) + "秒重新获取");
         }
 
         @Override
         public void onFinish() {
             tv.setEnabled(true);
-            tv.setText("重新获取");
-        }
-    };
-    public CountDownTimer count = new CountDownTimer(1000, 1000) {
-        @Override
-        public void onTick(long millisUntilFinished) {
-            tv.setEnabled(false);
-        }
-
-        @Override
-        public void onFinish() {
-            tv.setEnabled(true);
-            mCountDownListener.sendMessage(true);
+            tv.setText("获取验证码");
         }
     };
 
-    public interface CountDownListener {
-        void sendMessage(boolean isFinish);
+    public void cancelTimer() {
+        if (timer != null) {
+            timer.cancel();
+        }
     }
+
 
     /**
      * 获取随机验证码
      */
-    public static String getNum() {
+    public String getNum() {
         StringBuilder sb = new StringBuilder();
         //随机生成6位数  发送到聚合
         Random random = new Random();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i <6; i++) {
             int a = random.nextInt(10);
             sb.append(a);
         }
         return sb.toString();
     }
-
 }

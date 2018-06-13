@@ -20,11 +20,11 @@ import java.util.List;
  * Date : 17/8/14
  */
 
-public class HomeMsgAdapter extends BaseAdapter{
+public class HomeMsgAdapter extends BaseAdapter {
     private List<MeassageBean.DataList> msgList;
     private Context mContext;
 
-    public HomeMsgAdapter(Context mContext,List<MeassageBean.DataList> list){
+    public HomeMsgAdapter(Context mContext, List<MeassageBean.DataList> list) {
         this.mContext = mContext;
         this.msgList = list;
     }
@@ -46,33 +46,31 @@ public class HomeMsgAdapter extends BaseAdapter{
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = View.inflate(mContext, R.layout.msg_item_layout,null);
+        View view = View.inflate(mContext, R.layout.msg_item_layout, null);
         MeassageBean.DataList item = msgList.get(position);
-        if (item.getTitle().equals("系统消息"))
-        {
-            ((TextView)view.findViewById(R.id.Title)).setText("系统消息");
-            ((TextView)view.findViewById(R.id.desc)).setText("");
-        }else
-        {
-            ((TextView)view.findViewById(R.id.Title)).setText(item.getTitle());
-            ((TextView)view.findViewById(R.id.desc)).setText(item.getCategory());
+        if (item.getTitle().equals("系统消息")) {
+            ((TextView) view.findViewById(R.id.Title)).setText("系统消息");
+            ((TextView) view.findViewById(R.id.desc)).setText("");
+        } else {
+            ((TextView) view.findViewById(R.id.Title)).setText(item.getTitle());
+            ((TextView) view.findViewById(R.id.desc)).setText(item.getCategory());
         }
-        if(Strings.isNullOrEmpty(item.getCategoryId())){
+        if (Strings.isNullOrEmpty(item.getCategoryId())) {
 //            ((TextView)view.findViewById(R.id.Title)).setText("系统消息");
 //            ((TextView)view.findViewById(R.id.desc)).setText("");
-        }else{
+        } else {
 //            ((TextView)view.findViewById(R.id.Title)).setText(item.getTitle());
 //            ((TextView)view.findViewById(R.id.desc)).setText(item.getCategory());
         }
-        if(!TextUtils.isEmpty(item.getUnreadMessages())&&Integer.parseInt(item.getUnreadMessages()) > 0) {
+        if (!TextUtils.isEmpty(item.getUnreadMessages()) && Integer.parseInt(item.getUnreadMessages()) > 0) {
             view.findViewById(R.id.Count).setVisibility(View.VISIBLE);
             ((TextView) view.findViewById(R.id.Count)).setText("" + item.getUnreadMessages());
-        }else{
+        } else {
             view.findViewById(R.id.Count).setVisibility(View.INVISIBLE);
         }
-        if(!Strings.isNullOrEmpty(item.getLogo())) {
-            ImageLoaderUtil.getInstance().displayImage(item.getLogo(), (ImageView) view.findViewById(R.id.Image));
-        }
+
+        ImageLoaderUtil.getInstance().displayImage(item.getLogo(), (ImageView) view.findViewById(R.id.Image));
+
         return view;
     }
 }
