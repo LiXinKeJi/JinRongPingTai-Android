@@ -75,8 +75,8 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
                 JSONObject obj_c = obj_b.getJSONArray("tlist").getJSONObject(third_index);
                 JSONObject obj_d = obj_c.getJSONArray("fflist").getJSONObject(fourth_index);
                 //info = obj_a.getString("name")+"-"+obj_b.getString("name")+"-"+obj_c.getString("name")+"-"+obj_d.getString("name");
-                info = obj_d.getString("name");
-                id = obj_d.getString("industryId");
+                info = obj_a.getString("name");
+                id = obj_a.getString("industryId");
             }catch (Exception e){
 
             }

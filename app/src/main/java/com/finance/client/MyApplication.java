@@ -1,4 +1,4 @@
-package com.finance.client.activity;
+package com.finance.client;
 
 import android.app.Activity;
 import android.content.Context;

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.finance.client.MyApplication;
 import com.finance.client.R;
 import com.finance.client.model.BaseResultDO;
 import com.finance.client.util.Content;

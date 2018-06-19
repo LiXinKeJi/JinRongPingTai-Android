@@ -12,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.finance.client.R;
-import com.finance.client.activity.MyApplication;
+import com.finance.client.MyApplication;
 import com.finance.client.activity.PaySelectActivity;
 import com.finance.client.common.LogOutDialog;
 import com.finance.client.model.MasterDao;

@@ -14,7 +14,6 @@ import android.widget.ListView;
 
 import com.finance.client.R;
 import com.finance.client.activity.CompanyInfoActivity;
-import com.finance.client.activity.MyApplication;
 import com.finance.client.activity.SearchActivity;
 import com.finance.client.adapter.MasterAdapter;
 import com.finance.client.model.MasterDao;
@@ -113,7 +112,7 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
 
             @Override
             public void onResponse(String response, int id) {
-                Log.e("首页消息", "onResponse: " + response);
+                Log.e("订阅者消息", "onResponse: " + response);
                 Gson gson = new Gson();
                 dismissLoading();
                 MasterListDao masterListDao = gson.fromJson(response,MasterListDao.class);

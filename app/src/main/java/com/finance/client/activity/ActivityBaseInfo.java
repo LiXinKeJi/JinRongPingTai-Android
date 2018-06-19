@@ -111,7 +111,6 @@ public class ActivityBaseInfo extends BaseActivity {
             this.takePhoto();
         } else {//禁止使用权限，询问是否设置允许
             Toast.makeText(this, "需要访问内存卡和拍照权限", Toast.LENGTH_SHORT).show();
-            ;
         }
     }
 
@@ -193,6 +192,7 @@ public class ActivityBaseInfo extends BaseActivity {
         Map<String, String> params = new HashMap<>();
         final String json = "{\"cmd\":\"completeUserInfo\",\"uid\":\"" + uid + "\",\"avatar\":\"" + avatar + "\"" +
                 ",\"nickName\":\"" + nickName + "\",\"industry\":\"" + categoryId + "\",\"address\":\"" + address + "\"}";
+        Log.e("完善资料行业id......",categoryId);
         params.put("json", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
@@ -236,6 +236,7 @@ public class ActivityBaseInfo extends BaseActivity {
             @Override
             public void onResponse(String response, int id) {
                 dismissLoading();
+                Log.e("行业分类......",response);
                 try {
                     JSONObject obj = new JSONObject(response);
                     if (obj.getString("result").equals("1")) {

@@ -11,9 +11,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.finance.client.MyApplication;
 import com.finance.client.R;
+import com.finance.client.fragment.MineFragment;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
+import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.pingplusplus.android.Pingpp;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -22,6 +25,7 @@ import com.zhy.http.okhttp.callback.StringCallback;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -43,6 +47,8 @@ public class PayActivity extends BaseActivity {
     private String charge;
     private TextView txtPay;
     private String projectId;
+
+    private double balance = 0.0;//钱包余额
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,6 +76,7 @@ public class PayActivity extends BaseActivity {
         selectIcon = getResources().getDrawable(R.drawable.choose_select);
         unSelectIcon = getResources().getDrawable(R.drawable.choose);
 
+        requestData();
     }
 
     @Override
@@ -114,6 +121,10 @@ public class PayActivity extends BaseActivity {
         DecimalFormat decimalFormat = new DecimalFormat("###################.###########");
         Map<String, String> params = Maps.newHashMap();
         if (channel.equals("balancePay")) {
+            if(amount>balance){
+                ToastUtils.showMessageShort(this,"余额不足");
+                return;
+            }
             final String json = "{\"cmd\":\"balancePay\",\"amount\":\"" + decimalFormat.format(amount) + "\"" +
                     ",\"orderNo\":\"" + orderId + "\",\"channel\":\"" + channel + "\",\"body\":\"" + body + "\"}";
             params.put("json", json);
@@ -184,4 +195,40 @@ public class PayActivity extends BaseActivity {
             }
         }
     }
+
+
+    //获取余额
+    private void requestData() {
+        Map<String, String> params = new HashMap<>();
+        final String json = "{\"cmd\":\"getUserAmount\",\"uid\":\"" + UserUtil.uid + "\"}";
+        params.put("json", json);
+        showLoading();
+        OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e, int id) {
+                dismissLoading();
+                ToastUtils.makeText(PayActivity.this, e.getMessage());
+            }
+
+            @Override
+            public void onResponse(String response, int id) {
+                dismissLoading();
+                Log.e("钱包余额...........", response);
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    if (obj.getString("result").equals("1")) {
+                        ToastUtils.makeText(PayActivity.this, obj.getString("resultNote"));
+                        return;
+                    }
+                    balance = Double.valueOf(obj.getString("amount"));
+                    MineFragment.userInfo.setAmount(obj.getString("amount"));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
 }
