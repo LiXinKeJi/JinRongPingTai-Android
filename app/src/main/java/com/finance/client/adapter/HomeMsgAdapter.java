@@ -54,14 +54,9 @@ public class HomeMsgAdapter extends BaseAdapter {
         } else {
             ((TextView) view.findViewById(R.id.Title)).setText(item.getTitle());
             ((TextView) view.findViewById(R.id.desc)).setText(item.getCategory());
+            ImageLoaderUtil.getInstance().displayImage(item.getLogo(), (ImageView) view.findViewById(R.id.Image));
         }
-        if (Strings.isNullOrEmpty(item.getCategoryId())) {
-//            ((TextView)view.findViewById(R.id.Title)).setText("系统消息");
-//            ((TextView)view.findViewById(R.id.desc)).setText("");
-        } else {
-//            ((TextView)view.findViewById(R.id.Title)).setText(item.getTitle());
-//            ((TextView)view.findViewById(R.id.desc)).setText(item.getCategory());
-        }
+
         if (!TextUtils.isEmpty(item.getUnreadMessages()) && Integer.parseInt(item.getUnreadMessages()) > 0) {
             view.findViewById(R.id.Count).setVisibility(View.VISIBLE);
             ((TextView) view.findViewById(R.id.Count)).setText("" + item.getUnreadMessages());
@@ -69,7 +64,7 @@ public class HomeMsgAdapter extends BaseAdapter {
             view.findViewById(R.id.Count).setVisibility(View.INVISIBLE);
         }
 
-        ImageLoaderUtil.getInstance().displayImage(item.getLogo(), (ImageView) view.findViewById(R.id.Image));
+
 
         return view;
     }

@@ -154,7 +154,7 @@ public class SearchActivity extends BaseActivity{
             Toast.makeText(this, "无法获取分类数据", Toast.LENGTH_SHORT).show();
             return;
         }
-        IndustryChooseDialog dialog = new IndustryChooseDialog(this,category);
+        IndustryChooseDialog dialog = new IndustryChooseDialog(this,category,0);
         dialog.setOnCategoryChangeListener(new IndustryChooseDialog.onCategoryChangeListener() {
             @Override
             public void onChange(String info,String id) {

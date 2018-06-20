@@ -107,7 +107,6 @@ public class MineFragment extends BaseFragment implements View.OnClickListener{
             Intent intent = new Intent(this.getContext(), SettingActivity.class);
             startActivity(intent);
         }else if(v.getId() == R.id.XDLayout){
-
             Intent intent = new Intent(this.getContext(), ReNewActivity.class);
             startActivity(intent);
         }else if(v.getId() == R.id.WalletLayout){

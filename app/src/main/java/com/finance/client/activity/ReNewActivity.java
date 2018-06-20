@@ -35,7 +35,7 @@ import okhttp3.Call;
  * Date : 17/9/5
  */
 
-public class ReNewActivity extends BaseActivity{
+public class ReNewActivity extends BaseActivity {
     private PullToRefreshListView mListView;
     private ReNewAdapter adapter;
     private List<ConcernedPublishersDao> lists = new ArrayList<>();
@@ -45,24 +45,15 @@ public class ReNewActivity extends BaseActivity{
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        title="续订";
+        title = "续订";
         setContentView(R.layout.activity_renew);
         super.onCreate(savedInstanceState);
-        mListView = (PullToRefreshListView)findViewById(R.id.ListView);
-        adapter = new ReNewAdapter(this,lists);
+        mListView = (PullToRefreshListView) findViewById(R.id.ListView);
+        adapter = new ReNewAdapter(this, lists);
         mListView.setAdapter(adapter);
         mListView.setMode(PullToRefreshBase.Mode.BOTH);
         this.requestData();
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                ConcernedPublishersDao info = lists.get(position-1);
-//                Intent intent = new Intent(this, CompanyInfoActivity.class);
-//                intent.putExtra("id",info.getMerchantID());
-//                intent.putExtra("name",info.getName());
-//                startActivity(intent);
-            }
-        });
+
         mListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
@@ -75,14 +66,14 @@ public class ReNewActivity extends BaseActivity{
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
                 nowPage += 1;
-                if(nowPage > totalPage){
+                if (nowPage > totalPage) {
                     new Handler().post(new Runnable() {
                         @Override
                         public void run() {
                             mListView.onRefreshComplete();
                         }
                     });
-                }else{
+                } else {
                     requestData();
                 }
             }
@@ -90,41 +81,42 @@ public class ReNewActivity extends BaseActivity{
     }
 
 
-    private void requestData(){
-        Map<String,String> params = Maps.newHashMap();
-        final String json = "{\"cmd\":\"getAuthorList\",\"uid\":\""+ UserUtil.uid+"\"" +
-                ",\"pageCount\":\""+10+"\",\"nowPage\":\""+nowPage+"\"}";
+    private void requestData() {
+        Map<String, String> params = Maps.newHashMap();
+        final String json = "{\"cmd\":\"getAuthorList\",\"uid\":\"" + UserUtil.uid + "\"" +
+                ",\"pageCount\":\"" + 10 + "\",\"nowPage\":\"" + nowPage + "\"}";
         params.put("json", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(ReNewActivity.this,e.getMessage());
+                ToastUtils.makeText(ReNewActivity.this, e.getMessage());
             }
 
             @Override
             public void onResponse(String response, int id) {
+                Log.e("订阅者",response);
                 dismissLoading();
                 Gson gson = new Gson();
-                RenewResultDao renewResultDao = gson.fromJson(response,RenewResultDao.class);
+                RenewResultDao renewResultDao = gson.fromJson(response, RenewResultDao.class);
                 mListView.onRefreshComplete();
-                if (renewResultDao.getResult().equals("1")){
-                    ToastUtils.makeText(ReNewActivity.this,renewResultDao.getResultNote());
+                if (renewResultDao.getResult().equals("1")) {
+                    ToastUtils.makeText(ReNewActivity.this, renewResultDao.getResultNote());
                     return;
                 }
-                if (renewResultDao.getTotalPage()!=null) {
+                if (renewResultDao.getTotalPage() != null) {
                     totalPage = Integer.parseInt(renewResultDao.getTotalPage());
-                    Log.e("totalpage---",renewResultDao.getTotalPage());
+                    Log.e("totalpage---", renewResultDao.getTotalPage());
                 }
 
-                if(renewResultDao.getDataList() != null) {
-                    for(int i=0;i<renewResultDao.getDataList().size();i++)
-                    {
-                        if (!TextUtils.isEmpty(renewResultDao.getDataList().get(i).getStatus())&&renewResultDao.getDataList().get(i).getStatus().equals("0")) {
+                if (renewResultDao.getDataList() != null) {
+                    for (int i = 0; i < renewResultDao.getDataList().size(); i++) {
+                        if (!TextUtils.isEmpty(renewResultDao.getDataList().get(i).getStatus()) && renewResultDao.getDataList().get(i).getStatus().equals("0")) {
                             lists.add(renewResultDao.getDataList().get(i));
                         }
                     }
+                    Log.e("订阅者", new Gson().toJson(lists));
                     adapter.notifyDataSetChanged();
                 }
             }

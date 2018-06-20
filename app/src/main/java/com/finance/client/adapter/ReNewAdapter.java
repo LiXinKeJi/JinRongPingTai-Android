@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -95,6 +96,7 @@ public class ReNewAdapter extends BaseAdapter{
                 public void onClick(View v) {
                     if (info.getStatus().equals("0")) {
                         Intent intent = new Intent(mContext, PaySelectActivity.class);
+                        Log.e("id",info.getMerchantID());
                         intent.putExtra("merchantID", info.getMerchantID());
                         intent.putExtra("isOrder", "1");
                         mContext.startActivity(intent);

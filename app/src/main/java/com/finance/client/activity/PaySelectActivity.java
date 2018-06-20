@@ -20,6 +20,7 @@ import com.finance.client.adapter.PaySelectAdapter;
 import com.finance.client.model.BaseBean;
 import com.finance.client.model.PaySelectBean;
 import com.finance.client.util.Content;
+import com.finance.client.util.ToastUtils;
 import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -55,6 +56,7 @@ public class PaySelectActivity extends BaseActivity {
     private String projectId;
     private ListView select_price_list;
     private PaySelectAdapter mAdapter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         title = "订购支付";
@@ -90,7 +92,6 @@ public class PaySelectActivity extends BaseActivity {
                 mAdapter.setDefSelect(position-1);
                 price = priceList.get(position-1).getPrice();
                 projectId = priceList.get(position-1).getId();
-
             }
         });
     }
@@ -166,6 +167,7 @@ public class PaySelectActivity extends BaseActivity {
         final Map<String, String> params = Maps.newHashMap();
         String json = "{\"cmd\":\"getPriceList\",\"uid\":\"" + UserUtil.uid + "\",\"merchantID\":\"" + merchantID + "\"}";
         params.put("json", json);
+        Log.e("获取续订人....",json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override

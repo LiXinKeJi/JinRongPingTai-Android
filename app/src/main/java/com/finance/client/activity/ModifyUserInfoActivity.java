@@ -214,26 +214,7 @@ public class ModifyUserInfoActivity extends BaseActivity {
     }
 
 
-    private void chooseCategory() {
-        if (category == null) {
-            Toast.makeText(this, "无法获取分类数据", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        IndustryChooseDialog dialog = new IndustryChooseDialog(this, category);
-        dialog.setOnCategoryChangeListener(new IndustryChooseDialog.onCategoryChangeListener() {
-            @Override
-            public void onChange(String info, String id) {
-                categoryInfo = id;
-                ((TextView) findViewById(R.id.Trade)).setText(info);
-            }
-        });
-        dialog.show();
-        WindowManager windowManager = getWindowManager();
-        Display display = windowManager.getDefaultDisplay();
-        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-        lp.width = (int) (display.getWidth()); //设置宽度
-        dialog.getWindow().setAttributes(lp);
-    }
+
 
 
     private void takePhoto() {

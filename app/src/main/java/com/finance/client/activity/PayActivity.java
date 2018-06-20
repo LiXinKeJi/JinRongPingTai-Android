@@ -107,7 +107,7 @@ public class PayActivity extends BaseActivity {
                 img_wallet.setImageDrawable(selectIcon);
                 break;
             case R.id.SubmitBtn:
-                if (Double.valueOf(price) <= 0.0) {
+                if (Double.valueOf(price) < 0.0) {
                     ToastUtils.showMessageShort(this, "支付金额错误");
                     return;
                 }

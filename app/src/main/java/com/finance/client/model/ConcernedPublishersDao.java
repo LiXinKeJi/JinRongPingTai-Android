@@ -7,7 +7,7 @@ package com.finance.client.model;
 public class ConcernedPublishersDao {
 
 
-    private String merchantID;
+    private String merchantId;
     private String category;
     private String logo;
     private String name;
@@ -22,11 +22,11 @@ public class ConcernedPublishersDao {
     private String isVerify;
 
     public String getMerchantID() {
-        return merchantID;
+        return merchantId;
     }
 
     public void setMerchantID(String merchantID) {
-        this.merchantID = merchantID;
+        this.merchantId = merchantID;
     }
 
     public String getCategory() {

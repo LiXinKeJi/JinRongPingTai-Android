@@ -47,10 +47,14 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
     private String id = "";
     private int maxsize = 14;
     private int minsize = 12;
-    public IndustryChooseDialog(@NonNull Context context,JSONArray data) {
+
+    private int flag=-1;//-1，只显示一级，0显示4级
+
+    public IndustryChooseDialog(@NonNull Context context,JSONArray data,int flag) {
         super(context, R.style.RegionDialogTheme);
         this.cityData = data;
         this.context=context;
+        this.flag=flag;
         Init();
     }
 
@@ -75,8 +79,13 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
                 JSONObject obj_c = obj_b.getJSONArray("tlist").getJSONObject(third_index);
                 JSONObject obj_d = obj_c.getJSONArray("fflist").getJSONObject(fourth_index);
                 //info = obj_a.getString("name")+"-"+obj_b.getString("name")+"-"+obj_c.getString("name")+"-"+obj_d.getString("name");
-                info = obj_a.getString("name");
-                id = obj_a.getString("industryId");
+                if(flag==-1){
+                    info = obj_a.getString("name");
+                    id = obj_a.getString("industryId");
+                }else{
+                    info = obj_d.getString("name");
+                    id = obj_d.getString("industryId");
+                }
             }catch (Exception e){
 
             }
@@ -97,6 +106,17 @@ public class IndustryChooseDialog extends Dialog implements View.OnClickListener
         secondView = (WheelView) findViewById(R.id.WheelView2);
         thirdView = (WheelView)findViewById(R.id.WheelView3);
         fourthView = (WheelView)findViewById(R.id.WheelView4);
+
+        if(flag==-1){
+            secondView.setVisibility(View.GONE);
+            thirdView.setVisibility(View.GONE);
+            fourthView.setVisibility(View.GONE);
+        }else{
+            secondView.setVisibility(View.VISIBLE);
+            thirdView.setVisibility(View.VISIBLE);
+            fourthView.setVisibility(View.VISIBLE);
+        }
+
         firstView.addChangingListener(listener1);
         secondView.addChangingListener(listener2);
         thirdView.addChangingListener(listener3);
