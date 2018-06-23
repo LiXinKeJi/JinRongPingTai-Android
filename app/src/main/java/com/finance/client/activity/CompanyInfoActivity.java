@@ -38,6 +38,8 @@ public class CompanyInfoActivity extends BaseActivity{
     private TextView rightBtn,statusInfo;
     private RatingBar ratingBar;
     private TextView tv_score;
+    private TextView tv_num;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         title = getIntent().getStringExtra("name");
@@ -50,8 +52,8 @@ public class CompanyInfoActivity extends BaseActivity{
         rightBtn.setOnClickListener(this);
         ratingBar=(RatingBar)findViewById(R.id.ratingBar);
         tv_score=(TextView)findViewById(R.id.tv_score);
+        tv_num= (TextView) findViewById(R.id.tv_num);
         id = getIntent().getStringExtra("id");
-
     }
 
     @Override
@@ -71,6 +73,7 @@ public class CompanyInfoActivity extends BaseActivity{
         switch (v.getId()){
             case R.id.RightBtnText:
                 Intent intent = new Intent(this,RemarkActivity.class);
+                intent.putExtra("Remarks",info.getNickName());
                 intent.putExtra("id",info.getMerchantId());
                 startActivity(intent);
                 break;
@@ -107,6 +110,7 @@ public class CompanyInfoActivity extends BaseActivity{
 
     private void UpdateView() {
         if (info != null){
+            tv_num.setText(info.getCommentNum()+"人评价");
             if (!TextUtils.isEmpty(info.getLogo())) ImageLoaderUtil.getInstance().displayImage(info.getLogo(), (ImageView) findViewById(R.id.Logo));
             else ((ImageView) findViewById(R.id.Logo)).setImageResource(R.drawable.ic_launcher);
             if (TextUtils.isEmpty(info.getNickName())) ((TextView) findViewById(R.id.Name)).setText(info.getName());
@@ -115,7 +119,7 @@ public class CompanyInfoActivity extends BaseActivity{
             if (!TextUtils.isEmpty(info.getCategory())) ((TextView) findViewById(R.id.Category)).setText("分类: " + info.getCategory());
             if (!TextUtils.isEmpty(info.getFansNumber())) ((TextView) findViewById(R.id.Fans)).setText(info.getFansNumber() + "人订阅");
             if (!TextUtils.isEmpty(info.getIntroduction())) {
-                ((TextView) findViewById(R.id.Desc)).setText(info.getIntroduction());
+                ((TextView) findViewById(R.id.Desc)).setText("个性签名："+info.getSignature());
                 ((TextView) findViewById(R.id.Info)).setText(info.getIntroduction());
             }
             if (!TextUtils.isEmpty(info.getAddress()))((TextView) findViewById(R.id.Address)).setText(info.getAddress());

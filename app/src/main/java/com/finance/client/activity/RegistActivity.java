@@ -125,9 +125,9 @@ public class RegistActivity extends BaseActivity{
             Toast.makeText(this, "两次密码不一致", Toast.LENGTH_SHORT).show();
             return;
         }
-        Intent intent = new Intent(RegistActivity.this,ActivityBaseInfo.class);
-        startActivity(intent);
-        finish();
+//        Intent intent = new Intent(RegistActivity.this,ActivityBaseInfo.class);
+//        startActivity(intent);
+//        finish();
 
         getRegister(phoneNum, ToolUtil.md5(password));
 

@@ -1,5 +1,6 @@
 package com.finance.client.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import com.finance.client.R;
 import com.finance.client.adapter.MasterAdapter;
 import com.finance.client.common.IndustryChooseDialog;
+import com.finance.client.fragment.MasterFragment;
 import com.finance.client.model.MasterDao;
 import com.finance.client.model.MasterListDao;
 import com.finance.client.util.Content;
@@ -88,6 +91,17 @@ public class SearchActivity extends BaseActivity{
                 }else{
                     Search();
                 }
+            }
+        });
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MasterDao info = lists.get(position - 1);
+                Intent intent = new Intent(SearchActivity.this, CompanyInfoActivity.class);
+                intent.putExtra("id", info.getMerchantId());
+                intent.putExtra("name", info.getName());
+                startActivity(intent);
             }
         });
 
@@ -193,7 +207,6 @@ public class SearchActivity extends BaseActivity{
                     }
                     category = obj.getJSONArray("flist");
                     chooseCategory();
-                    ToastUtils.makeText(SearchActivity.this,"获取分类数据成功");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

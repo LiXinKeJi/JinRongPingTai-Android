@@ -187,7 +187,6 @@ public class ModifyUserInfoActivity extends BaseActivity {
                         return;
                     }
                     category = obj.getJSONArray("flist");
-                    ToastUtils.makeText(ModifyUserInfoActivity.this, "获取分类数据成功");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

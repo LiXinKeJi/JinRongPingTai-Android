@@ -29,13 +29,20 @@ import okhttp3.Call;
 
 public class RemarkActivity extends BaseActivity{
     private String id;
+
+    private EditText Edit;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         id = getIntent().getStringExtra("id");
+        String nickname=getIntent().getStringExtra("Remarks");
         title = "设置备注";
         setContentView(R.layout.remark_layout);
         super.onCreate(savedInstanceState);
         findViewById(R.id.SubmitBtn).setOnClickListener(this);
+        Edit=  (EditText)findViewById(R.id.Edit);
+        Edit.setText(nickname);
+        Edit.setHint("45454545");
     }
 
     @Override
@@ -52,7 +59,7 @@ public class RemarkActivity extends BaseActivity{
     }
 
     private void Submit(){
-        String text = ((EditText)findViewById(R.id.Edit)).getText().toString();
+        String text = Edit.getText().toString();
         if(TextUtils.isEmpty(text)){
             Toast.makeText(this, "请输入备注信息", Toast.LENGTH_SHORT).show();
             return;

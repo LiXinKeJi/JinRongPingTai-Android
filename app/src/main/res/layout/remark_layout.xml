@@ -17,7 +17,7 @@
             android:id="@+id/Edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@null"
+            android:background="@color/white"
             android:textSize="16sp"
             android:textColor="#333333"
             android:hint="输入备注信息"

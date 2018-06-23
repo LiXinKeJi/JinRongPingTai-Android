@@ -20,6 +20,15 @@ public class MasterDao {
     private String signature;
     private String status;
     private String stopTime;
+    private String commentNum;
+
+    public String getCommentNum() {
+        return commentNum;
+    }
+
+    public void setCommentNum(String commentNum) {
+        this.commentNum = commentNum;
+    }
 
     public String getAddress() {
         return address;

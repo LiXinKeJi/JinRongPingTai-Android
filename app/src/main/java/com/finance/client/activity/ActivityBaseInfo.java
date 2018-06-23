@@ -244,7 +244,6 @@ public class ActivityBaseInfo extends BaseActivity {
                         return;
                     }
                     category = obj.getJSONArray("flist");
-                    ToastUtils.makeText(ActivityBaseInfo.this, "获取分类数据成功");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

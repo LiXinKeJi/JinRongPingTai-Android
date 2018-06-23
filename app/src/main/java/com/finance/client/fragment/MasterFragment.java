@@ -39,33 +39,34 @@ import okhttp3.Call;
  * Date : 17/9/2
  */
 
-public class MasterFragment extends BaseFragment implements View.OnClickListener{
+public class MasterFragment extends BaseFragment implements View.OnClickListener {
     private View view;
     private PullToRefreshListView mListView;
     private MasterAdapter adapter;
     private List<MasterDao> lists = new ArrayList<>();
     private int nowPage = 1;
     private int totalPage = 1;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_master_layout,null);
+        view = inflater.inflate(R.layout.fragment_master_layout, null);
         initView();
         return view;
     }
 
     private void initView() {
         view.findViewById(R.id.SearchBtn).setOnClickListener(this);
-        mListView = (PullToRefreshListView)view.findViewById(R.id.ListView);
-        adapter = new MasterAdapter(this.getContext(),lists, false);
+        mListView = (PullToRefreshListView) view.findViewById(R.id.ListView);
+        adapter = new MasterAdapter(this.getContext(), lists, false);
         mListView.setAdapter(adapter);
         mListView.setMode(PullToRefreshBase.Mode.BOTH);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MasterDao info = lists.get(position-1);
+                MasterDao info = lists.get(position - 1);
                 Intent intent = new Intent(MasterFragment.this.getActivity(), CompanyInfoActivity.class);
-                intent.putExtra("id",info.getMerchantId());
+                intent.putExtra("id", info.getMerchantId());
                 intent.putExtra("name", info.getName());
                 startActivity(intent);
             }
@@ -77,17 +78,18 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
                 nowPage = 1;
                 requestData();
             }
+
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
                 nowPage += 1;
-                if(nowPage > totalPage){
+                if (nowPage > totalPage) {
                     new Handler().post(new Runnable() {
                         @Override
                         public void run() {
                             mListView.onRefreshComplete();
                         }
                     });
-                }else{
+                } else {
                     requestData();
                 }
             }
@@ -95,18 +97,17 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
     }
 
 
-
-    private void requestData(){
-        Map<String,String> params = Maps.newHashMap();
-        String json = "{\"cmd\":\"getAuthorList\",\"uid\":\""+ UserUtil.uid+"\"" +
-                ",\"pageCount\":\""+10+"\",\"nowPage\":\""+nowPage+"\"}";
-        params.put("json",json);
+    private void requestData() {
+        Map<String, String> params = Maps.newHashMap();
+        String json = "{\"cmd\":\"getAuthorList\",\"uid\":\"" + UserUtil.uid + "\"" +
+                ",\"pageCount\":\"" + 10 + "\",\"nowPage\":\"" + nowPage + "\"}";
+        params.put("json", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(getActivity(),e.getMessage());
+                ToastUtils.makeText(getActivity(), e.getMessage());
                 mListView.onRefreshComplete();
             }
 
@@ -115,14 +116,13 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
                 Log.e("订阅者消息", "onResponse: " + response);
                 Gson gson = new Gson();
                 dismissLoading();
-                MasterListDao masterListDao = gson.fromJson(response,MasterListDao.class);
-                if (masterListDao.getResult().equals("1")){
-                    ToastUtils.makeText(getActivity(),masterListDao.getResultNote());
+                MasterListDao masterListDao = gson.fromJson(response, MasterListDao.class);
+                if (masterListDao.getResult().equals("1")) {
+                    ToastUtils.makeText(getActivity(), masterListDao.getResultNote());
                     mListView.onRefreshComplete();
                     return;
                 }
-                if (!TextUtils.isEmpty(masterListDao.getTotalPage()))
-                {
+                if (!TextUtils.isEmpty(masterListDao.getTotalPage())) {
                     totalPage = Integer.parseInt(masterListDao.getTotalPage());
                 }
                 if (masterListDao.getDataList() != null) {
@@ -133,9 +133,10 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
             }
         });
     }
+
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.SearchBtn){
+        if (v.getId() == R.id.SearchBtn) {
             Intent intent = new Intent(this.getActivity(), SearchActivity.class);
             startActivity(intent);
         }
@@ -144,9 +145,9 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
     @Override
     public void onResume() {
         super.onResume();
-            lists.clear();
-            nowPage = 1;
-            requestData();
+        lists.clear();
+        nowPage = 1;
+        requestData();
     }
 }
 

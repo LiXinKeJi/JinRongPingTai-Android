@@ -88,7 +88,7 @@ public class MasterAdapter extends BaseAdapter {
         if (TextUtils.isEmpty(info.getNickName())) {
             viewHolder.NickName.setVisibility(View.GONE);
         } else {
-            viewHolder.NickName.setText("("+info.getNickName()+")");
+            viewHolder.NickName.setText("(" + info.getNickName() + ")");
         }
         if (TextUtils.isEmpty(info.getLogo())) {
             viewHolder.HeadImg.setImageResource(R.drawable.ic_launcher);
@@ -97,8 +97,16 @@ public class MasterAdapter extends BaseAdapter {
         }
         viewHolder.Name.setText(info.getName());
         viewHolder.Title.setText(info.getCategory());
+        if (position > 0) {
+            if (lists.get(position).getCategory().equals(lists.get(position - 1).getCategory())) {
+                viewHolder.Title.setVisibility(View.GONE);
+            }else{
+                viewHolder.Title.setVisibility(View.VISIBLE);
+            }
+        }
+
         viewHolder.ID.setText("ID 号：" + info.getMerchantId());
-        viewHolder.Desc.setText(info.getSignature());
+        viewHolder.Desc.setText("个性签名："+info.getSignature());
         viewHolder.Score.setText(info.getScore());
         viewHolder.Fans.setText("" + info.getFansNumber());
         if (searchAdapter) {
@@ -128,19 +136,6 @@ public class MasterAdapter extends BaseAdapter {
                     viewHolder.StatusInfo.setText("已订购");
                     viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
                     viewHolder.StatusInfo.setEnabled(true);
-//                    viewHolder.StatusInfo.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            if (dialog1 == null)
-//                                dialog1 = new LogOutDialog(mContext, R.string.are_you_sure_cancel, new LogOutDialog.OnSureBtnClickListener() {
-//                                    @Override
-//                                    public void sure() {
-//                                        cancel(position);
-//                                    }
-//                                });
-//                            dialog1.show();
-//                        }
-//                    });
                     break;
                 case "1":
                     viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);
@@ -170,27 +165,27 @@ public class MasterAdapter extends BaseAdapter {
 
     class MasterViewHolder {
         RoundedImageView HeadImg;
-        TextView Title, StatusInfo, Name,NickName, ID, Fans, Score, Desc;
+        TextView Title, StatusInfo, Name, NickName, ID, Fans, Score, Desc;
     }
 
     private void follow(int index) {
         final MasterDao info = lists.get(index);
         Map<String, String> params = Maps.newHashMap();
-        final String json = "{\"cmd\":\"attention\",\"uid\":\""+ UserUtil.uid+"\",\"merchantID\":\""+info.getMerchantId()+"\"}";
+        final String json = "{\"cmd\":\"attention\",\"uid\":\"" + UserUtil.uid + "\",\"merchantID\":\"" + info.getMerchantId() + "\"}";
         params.put("json", json);
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
-                ToastUtils.makeText(mContext,e.getMessage());
+                ToastUtils.makeText(mContext, e.getMessage());
             }
 
             @Override
             public void onResponse(String response, int id) {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
-                    if(jsonObject.getString("result").equals("1")){
-                        ToastUtils.makeText(mContext, ""+jsonObject.getString("resultNote"));
-                        return ;
+                    if (jsonObject.getString("result").equals("1")) {
+                        ToastUtils.makeText(mContext, "" + jsonObject.getString("resultNote"));
+                        return;
                     }
                     Toast.makeText(mContext, "添加成功", Toast.LENGTH_SHORT).show();
                     info.setAttention("1");
@@ -206,21 +201,21 @@ public class MasterAdapter extends BaseAdapter {
     private void cancel(int index) {
         final MasterDao info = lists.get(index);
         Map<String, String> params = Maps.newHashMap();
-        final String json = "{\"cmd\":\"cancleOrder\",\"uid\":\""+UserUtil.uid+"\",\"merchantID\":\""+info.getMerchantId()+"\"}";
+        final String json = "{\"cmd\":\"cancleOrder\",\"uid\":\"" + UserUtil.uid + "\",\"merchantID\":\"" + info.getMerchantId() + "\"}";
         params.put("json", json);
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
-                ToastUtils.makeText(mContext,e.getMessage());
+                ToastUtils.makeText(mContext, e.getMessage());
             }
 
             @Override
             public void onResponse(String response, int id) {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
-                    if(jsonObject.getString("result").equals("1")){
-                        ToastUtils.makeText(mContext, ""+jsonObject.getString("resultNote"));
-                        return ;
+                    if (jsonObject.getString("result").equals("1")) {
+                        ToastUtils.makeText(mContext, "" + jsonObject.getString("resultNote"));
+                        return;
                     }
                     Toast.makeText(mContext, "取消订购成功", Toast.LENGTH_SHORT).show();
                     info.setStatus("1");
