@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 
 import com.finance.client.util.CrashHandler;
+import com.finance.client.util.UserUtil;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
+import com.yhrun.alchemy.Util.ImageLoaderUtil;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -34,7 +36,7 @@ public class MyApplication extends MultiDexApplication {
     }
 
 
-  //  String json = "{\"cmd\":\"upPrize\",\"prizeId\":\"" + prizeId  + "\",\"userNme\":\"" + MyApplication.getUserName() + "\"}";
+  //   String json = "{\"cmd\":\"upPrize\",\"prizeId\":\"" + prizeId  + "\",\"userNme\":\"" + MyApplication.getUserName() + "\"}";
 
 
     @Override
@@ -47,8 +49,11 @@ public class MyApplication extends MultiDexApplication {
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
         //崩溃错误日志写入本地文档
-        CrashHandler catchExcep = new CrashHandler(this);
-        Thread.setDefaultUncaughtExceptionHandler(catchExcep);
+//        CrashHandler catchExcep = new CrashHandler(this);
+//        Thread.setDefaultUncaughtExceptionHandler(catchExcep);
+
+       UserUtil.getUid(this);
+        ImageLoaderUtil.init(this);
     }
 
 

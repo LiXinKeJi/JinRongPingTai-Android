@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/okhttputils/okhttputils.iml" filepath="$PROJECT_DIR$/okhttputils/okhttputils.iml" />
       <module fileurl="file://$PROJECT_DIR$/pingpp/pingpp.iml" filepath="$PROJECT_DIR$/pingpp/pingpp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/swipeLayoutlibrary/swipeLayoutlibrary.iml" filepath="$PROJECT_DIR$/swipeLayoutlibrary/swipeLayoutlibrary.iml" />
     </modules>
   </component>
 </project>

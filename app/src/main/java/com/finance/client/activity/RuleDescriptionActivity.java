@@ -2,6 +2,7 @@ package com.finance.client.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -44,7 +45,14 @@ public class RuleDescriptionActivity extends BaseActivity {
         });
 
         myWebView = (WebView) findViewById(R.id.webview);
-        requestData();
+
+        if(TextUtils.isEmpty(getIntent().getStringExtra("url"))){
+            requestData();
+        }else{
+            ruleDescriptionUrl = getIntent().getStringExtra("url");//启动页，欢迎页跳转
+            myWebView.loadUrl(ruleDescriptionUrl);
+        }
+
         WebSettings settings = myWebView.getSettings();
         // 设置可以支持缩放
         settings.setSupportZoom(true);

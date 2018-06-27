@@ -1,1 +1,1 @@
-include ':app', ':pingpp', ':okhttputils'
+include ':app', ':pingpp', ':okhttputils', ':swipeLayoutlibrary'

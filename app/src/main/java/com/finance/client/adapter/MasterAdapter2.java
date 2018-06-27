@@ -15,10 +15,11 @@ import android.widget.Toast;
 
 import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
-import com.finance.client.R;
 import com.finance.client.MyApplication;
+import com.finance.client.R;
 import com.finance.client.activity.PaySelectActivity;
 import com.finance.client.common.LogOutDialog;
+import com.finance.client.http.DelMaster;
 import com.finance.client.model.MasterDao;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
@@ -42,16 +43,23 @@ import okhttp3.Call;
  * Date : 17/9/2
  */
 
-public class MasterAdapter extends BaseAdapter {
+public class MasterAdapter2 extends BaseAdapter {
     private Context mContext;
     private List<MasterDao> lists;
     private boolean searchAdapter;
-    private LogOutDialog dialog1;
 
-    public MasterAdapter(Context mContext, List<MasterDao> lists, boolean searchAdapter) {
+    public RefreshCallBack refreshCallBack;
+
+    public interface RefreshCallBack {
+        void Refresh();
+    }
+
+
+    public MasterAdapter2(Context mContext, List<MasterDao> lists, boolean searchAdapter, RefreshCallBack refreshCallBack) {
         this.mContext = mContext;
         this.lists = lists;
         this.searchAdapter = searchAdapter;
+        this.refreshCallBack=refreshCallBack;
     }
 
     @Override
@@ -71,9 +79,9 @@ public class MasterAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        MasterViewHolder viewHolder;
+        final MasterViewHolder viewHolder;
         if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.master_item_layout, null);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.master_item_layout2, null);
             viewHolder = new MasterViewHolder();
             viewHolder.HeadImg = (RoundedImageView) convertView.findViewById(R.id.master_HeadImg);
             viewHolder.Title = (TextView) convertView.findViewById(R.id.master_Title);
@@ -84,6 +92,8 @@ public class MasterAdapter extends BaseAdapter {
             viewHolder.Fans = (TextView) convertView.findViewById(R.id.master_Fans);
             viewHolder.Score = (TextView) convertView.findViewById(R.id.master_Score);
             viewHolder.Desc = (TextView) convertView.findViewById(R.id.master_Desc);
+            viewHolder.iv_del = (ImageView) convertView.findViewById(R.id.iv_del);
+            viewHolder.itemview_swipe = (SwipeLayout) convertView.findViewById(R.id.itemview_swipe);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (MasterViewHolder) convertView.getTag();
@@ -113,7 +123,43 @@ public class MasterAdapter extends BaseAdapter {
         viewHolder.Desc.setText("个性签名：" + info.getSignature());
         viewHolder.Score.setText(info.getScore());
         viewHolder.Fans.setText("" + info.getFansNumber());
-
+        viewHolder.itemview_swipe.close();
+        viewHolder.itemview_swipe.addSwipeListener(new SimpleSwipeListener() {
+            @Override
+            public void onOpen(SwipeLayout layout) {
+                if (!searchAdapter) {
+                    if (info.getStatus().equals("0")) {//已订购
+                        layout.close();
+                    }
+                }
+            }
+        });
+        viewHolder.iv_del.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!searchAdapter) {
+                    if (info.getStatus().equals("0")) {//已订购
+                        viewHolder.itemview_swipe.close();
+                    } else {
+                        DelMaster.delMaster(mContext, info.getMerchantId(), new DelMaster.DelMasterCallBack() {
+                            @Override
+                            public void del(String id) {
+                                for (int i = 0; i < lists.size(); i++) {
+                                    try {
+                                        if (lists.get(position).getMerchantId().equals(id)) {
+                                            refreshCallBack.Refresh();
+                                            break;
+                                        }
+                                    } catch (Exception e) {
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+                return true;
+            }
+        });
 
 
         if (searchAdapter) {
@@ -170,9 +216,12 @@ public class MasterAdapter extends BaseAdapter {
         return convertView;
     }
 
+
     class MasterViewHolder {
         RoundedImageView HeadImg;
         TextView Title, StatusInfo, Name, NickName, ID, Fans, Score, Desc;
+        ImageView iv_del;
+        SwipeLayout itemview_swipe;
     }
 
     private void follow(int index) {
