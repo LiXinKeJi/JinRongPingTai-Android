@@ -117,6 +117,8 @@ public class MasterAdapter2 extends BaseAdapter {
             } else {
                 viewHolder.Title.setVisibility(View.VISIBLE);
             }
+        }else{
+            viewHolder.Title.setVisibility(View.VISIBLE);
         }
 
         viewHolder.ID.setText("ID 号：" + info.getMerchantId());
@@ -183,36 +185,44 @@ public class MasterAdapter2 extends BaseAdapter {
                     break;
             }
         } else {
-            switch (info.getStatus()) {
-                case "0":
-                    viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);
-                    viewHolder.StatusInfo.setText("已订购");
-                    viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
-                    viewHolder.StatusInfo.setEnabled(true);
-                    break;
-                case "1":
-                    viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);
-                    viewHolder.StatusInfo.setText("订购");
-                    viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
-                    viewHolder.StatusInfo.setEnabled(true);
-                    viewHolder.StatusInfo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(mContext, PaySelectActivity.class);
-                            intent.putExtra("merchantID", info.getMerchantId());
-                            intent.putExtra("isOrder", "0");
-                            mContext.startActivity(intent);
-                        }
-                    });
-                    break;
-                case "2":
-                    viewHolder.StatusInfo.setEnabled(false);
-                    viewHolder.StatusInfo.setBackgroundResource(R.drawable.gray_15);
-                    viewHolder.StatusInfo.setText("订购已满");
-                    viewHolder.StatusInfo.setTextColor(Color.parseColor("#777777"));
-                    break;
+            if(info.getIsman().equals("1")){
+                viewHolder.StatusInfo.setEnabled(false);
+                viewHolder.StatusInfo.setBackgroundResource(R.drawable.gray_15);
+                viewHolder.StatusInfo.setText("订购已满");
+                viewHolder.StatusInfo.setTextColor(Color.parseColor("#777777"));
+            }else{
+                switch (info.getStatus()) {
+                    case "0":
+                        viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);
+                        viewHolder.StatusInfo.setText("已订购");
+                        viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
+                        viewHolder.StatusInfo.setEnabled(true);
+                        break;
+                    case "1":
+                        viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);
+                        viewHolder.StatusInfo.setText("订购");
+                        viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
+                        viewHolder.StatusInfo.setEnabled(true);
+                        viewHolder.StatusInfo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(mContext, PaySelectActivity.class);
+                                intent.putExtra("merchantID", info.getMerchantId());
+                                intent.putExtra("isOrder", "0");
+                                mContext.startActivity(intent);
+                            }
+                        });
+                        break;
+                    case "2":
+                        viewHolder.StatusInfo.setEnabled(false);
+                        viewHolder.StatusInfo.setBackgroundResource(R.drawable.gray_15);
+                        viewHolder.StatusInfo.setText("订购已满");
+                        viewHolder.StatusInfo.setTextColor(Color.parseColor("#777777"));
+                        break;
+                }
             }
         }
+
         return convertView;
     }
 

@@ -21,6 +21,16 @@ public class MasterDao {
     private String status;
     private String stopTime;
     private String commentNum;
+    private String isman;//订购是否定满 0没满 1已满
+
+
+    public String getIsman() {
+        return isman;
+    }
+
+    public void setIsman(String isman) {
+        this.isman = isman;
+    }
 
     public String getCommentNum() {
         return commentNum;
