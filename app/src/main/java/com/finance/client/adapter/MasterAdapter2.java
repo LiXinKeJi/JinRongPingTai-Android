@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,8 +17,8 @@ import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
 import com.finance.client.MyApplication;
 import com.finance.client.R;
+import com.finance.client.activity.CompanyInfoActivity;
 import com.finance.client.activity.PaySelectActivity;
-import com.finance.client.common.LogOutDialog;
 import com.finance.client.http.DelMaster;
 import com.finance.client.model.MasterDao;
 import com.finance.client.util.Content;
@@ -59,7 +59,7 @@ public class MasterAdapter2 extends BaseAdapter {
         this.mContext = mContext;
         this.lists = lists;
         this.searchAdapter = searchAdapter;
-        this.refreshCallBack=refreshCallBack;
+        this.refreshCallBack = refreshCallBack;
     }
 
     @Override
@@ -94,6 +94,8 @@ public class MasterAdapter2 extends BaseAdapter {
             viewHolder.Desc = (TextView) convertView.findViewById(R.id.master_Desc);
             viewHolder.iv_del = (ImageView) convertView.findViewById(R.id.iv_del);
             viewHolder.itemview_swipe = (SwipeLayout) convertView.findViewById(R.id.itemview_swipe);
+            viewHolder.ll_main = (LinearLayout) convertView.findViewById(R.id.ll_main);
+            viewHolder.tv_authen = (TextView) convertView.findViewById(R.id.tv_authen);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (MasterViewHolder) convertView.getTag();
@@ -102,6 +104,7 @@ public class MasterAdapter2 extends BaseAdapter {
         if (TextUtils.isEmpty(info.getNickName())) {
             viewHolder.NickName.setVisibility(View.GONE);
         } else {
+            viewHolder.NickName.setVisibility(View.VISIBLE);
             viewHolder.NickName.setText("(" + info.getNickName() + ")");
         }
         if (TextUtils.isEmpty(info.getLogo())) {
@@ -117,14 +120,31 @@ public class MasterAdapter2 extends BaseAdapter {
             } else {
                 viewHolder.Title.setVisibility(View.VISIBLE);
             }
-        }else{
+        } else {
             viewHolder.Title.setVisibility(View.VISIBLE);
+        }
+
+        if(info.getState().equals("1")){
+            viewHolder.tv_authen.setText("已认证");
+        }else{
+            viewHolder.tv_authen.setText("未认证");
         }
 
         viewHolder.ID.setText("ID 号：" + info.getMerchantId());
         viewHolder.Desc.setText("个性签名：" + info.getSignature());
         viewHolder.Score.setText(info.getScore());
         viewHolder.Fans.setText("" + info.getFansNumber());
+
+        viewHolder.ll_main.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MasterDao info = lists.get(position);
+                Intent intent = new Intent(mContext, CompanyInfoActivity.class);
+                intent.putExtra("id", info.getMerchantId());
+                intent.putExtra("name", info.getName());
+                mContext.startActivity(intent);
+            }
+        });
         viewHolder.itemview_swipe.close();
         viewHolder.itemview_swipe.addSwipeListener(new SimpleSwipeListener() {
             @Override
@@ -136,9 +156,10 @@ public class MasterAdapter2 extends BaseAdapter {
                 }
             }
         });
-        viewHolder.iv_del.setOnTouchListener(new View.OnTouchListener() {
+
+        viewHolder.iv_del.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View v) {
                 if (!searchAdapter) {
                     if (info.getStatus().equals("0")) {//已订购
                         viewHolder.itemview_swipe.close();
@@ -159,9 +180,21 @@ public class MasterAdapter2 extends BaseAdapter {
                         });
                     }
                 }
-                return true;
             }
         });
+
+         viewHolder.StatusInfo.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if(!info.getStatus().equals("1")){
+                                    return;
+                                }
+                                Intent intent = new Intent(mContext, PaySelectActivity.class);
+                                intent.putExtra("merchantID", info.getMerchantId());
+                                intent.putExtra("isOrder", "0");
+                                mContext.startActivity(intent);
+                            }
+                        });
 
 
         if (searchAdapter) {
@@ -185,12 +218,12 @@ public class MasterAdapter2 extends BaseAdapter {
                     break;
             }
         } else {
-            if(info.getIsman().equals("1")){
+            if (info.getIsman().equals("1")) {
                 viewHolder.StatusInfo.setEnabled(false);
                 viewHolder.StatusInfo.setBackgroundResource(R.drawable.gray_15);
                 viewHolder.StatusInfo.setText("订购已满");
                 viewHolder.StatusInfo.setTextColor(Color.parseColor("#777777"));
-            }else{
+            } else {
                 switch (info.getStatus()) {
                     case "0":
                         viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);
@@ -203,15 +236,6 @@ public class MasterAdapter2 extends BaseAdapter {
                         viewHolder.StatusInfo.setText("订购");
                         viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
                         viewHolder.StatusInfo.setEnabled(true);
-                        viewHolder.StatusInfo.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(mContext, PaySelectActivity.class);
-                                intent.putExtra("merchantID", info.getMerchantId());
-                                intent.putExtra("isOrder", "0");
-                                mContext.startActivity(intent);
-                            }
-                        });
                         break;
                     case "2":
                         viewHolder.StatusInfo.setEnabled(false);
@@ -229,9 +253,10 @@ public class MasterAdapter2 extends BaseAdapter {
 
     class MasterViewHolder {
         RoundedImageView HeadImg;
-        TextView Title, StatusInfo, Name, NickName, ID, Fans, Score, Desc;
+        TextView Title, StatusInfo, Name, NickName, ID, Fans, Score, Desc,tv_authen;
         ImageView iv_del;
         SwipeLayout itemview_swipe;
+        LinearLayout ll_main;
     }
 
     private void follow(int index) {

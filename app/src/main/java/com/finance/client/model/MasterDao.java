@@ -23,6 +23,16 @@ public class MasterDao {
     private String commentNum;
     private String isman;//订购是否定满 0没满 1已满
 
+    private String state;//0未认证，1已认证
+
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public String getIsman() {
         return isman;

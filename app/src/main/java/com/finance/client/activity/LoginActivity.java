@@ -50,12 +50,13 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.login_activity);
+        title="登录";
         super.onCreate(savedInstanceState);
         findViewById(R.id.LoginBtn).setOnClickListener(this);
-        NavLayout.setVisibility(View.GONE);
-        findViewById(R.id.PwdCallbackBtn).setOnClickListener(this);
+        findViewById(R.id.PwdCallbackBtn) .setOnClickListener(this);
         findViewById(R.id.RegisterBtn).setOnClickListener(this);
         findViewById(R.id.WXBtn).setOnClickListener(this);
+        findViewById(R.id.BackImgBtn).setVisibility(View.GONE);
         wxApi = WXAPIFactory.createWXAPI(this, Content.WXID);  //wechat regist
         mShareAPI = UMShareAPI.get(this);
     }

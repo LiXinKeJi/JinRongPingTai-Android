@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rl_main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white">
@@ -18,9 +19,9 @@
 
     <com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/itemview_swipe"
-        android:layout_below="@+id/master_Title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/master_Title">
 
         <FrameLayout
             android:layout_width="wrap_content"
@@ -44,13 +45,14 @@
 
 
         <LinearLayout
+            android:id="@+id/ll_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <com.makeramen.roundedimageview.RoundedImageView
@@ -65,7 +67,7 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp">
@@ -115,10 +117,19 @@
                         </LinearLayout>
 
                         <TextView
+                            android:id="@+id/tv_authen"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text=""
+                            android:textColor="#777777"
+                            android:textSize="12sp" />
+
+                        <TextView
                             android:id="@+id/master_ID"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="15dp"
+                            android:layout_marginTop="3dp"
                             android:text=""
                             android:textColor="#777777"
                             android:textSize="12sp" />

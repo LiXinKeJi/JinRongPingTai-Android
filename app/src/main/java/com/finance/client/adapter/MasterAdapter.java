@@ -84,6 +84,7 @@ public class MasterAdapter extends BaseAdapter {
             viewHolder.Fans = (TextView) convertView.findViewById(R.id.master_Fans);
             viewHolder.Score = (TextView) convertView.findViewById(R.id.master_Score);
             viewHolder.Desc = (TextView) convertView.findViewById(R.id.master_Desc);
+            viewHolder.tv_authen = (TextView) convertView.findViewById(R.id.tv_authen);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (MasterViewHolder) convertView.getTag();
@@ -92,6 +93,7 @@ public class MasterAdapter extends BaseAdapter {
         if (TextUtils.isEmpty(info.getNickName())) {
             viewHolder.NickName.setVisibility(View.GONE);
         } else {
+            viewHolder.NickName.setVisibility(View.VISIBLE);
             viewHolder.NickName.setText("(" + info.getNickName() + ")");
         }
         if (TextUtils.isEmpty(info.getLogo())) {
@@ -114,7 +116,11 @@ public class MasterAdapter extends BaseAdapter {
         viewHolder.Score.setText(info.getScore());
         viewHolder.Fans.setText("" + info.getFansNumber());
 
-
+        if(info.getState().equals("1")){
+            viewHolder.tv_authen.setText("已认证");
+        }else{
+            viewHolder.tv_authen.setText("未认证");
+        }
 
         if (searchAdapter) {
             switch (info.getAttention()) {
@@ -172,7 +178,7 @@ public class MasterAdapter extends BaseAdapter {
 
     class MasterViewHolder {
         RoundedImageView HeadImg;
-        TextView Title, StatusInfo, Name, NickName, ID, Fans, Score, Desc;
+        TextView Title, StatusInfo, Name, NickName, ID, Fans, Score, Desc,tv_authen;
     }
 
     private void follow(int index) {

@@ -41,7 +41,7 @@ public class PayActivity extends BaseActivity {
     private RelativeLayout rl_wx, rl_apliay;
     private Drawable selectIcon;
     private Drawable unSelectIcon;
-    private String channel = "wx", body = "备注";
+    private String channel = "balancePay", body = "备注";
     private String orderId;
     private TextView OrderId;
     private String charge;

@@ -72,6 +72,10 @@ public class CompanyInfoActivity extends BaseActivity{
         super.onClick(v);
         switch (v.getId()){
             case R.id.RightBtnText:
+                if(!info.getAttention().equals("1")){
+                    ToastUtils.showMessageShort(this,"请先关注");
+                    return;
+                }
                 Intent intent = new Intent(this,RemarkActivity.class);
                 intent.putExtra("Remarks",info.getNickName());
                 intent.putExtra("id",info.getMerchantId());
@@ -84,6 +88,7 @@ public class CompanyInfoActivity extends BaseActivity{
         Map<String,String> params = Maps.newHashMap();
         String json = "{\"cmd\":\"getAuthorDetail\",\"uid\":\""+ UserUtil.uid+"\",\"merchantID\":\""+id+"\"}";
         params.put("json",json);
+        Log.e("获取订购人信息",json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
@@ -140,6 +145,10 @@ public class CompanyInfoActivity extends BaseActivity{
                         statusInfo.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                if(!info.getAttention().equals("1")){
+                                    ToastUtils.showMessageShort(CompanyInfoActivity.this,"请先关注");
+                                    return;
+                                }
                                 Intent intent = new Intent(CompanyInfoActivity.this, PaySelectActivity.class);
                                 intent.putExtra("merchantID", info.getMerchantId());
                                 intent.putExtra("isOrder", "0");

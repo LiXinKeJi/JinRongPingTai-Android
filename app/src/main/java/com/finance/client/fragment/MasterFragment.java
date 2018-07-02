@@ -40,7 +40,7 @@ import okhttp3.Call;
  * Date : 17/9/2
  */
 
-public class MasterFragment extends BaseFragment implements View.OnClickListener,MasterAdapter2.RefreshCallBack {
+public class MasterFragment extends BaseFragment implements View.OnClickListener, MasterAdapter2.RefreshCallBack {
     private View view;
     private PullToRefreshListView mListView;
     private MasterAdapter2 adapter;
@@ -59,19 +59,10 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
     private void initView() {
         view.findViewById(R.id.SearchBtn).setOnClickListener(this);
         mListView = (PullToRefreshListView) view.findViewById(R.id.ListView);
-        adapter = new MasterAdapter2(this.getContext(), lists, false,this);
+        adapter = new MasterAdapter2(this.getContext(), lists, false, this);
         mListView.setAdapter(adapter);
         mListView.setMode(PullToRefreshBase.Mode.BOTH);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MasterDao info = lists.get(position - 1);
-                Intent intent = new Intent(MasterFragment.this.getActivity(), CompanyInfoActivity.class);
-                intent.putExtra("id", info.getMerchantId());
-                intent.putExtra("name", info.getName());
-                startActivity(intent);
-            }
-        });
+
         mListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> pullToRefreshBase) {
@@ -127,7 +118,23 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
                     totalPage = Integer.parseInt(masterListDao.getTotalPage());
                 }
                 if (masterListDao.getDataList() != null) {
-                    lists.addAll(masterListDao.getDataList());
+                    for (int i = 0; i < masterListDao.getDataList().size(); i++) {//排序，把分类相同的放一起
+                        if (lists.contains(masterListDao.getDataList().get(i).getCategory())) {
+                            lists.add(masterListDao.getDataList().get(i));
+                        } else {
+                            boolean b=false;
+                            for (int j = 0; j < lists.size(); j++) {
+                                if (lists.get(j).getCategory().equals(masterListDao.getDataList().get(i).getCategory())) {
+                                    lists.add(j + 1, masterListDao.getDataList().get(i));
+                                    b=true;
+                                    break;
+                                }
+                            }
+                            if(!b){
+                                lists.add( masterListDao.getDataList().get(i));
+                            }
+                        }
+                    }
                     adapter.notifyDataSetChanged();
                     mListView.onRefreshComplete();
                 }

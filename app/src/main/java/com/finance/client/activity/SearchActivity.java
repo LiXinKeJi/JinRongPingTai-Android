@@ -120,6 +120,15 @@ public class SearchActivity extends BaseActivity{
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if(category!=null){
+            lists.clear();
+            Search();
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         super.onClick(v);
         if(v.getId() == R.id.RightBtnText){
