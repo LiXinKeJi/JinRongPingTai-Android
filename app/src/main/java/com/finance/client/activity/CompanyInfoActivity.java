@@ -32,10 +32,10 @@ import okhttp3.Call;
  * Date : 17/9/5
  */
 
-public class CompanyInfoActivity extends BaseActivity{
+public class CompanyInfoActivity extends BaseActivity {
     private String id;
     private MasterDao info;
-    private TextView rightBtn,statusInfo;
+    private TextView rightBtn, statusInfo;
     private RatingBar ratingBar;
     private TextView tv_score;
     private TextView tv_num;
@@ -50,9 +50,9 @@ public class CompanyInfoActivity extends BaseActivity{
         rightBtn.setText("设置备注");
         rightBtn.setVisibility(View.VISIBLE);
         rightBtn.setOnClickListener(this);
-        ratingBar=(RatingBar)findViewById(R.id.ratingBar);
-        tv_score=(TextView)findViewById(R.id.tv_score);
-        tv_num= (TextView) findViewById(R.id.tv_num);
+        ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+        tv_score = (TextView) findViewById(R.id.tv_score);
+        tv_num = (TextView) findViewById(R.id.tv_num);
         id = getIntent().getStringExtra("id");
     }
 
@@ -70,41 +70,41 @@ public class CompanyInfoActivity extends BaseActivity{
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.RightBtnText:
-                if(!info.getAttention().equals("1")){
-                    ToastUtils.showMessageShort(this,"请先关注");
+                if (!info.getAttention().equals("1")) {
+                    ToastUtils.showMessageShort(this, "请先关注");
                     return;
                 }
-                Intent intent = new Intent(this,RemarkActivity.class);
-                intent.putExtra("Remarks",info.getNickName());
-                intent.putExtra("id",info.getMerchantId());
+                Intent intent = new Intent(this, RemarkActivity.class);
+                intent.putExtra("Remarks", info.getNickName());
+                intent.putExtra("id", info.getMerchantId());
                 startActivity(intent);
                 break;
         }
     }
 
-    private void requestData(){
-        Map<String,String> params = Maps.newHashMap();
-        String json = "{\"cmd\":\"getAuthorDetail\",\"uid\":\""+ UserUtil.uid+"\",\"merchantID\":\""+id+"\"}";
-        params.put("json",json);
-        Log.e("获取订购人信息",json);
+    private void requestData() {
+        Map<String, String> params = Maps.newHashMap();
+        String json = "{\"cmd\":\"getAuthorDetail\",\"uid\":\"" + UserUtil.uid + "\",\"merchantID\":\"" + id + "\"}";
+        params.put("json", json);
+        Log.e("获取订购人信息", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(CompanyInfoActivity.this,e.getMessage());
+                ToastUtils.makeText(CompanyInfoActivity.this, e.getMessage());
             }
 
             @Override
             public void onResponse(String response, int id) {
-                Log.e("订购人信息",response);
+                Log.e("订购人信息", response);
                 Gson gson = new Gson();
                 dismissLoading();
-                CompanyInfoBean companyInfoBean = gson.fromJson(response,CompanyInfoBean.class);
-                if (companyInfoBean.getResult().equals("1")){
-                    ToastUtils.makeText(CompanyInfoActivity.this,companyInfoBean.getResultNote());
+                CompanyInfoBean companyInfoBean = gson.fromJson(response, CompanyInfoBean.class);
+                if (companyInfoBean.getResult().equals("1")) {
+                    ToastUtils.makeText(CompanyInfoActivity.this, companyInfoBean.getResultNote());
                     return;
                 }
                 info = companyInfoBean.getDataList();
@@ -114,25 +114,35 @@ public class CompanyInfoActivity extends BaseActivity{
     }
 
     private void UpdateView() {
-        if (info != null){
-            tv_num.setText(info.getCommentNum()+"人评价");
-            if (!TextUtils.isEmpty(info.getLogo())) ImageLoaderUtil.getInstance().displayImage(info.getLogo(), (ImageView) findViewById(R.id.Logo));
+        if (info != null) {
+            tv_num.setText(info.getCommentNum() + "人评价");
+            if (!TextUtils.isEmpty(info.getLogo()))
+                ImageLoaderUtil.getInstance().displayImage(info.getLogo(), (ImageView) findViewById(R.id.Logo));
             else ((ImageView) findViewById(R.id.Logo)).setImageResource(R.drawable.ic_launcher);
-            if (TextUtils.isEmpty(info.getNickName())) ((TextView) findViewById(R.id.Name)).setText(info.getName());
-            else ((TextView) findViewById(R.id.Name)).setText(info.getName() + "(" + info.getNickName() + ")");
-            if (!TextUtils.isEmpty(info.getMerchantId())) ((TextView) findViewById(R.id.ID)).setText("ID号: " + info.getMerchantId());
-            if (!TextUtils.isEmpty(info.getCategory())) ((TextView) findViewById(R.id.Category)).setText("分类: " + info.getCategory());
-            if (!TextUtils.isEmpty(info.getFansNumber())) ((TextView) findViewById(R.id.Fans)).setText(info.getFansNumber() + "人订阅");
+            if (TextUtils.isEmpty(info.getNickName())) {
+                ((TextView) findViewById(R.id.Name)).setText(info.getName());
+            } else {
+                ((TextView) findViewById(R.id.Name)).setText(info.getName() + "(" + info.getNickName() + ")");
+            }
+            if (!TextUtils.isEmpty(info.getMerchantId()))
+                ((TextView) findViewById(R.id.ID)).setText("ID号: " + info.getMerchantId());
+            if (!TextUtils.isEmpty(info.getCategory()))
+                ((TextView) findViewById(R.id.Category)).setText("分类: " + info.getCategory());
+            if (!TextUtils.isEmpty(info.getFansNumber()))
+                ((TextView) findViewById(R.id.Fans)).setText(info.getFansNumber() + "人订阅");
             if (!TextUtils.isEmpty(info.getIntroduction())) {
-                ((TextView) findViewById(R.id.Desc)).setText("个性签名："+info.getSignature());
+                ((TextView) findViewById(R.id.Desc)).setText("个性签名：" + info.getSignature());
                 ((TextView) findViewById(R.id.Info)).setText(info.getIntroduction());
             }
-            if (!TextUtils.isEmpty(info.getAddress()))((TextView) findViewById(R.id.Address)).setText(info.getAddress());
-            if (!TextUtils.isEmpty(info.getScore()))ratingBar.setRating(Float.valueOf(info.getScore()));
+            if (!TextUtils.isEmpty(info.getAddress()))
+                ((TextView) findViewById(R.id.Address)).setText(info.getAddress());
+            if (!TextUtils.isEmpty(info.getScore()))
+                ratingBar.setRating(Float.valueOf(info.getScore()));
             if (!TextUtils.isEmpty(info.getScore())) tv_score.setText(info.getScore());
 
+
             if (!TextUtils.isEmpty(info.getStatus())) {
-                switch (info.getStatus()){
+                switch (info.getStatus()) {
                     case "0":
                         statusInfo.setBackgroundResource(R.drawable.black_15);
                         statusInfo.setText("已订购");
@@ -145,8 +155,8 @@ public class CompanyInfoActivity extends BaseActivity{
                         statusInfo.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if(!info.getAttention().equals("1")){
-                                    ToastUtils.showMessageShort(CompanyInfoActivity.this,"请先关注");
+                                if (!info.getAttention().equals("1")) {
+                                    ToastUtils.showMessageShort(CompanyInfoActivity.this, "请先关注");
                                     return;
                                 }
                                 Intent intent = new Intent(CompanyInfoActivity.this, PaySelectActivity.class);
@@ -157,12 +167,25 @@ public class CompanyInfoActivity extends BaseActivity{
                         });
                         break;
                     case "2":
+//                        statusInfo.setBackgroundResource(R.drawable.gray_15);
+//                        statusInfo.setText("订购已满");
+//                        statusInfo.setTextColor(Color.parseColor("#777777"));
+                        break;
+                }
+
+                if (info.getIsman().equals("1")) {
+                    if (info.getStatus().equals("0")) {
+                        statusInfo.setBackgroundResource(R.drawable.black_15);
+                        statusInfo.setText("已订购");
+                        statusInfo.setTextColor(Color.parseColor("#ffffff"));
+                    } else {
                         statusInfo.setBackgroundResource(R.drawable.gray_15);
                         statusInfo.setText("订购已满");
                         statusInfo.setTextColor(Color.parseColor("#777777"));
-                        break;
+                    }
                 }
             }
         }
     }
+
 }

@@ -219,10 +219,17 @@ public class MasterAdapter2 extends BaseAdapter {
             }
         } else {
             if (info.getIsman().equals("1")) {
-                viewHolder.StatusInfo.setEnabled(false);
-                viewHolder.StatusInfo.setBackgroundResource(R.drawable.gray_15);
-                viewHolder.StatusInfo.setText("订购已满");
-                viewHolder.StatusInfo.setTextColor(Color.parseColor("#777777"));
+                if(info.getStatus().equals("0")){
+                    viewHolder.StatusInfo.setBackgroundResource(R.drawable.black_15);
+                    viewHolder.StatusInfo.setText("已订购");
+                    viewHolder.StatusInfo.setTextColor(Color.parseColor("#ffffff"));
+                    viewHolder.StatusInfo.setEnabled(true);
+                }else{
+                    viewHolder.StatusInfo.setEnabled(false);
+                    viewHolder.StatusInfo.setBackgroundResource(R.drawable.gray_15);
+                    viewHolder.StatusInfo.setText("订购已满");
+                    viewHolder.StatusInfo.setTextColor(Color.parseColor("#777777"));
+                }
             } else {
                 switch (info.getStatus()) {
                     case "0":

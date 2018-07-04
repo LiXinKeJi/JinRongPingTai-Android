@@ -57,9 +57,9 @@ public class ChangeAdapter extends BaseAdapter{
         viewHolder.mType.setText(info.getType());
         viewHolder.mDate.setText(info.getTime());
         if (info.getType().contains("充值")){
-            viewHolder.mMoney.setText("+￥" + info.getMoney());
+            viewHolder.mMoney.setText(info.getMoney()+"元");
         }else {
-            viewHolder.mMoney.setText("-￥" + info.getMoney());
+            viewHolder.mMoney.setText( info.getMoney()+"元");
         }
         return convertView;
     }

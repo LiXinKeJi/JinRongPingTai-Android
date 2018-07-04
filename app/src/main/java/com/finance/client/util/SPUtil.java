@@ -30,6 +30,8 @@ public class SPUtil {
         return sp;
     }
 
+    public static String RemindMsg="RemindMsg";//消息提醒
+
 
     /**
      * 存入字符串

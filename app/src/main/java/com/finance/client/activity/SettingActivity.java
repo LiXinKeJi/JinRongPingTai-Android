@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.finance.client.R;
 import com.finance.client.util.Content;
+import com.finance.client.util.SPUtil;
 import com.finance.client.util.ToastUtils;
 import com.finance.client.util.UserUtil;
 import com.finance.client.util.Utils;
@@ -42,8 +43,8 @@ public class SettingActivity extends BaseActivity {
     private boolean isDown = false;
     private String version_name, updata_url;//获取的版本名,下载地址
     private int version_code;//获取的版本号
-    private ImageView PushBtn, MsgBtn, SysBtn;
-    private boolean push = true, msg = true, sys = true;
+    private ImageView PushBtn;
+    private boolean push;
 //    private SwitchButton PushBtn;
 
     @Override
@@ -63,8 +64,16 @@ public class SettingActivity extends BaseActivity {
         findViewById(R.id.AboutLayout).setOnClickListener(this);
         findViewById(R.id.LogoutBtn).setOnClickListener(this);
         PushBtn = (ImageView) findViewById(R.id.PushBtn);
-        MsgBtn = (ImageView) findViewById(R.id.MsgBtn);
-        SysBtn = (ImageView) findViewById(R.id.SysBtn);
+
+        push = SPUtil.getBoolean(this, SPUtil.RemindMsg, true);
+
+        if (push) {
+            PushBtn.setImageResource(R.drawable.kai);
+        } else {
+            PushBtn.setImageResource(R.drawable.off);
+        }
+
+
         getUpdata();
     }
 
@@ -173,24 +182,8 @@ public class SettingActivity extends BaseActivity {
             } else {
                 PushBtn.setImageResource(R.drawable.off);
             }
-
-        } else if (v.getId() == R.id.MsgBtn) {
-            msg = !msg;
-            if (msg) {
-                MsgBtn.setImageResource(R.drawable.kai);
-            } else {
-                MsgBtn.setImageResource(R.drawable.off);
-            }
-
-        } else if (v.getId() == R.id.SysBtn) {
-            sys = !sys;
-            if (sys) {
-                SysBtn.setImageResource(R.drawable.kai);
-            } else {
-                SysBtn.setImageResource(R.drawable.off);
-            }
-
-        } else if (v.getId() == R.id.SuggestLayout) {
+            SPUtil.putBoolean(this, SPUtil.RemindMsg, push);
+        }  else if (v.getId() == R.id.SuggestLayout) {
             Intent intent = new Intent(this, FeedbackActivity.class);
             startActivity(intent);
 

@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 import com.finance.client.activity.MainActivity;
+import com.finance.client.util.SPUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +36,7 @@ public class MyReceiver extends BroadcastReceiver {
 
             if (JPushInterface.ACTION_REGISTRATION_ID.equals(intent.getAction())) {
                 String regId = bundle.getString(JPushInterface.EXTRA_REGISTRATION_ID);
-                Logger.d(TAG, "[MyReceiver] 接收Registration Id : " + regId);
+
                 //send the Registration Id to your server...
 
             } else if (JPushInterface.ACTION_MESSAGE_RECEIVED.equals(intent.getAction())) {
@@ -42,9 +44,14 @@ public class MyReceiver extends BroadcastReceiver {
                 processCustomMessage(context, bundle);
 
             } else if (JPushInterface.ACTION_NOTIFICATION_RECEIVED.equals(intent.getAction())) {
-                Logger.d(TAG, "[MyReceiver] 接收到推送下来的通知");
-                int notifactionId = bundle.getInt(JPushInterface.EXTRA_NOTIFICATION_ID);
-                Logger.d(TAG, "[MyReceiver] 接收到推送下来的通知的ID: " + notifactionId);
+
+                if(SPUtil.getBoolean(context,SPUtil.RemindMsg,true)){
+                    Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                    vibrator.vibrate(500);
+
+                }
+
+
 
             } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
                 Logger.d(TAG, "[MyReceiver] 用户点击打开了通知");
@@ -52,8 +59,6 @@ public class MyReceiver extends BroadcastReceiver {
                 //打开自定义的Activity
 //				Intent i = new Intent(context, TestActivity.class);
 //				i.putExtras(bundle);
-//				//i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
 //				context.startActivity(i);
 
             } else if (JPushInterface.ACTION_RICHPUSH_CALLBACK.equals(intent.getAction())) {

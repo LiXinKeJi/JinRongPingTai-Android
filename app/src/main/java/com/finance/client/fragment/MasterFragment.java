@@ -22,6 +22,7 @@ import com.finance.client.model.MasterListDao;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
 import com.finance.client.util.UserUtil;
+import com.finance.client.util.abLog;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.yhrun.alchemy.View.pulltorefresh.PullToRefreshBase;
@@ -105,7 +106,7 @@ public class MasterFragment extends BaseFragment implements View.OnClickListener
 
             @Override
             public void onResponse(String response, int id) {
-                Log.e("订阅者消息", "onResponse: " + response);
+                abLog.e("订阅者消息", "onResponse: " + response);
                 Gson gson = new Gson();
                 dismissLoading();
                 MasterListDao masterListDao = gson.fromJson(response, MasterListDao.class);
