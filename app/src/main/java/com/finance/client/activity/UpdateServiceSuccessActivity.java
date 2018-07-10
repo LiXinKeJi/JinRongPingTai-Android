@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import com.finance.client.R;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,7 +38,7 @@ public class UpdateServiceSuccessActivity extends BaseActivity {
         calendar.setTime(date);
         calendar.add(calendar.DATE, 0);
         date = calendar.getTime();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy" + "-" + "MM" + "-" + "dd" + " " + "hh" + ":" + "mm" + ":" + "ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy" + "-" + "MM" + "-" + "dd" + " " + "HH" + ":" + "mm" + ":" + "ss");
         String dateString = formatter.format(date);
 
 
@@ -57,7 +59,7 @@ public class UpdateServiceSuccessActivity extends BaseActivity {
             ((TextView) findViewById(R.id.txt_update_paerson)).setText("恭喜您，已成功订购联系方式");
         } else if (projectId.equals("3000")) {
             if (!TextUtils.isEmpty(price)) {
-                ((TextView) findViewById(R.id.txt_update_paerson)).setText("恭喜您，app众筹成功，您当前累计消费" + price + "元，当前累计股份" + price + "股币");
+                ((TextView) findViewById(R.id.txt_update_paerson)).setText("恭喜您，已成功增加" + price + "众筹股币");
             }
         }
 
@@ -72,6 +74,9 @@ public class UpdateServiceSuccessActivity extends BaseActivity {
     public void onClick(View v) {
         super.onClick(v);
         if (v.getId() == R.id.FinishLayout) {
+            if(projectId.equals("3000")){
+                EventBus.getDefault().post(price);
+            }
             finish();
         }
     }

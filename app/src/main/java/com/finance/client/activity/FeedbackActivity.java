@@ -41,7 +41,8 @@ public class FeedbackActivity extends BaseActivity {
 
     private void postFeedback() {
         Map<String,String> params = Maps.newHashMap();
-        String json = "{\"cmd\":\"feedback\",\"uid\":\""+ UserUtil.getUid(this)+"\",\"content\":\""+ ((EditText)findViewById(R.id.edit_sign)).getText().toString()+"\"}";
+        String json = "{\"cmd\":\"feedback\",\"uid\":\""+ UserUtil.getUid(this)+"\",\"content\":\""+ ((EditText)findViewById(R.id.edit_sign)).getText().toString()+
+                "\",\"type\":\""+ "0"+"\"}";
         params.put("json",json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {

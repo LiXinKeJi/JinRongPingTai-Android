@@ -71,7 +71,7 @@ public class AboutActivity extends BaseActivity {
     private void requestData() {
         showLoading();
         Map<String, String> params = Maps.newHashMap();
-        final String json = "{\"cmd\":\"ruleDescription\",\"nid\":\"" + "6" + "\"}";
+        final String json = "{\"cmd\":\"ruleDescription\",\"nid\":\"" + "8" + "\"}";
 
         params.put("json", json);
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {

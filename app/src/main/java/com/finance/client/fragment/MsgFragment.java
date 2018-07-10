@@ -1,6 +1,9 @@
 package com.finance.client.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -54,6 +57,9 @@ public class MsgFragment extends BaseFragment {
         view = inflater.inflate(R.layout.fragment_msg_list, null);
         initView();
         RequestData();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("JPUSH");
+        getActivity().registerReceiver(new MyBroadcastReciver(), filter);
         return view;
     }
 
@@ -169,5 +175,20 @@ public class MsgFragment extends BaseFragment {
         intent.putExtra("title", item.getTitle());
         intent.putExtra("type", item.getType());
         startActivity(intent);
+    }
+
+
+    private class MyBroadcastReciver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String action = intent.getAction();//接收广播识别
+            if (action.equals("JPUSH")) {
+                msgList.clear();
+                nowPage = 1;
+                mAdapter.notifyDataSetChanged();
+                RequestData();
+            }
+        }
     }
 }

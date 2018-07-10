@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class SettingActivity extends BaseActivity {
     private int version_code;//获取的版本号
     private ImageView PushBtn;
     private boolean push;
+    private TextView tv_data;
 //    private SwitchButton PushBtn;
 
     @Override
@@ -63,9 +65,17 @@ public class SettingActivity extends BaseActivity {
         findViewById(R.id.UpdateLayout).setOnClickListener(this);
         findViewById(R.id.AboutLayout).setOnClickListener(this);
         findViewById(R.id.LogoutBtn).setOnClickListener(this);
+        findViewById(R.id.clearCacheLayout).setOnClickListener(this);
         PushBtn = (ImageView) findViewById(R.id.PushBtn);
 
         push = SPUtil.getBoolean(this, SPUtil.RemindMsg, true);
+
+        tv_data = (TextView) findViewById(R.id.tv_data);
+        try {
+            tv_data.setText(Utils.getTotalCacheSize(this));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         if (push) {
             PushBtn.setImageResource(R.drawable.kai);
@@ -124,7 +134,7 @@ public class SettingActivity extends BaseActivity {
 
     private void getUpdata() {
         Map<String, String> params = new HashMap<>();
-        String json = "{\"cmd\":\"getUpdata\",\"type\":\"" + 1 + "\"}";
+        String json = "{\"cmd\":\"getUpdata\",\"type\":\"" + 0 + "\"}";
         params.put("json", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
@@ -137,6 +147,7 @@ public class SettingActivity extends BaseActivity {
             @Override
             public void onResponse(String response, int id) {
                 dismissLoading();
+                Log.e("获取版本更新。。。。",response);
                 try {
                     JSONObject obj = new JSONObject(response);
                     if (obj.getString("result").equals("1")) {
@@ -187,6 +198,10 @@ public class SettingActivity extends BaseActivity {
             Intent intent = new Intent(this, FeedbackActivity.class);
             startActivity(intent);
 
+        }else if(v.getId() == R.id.clearCacheLayout) {
+            Utils.clearAllCache(this);
+            Toast.makeText(this,"缓存已清除",Toast.LENGTH_SHORT).show();
+            tv_data.setText("0KB");
         } else if (v.getId() == R.id.UpdateLayout) {
             //版本更新
             if (isDown) {

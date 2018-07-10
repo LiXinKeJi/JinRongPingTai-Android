@@ -3,11 +3,13 @@ package com.finance.client.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
+import com.finance.client.R;
 import com.finance.client.activity.MainActivity;
 import com.finance.client.util.SPUtil;
 
@@ -27,6 +29,7 @@ import cn.jpush.android.api.JPushInterface;
  */
 public class MyReceiver extends BroadcastReceiver {
     private static final String TAG = "JIGUANG-Example";
+    private MediaPlayer musicPlayer;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -49,9 +52,14 @@ public class MyReceiver extends BroadcastReceiver {
                     Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                     vibrator.vibrate(500);
 
+                    if(musicPlayer==null){
+                        musicPlayer = MediaPlayer.create(context, R.raw.a);
+                    }
+                    musicPlayer.start();
                 }
 
-
+                Intent i = new Intent("JPUSH");
+                context.sendBroadcast(i);
 
             } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
                 Logger.d(TAG, "[MyReceiver] 用户点击打开了通知");

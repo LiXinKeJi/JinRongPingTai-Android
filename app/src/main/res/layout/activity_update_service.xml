@@ -70,9 +70,9 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:hint="请输入金额"
-                    android:inputType="numberDecimal"
+                    android:inputType="number"
                     android:textColor="#666666"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -117,14 +117,13 @@
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <WebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:paddingLeft="10dp"
-            android:text="说明：每一元相当于1股币"
-            android:textColor="#666666"
-            android:textSize="12sp" />
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp" />
     </LinearLayout>
 
 

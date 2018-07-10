@@ -25,6 +25,34 @@ public class MasterDao {
 
     private String state;//0未认证，1已认证
 
+    private String publicImage;
+    private String publicitImage;
+    private String publicityImage;
+
+
+    public String getPublicImage() {
+        return publicImage;
+    }
+
+    public void setPublicImage(String publicImage) {
+        this.publicImage = publicImage;
+    }
+
+    public String getPublicitImage() {
+        return publicitImage;
+    }
+
+    public void setPublicitImage(String publicitImage) {
+        this.publicitImage = publicitImage;
+    }
+
+    public String getPublicityImage() {
+        return publicityImage;
+    }
+
+    public void setPublicityImage(String publicityImage) {
+        this.publicityImage = publicityImage;
+    }
 
     public String getState() {
         return state;

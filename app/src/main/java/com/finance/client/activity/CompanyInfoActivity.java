@@ -19,6 +19,7 @@ import com.finance.client.util.ToastUtils;
 import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.yhrun.alchemy.Util.ImageLoaderUtil;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -40,6 +41,8 @@ public class CompanyInfoActivity extends BaseActivity {
     private TextView tv_score;
     private TextView tv_num;
 
+    private ImageView image1,image2,image3;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         title = getIntent().getStringExtra("name");
@@ -54,6 +57,10 @@ public class CompanyInfoActivity extends BaseActivity {
         tv_score = (TextView) findViewById(R.id.tv_score);
         tv_num = (TextView) findViewById(R.id.tv_num);
         id = getIntent().getStringExtra("id");
+
+        image1= (ImageView) findViewById(R.id.image1);
+        image2= (ImageView) findViewById(R.id.image2);
+        image3= (ImageView) findViewById(R.id.image3);
     }
 
     @Override
@@ -139,6 +146,22 @@ public class CompanyInfoActivity extends BaseActivity {
             if (!TextUtils.isEmpty(info.getScore()))
                 ratingBar.setRating(Float.valueOf(info.getScore()));
             if (!TextUtils.isEmpty(info.getScore())) tv_score.setText(info.getScore());
+
+            if(!TextUtils.isEmpty(info.getPublicImage())){
+               ImageLoader.getInstance().displayImage(info.getPublicImage(),image1);
+            }else{
+                image1.setVisibility(View.GONE);
+            }
+            if(!TextUtils.isEmpty(info.getPublicitImage())){
+                ImageLoader.getInstance().displayImage(info.getPublicImage(),image2);
+            }else{
+                image2.setVisibility(View.GONE);
+            }
+            if(!TextUtils.isEmpty(info.getPublicityImage())){
+                ImageLoader.getInstance().displayImage(info.getPublicImage(),image3);
+            }else{
+                image3.setVisibility(View.GONE);
+            }
 
 
             if (!TextUtils.isEmpty(info.getStatus())) {

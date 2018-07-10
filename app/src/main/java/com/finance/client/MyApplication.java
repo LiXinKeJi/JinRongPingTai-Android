@@ -48,7 +48,7 @@ public class MyApplication extends MultiDexApplication {
         PlatformConfig.setWeixin("wxf33600c85feaf21b", "32f799126ed76ccfa08aa6005b4fb816");
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
-        JPushInterface.setPushTime(this,null,0,23);//接收推送时间
+        JPushInterface.setSilenceTime(CONTEXT, 0, 0, 23, 59);//全天静默
         //崩溃错误日志写入本地文档
 //        CrashHandler catchExcep = new CrashHandler(this);
 //        Thread.setDefaultUncaughtExceptionHandler(catchExcep);
