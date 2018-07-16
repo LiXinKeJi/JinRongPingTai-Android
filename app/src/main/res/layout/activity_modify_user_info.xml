@@ -287,18 +287,21 @@
         android:layout_marginRight="10dp">
 
         <TextView
+            android:id="@+id/tv_Sign"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_alignTop="@+id/Sign"
             android:text="个性签名"
             android:textColor="#333333"
             android:textSize="16sp" />
 
         <TextView
             android:id="@+id/Sign"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_toRightOf="@+id/tv_Sign"
+            android:layout_marginLeft="10dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:maxLength="30"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
             android:text=""

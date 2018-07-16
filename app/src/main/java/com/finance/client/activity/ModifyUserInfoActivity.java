@@ -94,7 +94,6 @@ public class ModifyUserInfoActivity extends BaseActivity {
             this.takePhoto();
         } else {//禁止使用权限，询问是否设置允许
             Toast.makeText(this, "需要访问内存卡和拍照权限", Toast.LENGTH_SHORT).show();
-            ;
         }
     }
 
@@ -238,6 +237,7 @@ public class ModifyUserInfoActivity extends BaseActivity {
         if (requestCode == 1000 & resultCode == 1002) {
             String str = data.getStringExtra("sign");
             txtSign.setText(str);
+            submit();
         }
     }
 

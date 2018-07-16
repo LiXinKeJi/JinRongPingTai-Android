@@ -67,4 +67,6 @@ dependencies {
     compile files('libs/jpush-android-3.0.9.jar')
     compile 'com.google.code.gson:gson:2.3.1'
     compile project(':swipeLayoutlibrary')
+
+    compile 'com.pingxx:pingpp-ui:2.1.16' // 使用 Ping++ UI 时额外添加
 }

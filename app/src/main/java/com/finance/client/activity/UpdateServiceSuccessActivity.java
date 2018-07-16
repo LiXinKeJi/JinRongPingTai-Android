@@ -44,7 +44,7 @@ public class UpdateServiceSuccessActivity extends BaseActivity {
 
         ((TextView) findViewById(R.id.txt_time)).setText("时间：" + dateString);
         if (projectId.equals("100")) {
-            ((TextView) findViewById(R.id.txt_update_paerson)).setText("恭喜您，已成功试订1个月");
+            ((TextView) findViewById(R.id.txt_update_paerson)).setText("恭喜您，已成功试订15天");
         } else if (projectId.equals("200")) {
             ((TextView) findViewById(R.id.txt_update_paerson)).setText("恭喜您，已成功订购1个月");
         } else if (projectId.equals("300")) {

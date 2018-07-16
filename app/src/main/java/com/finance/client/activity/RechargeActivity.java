@@ -12,12 +12,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.finance.client.MyApplication;
 import com.finance.client.R;
 import com.finance.client.util.CashierInputFilter;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
 import com.finance.client.util.UserUtil;
 import com.pingplusplus.android.Pingpp;
+import com.pingplusplus.ui.PaymentHandler;
+import com.pingplusplus.ui.PingppUI;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -41,7 +44,7 @@ public class RechargeActivity extends BaseActivity {
     private Drawable unSelectIcon;
     private EditText editPrice;
     private String orderId;
-    private String channel = "alipay", charge,body = "充值";
+    private String channel = "alipay", charge, body = "充值";
     private TextView txtAlipay, txtWx;
 
     @Override
@@ -75,18 +78,18 @@ public class RechargeActivity extends BaseActivity {
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.ChangeBtn:
                 if (TextUtils.isEmpty(editPrice.getText().toString())) {
                     Toast.makeText(this, "请输入金额", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if(Double.valueOf(editPrice.getText().toString())<=0){
-                    ToastUtils.showMessageShort(this,"充值金额不能小于等于0");
+                if (Double.valueOf(editPrice.getText().toString()) <= 0) {
+                    ToastUtils.showMessageShort(this, "充值金额不能小于等于0");
                     return;
                 }
-                if (TextUtils.isEmpty(UserUtil.uid)){
+                if (TextUtils.isEmpty(UserUtil.uid)) {
                     Toast.makeText(this, "请登录", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -107,15 +110,16 @@ public class RechargeActivity extends BaseActivity {
 
     private void requestOrderId() {
         Map<String, String> params = new HashMap<>();
-        final String json = "{\"cmd\":\"depositOrder\",\"uid\":\""+UserUtil.uid+"\",\"money\":\""+editPrice.getText().toString()+"\"}";
-        params.put("json",json);
+        final String json = "{\"cmd\":\"depositOrder\",\"uid\":\"" + UserUtil.uid + "\",\"money\":\"" + editPrice.getText().toString() + "\"}";
+        params.put("json", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(RechargeActivity.this,e.getMessage());
+                ToastUtils.makeText(RechargeActivity.this, e.getMessage());
             }
+
             @Override
             public void onResponse(String response, int id) {
                 dismissLoading();
@@ -126,9 +130,9 @@ public class RechargeActivity extends BaseActivity {
                         return;
                     }
                     orderId = obj.getString("orderNo");
-                    if (!TextUtils.isEmpty(orderId)){
+                    if (!TextUtils.isEmpty(orderId)) {
                         recharge();
-                    }else {
+                    } else {
                         ToastUtils.makeText(RechargeActivity.this, "生成订单失败，请重试！");
                     }
                 } catch (Exception e) {
@@ -142,15 +146,15 @@ public class RechargeActivity extends BaseActivity {
         double amount = Double.parseDouble(editPrice.getText().toString()) * 100;
         DecimalFormat decimalFormat = new DecimalFormat("###################.###########");
         Map<String, String> params = new HashMap<>();
-        final String json = "{\"cmd\":\"getCharge\",\"orderNo\":\""+orderId+"\",\"amount\":\""+decimalFormat.format(amount)+"\"" +
-                ",\"channel\":\""+channel+"\",\"body\":\""+body+"\"}";
-        params.put("json",json);
+        final String json = "{\"cmd\":\"getCharge\",\"orderNo\":\"" + orderId + "\",\"amount\":\"" + decimalFormat.format(amount) + "\"" +
+                ",\"channel\":\"" + channel + "\",\"body\":\"" + body + "\"}";
+        params.put("json", json);
         showLoading();
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {
                 dismissLoading();
-                ToastUtils.makeText(RechargeActivity.this,e.getMessage());
+                ToastUtils.makeText(RechargeActivity.this, e.getMessage());
             }
 
             @Override
@@ -163,12 +167,19 @@ public class RechargeActivity extends BaseActivity {
                         return;
                     }
                     charge = obj.getString("charge");
-                    runOnUiThread(new Runnable() {
+
+//                            Pingpp.createPayment(RechargeActivity.this, charge);
+                    PingppUI.createPay(RechargeActivity.this, charge, new PaymentHandler() {
                         @Override
-                        public void run() {
-                            Pingpp.createPayment(RechargeActivity.this, charge);
+                        public void handlePaymentResult(Intent intent) {
+                            if (intent.getExtras().getString("result").equals("success")) {
+                                Intent i = new Intent(RechargeActivity.this, ChongzhiChenggongActivity.class);
+                                i.putExtra("amount", editPrice.getText().toString());
+                                startActivity(i);
+                            }
                         }
                     });
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

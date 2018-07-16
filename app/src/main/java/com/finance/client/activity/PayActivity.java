@@ -19,6 +19,8 @@ import com.finance.client.util.ToastUtils;
 import com.finance.client.util.UserUtil;
 import com.google.common.collect.Maps;
 import com.pingplusplus.android.Pingpp;
+import com.pingplusplus.ui.PaymentHandler;
+import com.pingplusplus.ui.PingppUI;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -163,7 +165,20 @@ public class PayActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Pingpp.createPayment(PayActivity.this, charge);
+//                                Pingpp.createPayment(PayActivity.this, charge);
+                                PingppUI.createPay(PayActivity.this,charge,new PaymentHandler(){
+                                    @Override
+                                    public void handlePaymentResult(Intent intent) {
+                                        if (intent.getExtras().getString("result").equals("success")) {
+                                            Intent i = new Intent(PayActivity.this, UpdateServiceSuccessActivity.class);
+                                            i.putExtra("amount", price);
+                                            i.putExtra("projectId", projectId);
+                                            MyApplication.temp = 1;
+                                            startActivity(i);
+                                            finish();
+                                        }
+                                    }
+                                });
                             }
                         });
                     }

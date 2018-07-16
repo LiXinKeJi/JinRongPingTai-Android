@@ -143,8 +143,7 @@ public class LoginActivity extends BaseActivity {
      * 第三方登录
      */
     private void thirdLogin(final String screen_name, final String profile_image_url, String openid) {
-        String json = "{\"cmd\":\"weChatLogin\",\"wxId\":\"" + openid  + "\"}";
-
+        String json = "{\"cmd\":\"weChatLogin\",\"wxId\":\"" + openid  + "\",\"token\":\"" +JPushInterface.getRegistrationID(this) + "\"}";
         OkHttpUtils.post().url(Content.DOMAIN).addParams("json", json).build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e, int id) {

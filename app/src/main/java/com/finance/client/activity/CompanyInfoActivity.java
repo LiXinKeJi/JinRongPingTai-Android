@@ -148,17 +148,20 @@ public class CompanyInfoActivity extends BaseActivity {
             if (!TextUtils.isEmpty(info.getScore())) tv_score.setText(info.getScore());
 
             if(!TextUtils.isEmpty(info.getPublicImage())){
+                image1.setVisibility(View.VISIBLE);
                ImageLoader.getInstance().displayImage(info.getPublicImage(),image1);
             }else{
                 image1.setVisibility(View.GONE);
             }
             if(!TextUtils.isEmpty(info.getPublicitImage())){
-                ImageLoader.getInstance().displayImage(info.getPublicImage(),image2);
+                image2.setVisibility(View.VISIBLE);
+                ImageLoader.getInstance().displayImage(info.getPublicitImage(),image2);
             }else{
                 image2.setVisibility(View.GONE);
             }
             if(!TextUtils.isEmpty(info.getPublicityImage())){
-                ImageLoader.getInstance().displayImage(info.getPublicImage(),image3);
+                image3.setVisibility(View.VISIBLE);
+                ImageLoader.getInstance().displayImage(info.getPublicityImage(),image3);
             }else{
                 image3.setVisibility(View.GONE);
             }

@@ -160,12 +160,17 @@
 
         <!-- Ping++ SDK -->
         <activity
+            android:name="com.pingplusplus.ui.PaySuccessActivity"
+            android:configChanges="orientation|keyboardHidden|navigation|screenSize"/>
+        <activity
+            android:name="com.pingplusplus.ui.PayActivity"
+            android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity
             android:name="com.pingplusplus.android.PaymentActivity"
             android:configChanges="orientation|keyboardHidden|navigation|screenSize"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
-
-
         </activity>
 
         <!-- 微信支付 -->
@@ -181,12 +186,12 @@
             android:name="com.alipay.sdk.app.H5PayActivity"
             android:configChanges="orientation|keyboardHidden|navigation|screenSize"
             android:exported="false"
-            android:screenOrientation="behind"></activity>
+            android:screenOrientation="behind"/>
         <activity
             android:name="com.alipay.sdk.auth.AuthActivity"
             android:configChanges="orientation|keyboardHidden|navigation|screenSize"
             android:exported="false"
-            android:screenOrientation="behind"></activity>
+            android:screenOrientation="behind"/>
 
 
         <!-- 、、、、、、、、、、、、、、、友盟登陆分享、、、、、、、、、、、、、 -->
