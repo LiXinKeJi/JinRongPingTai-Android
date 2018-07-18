@@ -139,7 +139,7 @@ public class ForgetPwdActivity extends BaseActivity {
      * @param phone
      */
     public void sendSMS(String phone, String CODE) {
-        OkHttpUtils.post().url("https://v.juhe.cn/sms/send?").addParams("mobile", phone).addParams("tpl_id", "42425").addParams("tpl_value", "%23code%23%3d" + CODE).addParams("key", "d4cd3d885697fcc221c6fa172015a440").build().execute(new StringCallback() {
+        OkHttpUtils.post().url("https://v.juhe.cn/sms/send?").addParams("mobile", phone).addParams("tpl_id", "87243").addParams("tpl_value", "%23code%23%3d" + CODE).addParams("key", "d4cd3d885697fcc221c6fa172015a440").build().execute(new StringCallback() {
             @Override
             public void onResponse(String response, int id) {
                 try {

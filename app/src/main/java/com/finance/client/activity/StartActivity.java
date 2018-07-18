@@ -35,6 +35,11 @@ public class StartActivity extends AppCompatActivity implements StartImageHttp.I
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         image = (ImageView) findViewById(R.id.image);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         StartImageHttp.getImage(this);
     }
 
@@ -54,14 +59,16 @@ public class StartActivity extends AppCompatActivity implements StartImageHttp.I
                 Intent intent = new Intent(StartActivity.this, RuleDescriptionActivity.class);
                 intent.putExtra("url", model.url);
                 startActivity(intent);
+                timer.cancel();
             }
         });
     }
 
+    private Timer timer;
 
     private void toTask(final StartImageModel model) {
         final String uid = UserUtil.getUid(this);
-        Timer timer = new Timer();
+        timer = new Timer();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {

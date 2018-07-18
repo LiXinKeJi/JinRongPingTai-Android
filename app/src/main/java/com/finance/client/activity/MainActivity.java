@@ -23,6 +23,7 @@ import com.finance.client.fragment.MasterFragment;
 import com.finance.client.fragment.MineFragment;
 import com.finance.client.fragment.MsgFragment;
 import com.finance.client.receiver.ExampleUtil;
+import com.finance.client.util.ToastUtils;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -40,6 +41,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private int current = 0;
     public static boolean isForeground = false;
     private long exitTime = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +70,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         mFragments[0] = new MsgFragment();
         mFragments[1] = new MasterFragment();
         mFragments[2] = new MineFragment();
-        setCurrent(0);
+        setCurrent(0, mFragments[0]);
     }
 
     private void refreshView() {
@@ -82,34 +84,31 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case 0:
-                setCurrent(0);
+                setCurrent(0, new MsgFragment());
                 break;
             case 1:
-                setCurrent(1);
+                setCurrent(1, mFragments[1]);
                 break;
             case 2:
-                setCurrent(2);
-                break;
-            case 3:
-                setCurrent(3);
+                setCurrent(2, mFragments[2]);
                 break;
             default:
                 break;
         }
     }
 
-    private void setCurrent(int position) {
+    private void setCurrent(int position, Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        if (!mFragments[position].isAdded()) {
+        if (!fragment.isAdded()) {
             transaction
                     .hide(currentFragment)
-                    .add(R.id.activity_new_main_layout_content, mFragments[position]);
+                    .add(R.id.activity_new_main_layout_content, fragment);
         } else {
             transaction
                     .hide(currentFragment)
-                    .show(mFragments[position]);
+                    .show(fragment);
         }
-        currentFragment = mFragments[position];
+        currentFragment = fragment;
         transaction.commit();
 
         mLinearLayout[position].setSelected(true);

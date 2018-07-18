@@ -33,7 +33,7 @@ public class RuleDescriptionActivity extends BaseActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        title = "规则说明";
+        title = "推荐";
         setContentView(R.layout.activity_rule_description);
         super.onCreate(savedInstanceState);
 
@@ -70,7 +70,14 @@ public class RuleDescriptionActivity extends BaseActivity {
         settings.setUseWideViewPort(true);
         // 自适应屏幕
         settings.setLoadWithOverviewMode(true);
-//        myWebView.loadUrl(ruleDescriptionUrl);
+//        myWebView.loadUrl(ruleDescriptionUrl);]
+        if (!TextUtils.isEmpty(getIntent().getStringExtra("url"))) {
+            myWebView.loadUrl(getIntent().getStringExtra("url"));
+            title = "推荐";
+        } else {
+            requestData();
+            title = "规则说明";
+        }
     }
 
 

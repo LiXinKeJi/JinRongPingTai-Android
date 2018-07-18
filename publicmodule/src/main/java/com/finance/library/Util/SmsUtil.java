@@ -22,7 +22,7 @@ public class SmsUtil {
         String url = "http://v.juhe.cn/sms/send";
         RequestParams param = new RequestParams();
         param.put("mobile",phone);
-        param.put("tpl_id","42425");
+        param.put("tpl_id","87243");
         //param.put("tpl_id","24921");
         param.put("key","d4cd3d885697fcc221c6fa172015a440");
         //param.put("key","190ab8206f6efa2b35fbcbbf5ea1f957");

@@ -56,11 +56,20 @@ public class MsgFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_msg_list, null);
         initView();
-        RequestData();
         IntentFilter filter = new IntentFilter();
         filter.addAction("JPUSH");
         getActivity().registerReceiver(new MyBroadcastReciver(), filter);
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if(msgList.size()>0){
+            msgList.clear();
+            mAdapter.notifyDataSetChanged();
+        }
+        RequestData();
     }
 
     private void initView() {

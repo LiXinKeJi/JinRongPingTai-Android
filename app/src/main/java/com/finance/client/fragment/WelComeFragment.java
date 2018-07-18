@@ -1,5 +1,6 @@
 package com.finance.client.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.finance.client.MyApplication;
 import com.finance.client.R;
 import com.finance.client.activity.LoginActivity;
+import com.finance.client.activity.RuleDescriptionActivity;
 import com.finance.client.model.StartImageModel;
 import com.finance.client.util.SPUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -32,9 +34,17 @@ public class WelComeFragment extends BaseFragment {
 
 
     private void init(View view) {
-        ImageView image = (ImageView) view.findViewById(R.id.iv_bg);
+        final StartImageModel.imgBean model = (StartImageModel.imgBean) getArguments().getSerializable("model");
+        final ImageView image = (ImageView) view.findViewById(R.id.iv_bg);
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), RuleDescriptionActivity.class);
+                intent.putExtra("url", model.url);
+                startActivity(intent);
+            }
+        });
         TextView tv_in = (TextView) view.findViewById(R.id.tv_in);
-        StartImageModel.imgBean model = (StartImageModel.imgBean) getArguments().getSerializable("model");
 
         if (getArguments().getInt("flag", -1) == 0) {
             tv_in.setVisibility(View.VISIBLE);

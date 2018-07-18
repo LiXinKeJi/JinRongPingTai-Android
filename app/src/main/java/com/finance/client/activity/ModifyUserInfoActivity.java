@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.finance.client.R;
-import com.finance.client.common.IndustryChooseDialog;
 import com.finance.client.common.RegionChooseDialog;
 import com.finance.client.model.ModifyAvatarResultDao;
 import com.finance.client.model.UserInfoDao;
