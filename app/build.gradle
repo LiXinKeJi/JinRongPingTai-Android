@@ -43,30 +43,30 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:23.1.0'
-    compile 'com.android.support:design:23.1.0'
+    implementation 'com.android.support:design:23.1.0'
     testCompile 'junit:junit:4.12'
-    compile(name: 'alchemy-release', ext: 'aar')
-    compile(name: 'photo-picker-1.0.3.1', ext: 'aar')
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'org.greenrobot:eventbus:3.0.0'
-    compile 'com.google.guava:guava:19.0'
-    compile 'com.google.zxing:core:3.2.0'
-    compile 'com.journeyapps:zxing-android-embedded:3.1.0'
-    compile 'com.jakewharton:butterknife:8.4.0'
-    compile 'com.makeramen:roundedimageview:2.2.1'
-    compile project(':pingpp')
-    compile project(':okhttputils')
-    compile files('libs/open_sdk_r5781.jar')
-    compile files('libs/SocialSDK_WeiXin_1.jar')
-    compile files('libs/SocialSDK_WeiXin_2.jar')
-    compile files('libs/umeng_social_sdk.jar')
-    compile 'com.android.support:multidex:1.0.0'
-    compile files('libs/jcore-android-1.1.7.jar')
-    compile files('libs/jpush-android-3.0.9.jar')
-    compile 'com.google.code.gson:gson:2.3.1'
-    compile project(':swipeLayoutlibrary')
+    implementation(name: 'alchemy-release', ext: 'aar')
+    implementation(name: 'photo-picker-1.0.3.1', ext: 'aar')
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation 'com.google.guava:guava:19.0'
+    implementation 'com.google.zxing:core:3.2.0'
+    implementation 'com.journeyapps:zxing-android-embedded:3.1.0'
+    implementation 'com.jakewharton:butterknife:8.4.0'
+    implementation 'com.makeramen:roundedimageview:2.2.1'
+    implementation project(':pingpp')
+    implementation project(':okhttputils')
+    implementation files('libs/open_sdk_r5781.jar')
+    implementation files('libs/SocialSDK_WeiXin_1.jar')
+    implementation files('libs/SocialSDK_WeiXin_2.jar')
+    implementation files('libs/umeng_social_sdk.jar')
+    implementation 'com.android.support:multidex:1.0.0'
+    implementation files('libs/jcore-android-1.1.7.jar')
+    implementation files('libs/jpush-android-3.0.9.jar')
+    implementation 'com.google.code.gson:gson:2.3.1'
+    implementation project(':swipeLayoutlibrary')
 
-    compile 'com.pingxx:pingpp-ui:2.1.16' // 使用 Ping++ UI 时额外添加
+    implementation 'com.pingxx:pingpp-ui:2.1.16' // 使用 Ping++ UI 时额外添加
 }
