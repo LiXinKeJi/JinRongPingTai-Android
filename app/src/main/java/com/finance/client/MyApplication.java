@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 
-import com.finance.client.util.CrashHandler;
 import com.finance.client.util.UserUtil;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;

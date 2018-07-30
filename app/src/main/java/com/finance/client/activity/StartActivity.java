@@ -12,14 +12,9 @@ import com.finance.client.MyApplication;
 import com.finance.client.R;
 import com.finance.client.http.StartImageHttp;
 import com.finance.client.model.StartImageModel;
-import com.finance.client.util.Content;
 import com.finance.client.util.SPUtil;
 import com.finance.client.util.UserUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.umeng.socialize.UMShareAPI;
-import com.yhrun.alchemy.Util.ImageLoaderUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;

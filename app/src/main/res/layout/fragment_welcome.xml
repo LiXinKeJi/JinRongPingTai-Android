@@ -37,7 +37,7 @@
                 android:paddingLeft="40dp"
                 android:paddingRight="40dp"
                 android:paddingTop="10dp"
-                android:text="马上预约"
+                android:text="立即体验"
                 android:textColor="@color/colorWhite"
                 android:textSize="20sp" />
 

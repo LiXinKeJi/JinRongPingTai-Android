@@ -14,8 +14,6 @@ public static String WXID = "wxf33600c85feaf21b";
      * id=9  用户端升级服务说明
      * id=10  商家端升级服务说明
      * id=2  设置粉丝订购价格说明
-     *
-     *
      * */
 
 

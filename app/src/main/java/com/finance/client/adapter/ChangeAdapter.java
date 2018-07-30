@@ -56,6 +56,7 @@ public class ChangeAdapter extends BaseAdapter{
         ChangeListResultDao.ChangeInfoDao info = lists.get(position);
         viewHolder.mType.setText(info.getType());
         viewHolder.mDate.setText(info.getTime());
+
         if (info.getType().contains("充值")){
             viewHolder.mMoney.setText(info.getMoney()+"元");
         }else {
