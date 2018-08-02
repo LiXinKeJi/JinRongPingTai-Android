@@ -21,7 +21,7 @@ import okhttp3.Response;
  * Created by zhy on 15/8/17.
  */
 public class OkHttpUtils {
-    public static final long DEFAULT_MILLISECONDS = 10_000L;
+    public static final long DEFAULT_MILLISECONDS = 60_000L;
     private volatile static OkHttpUtils mInstance;
     private OkHttpClient mOkHttpClient;
     private Platform mPlatform;

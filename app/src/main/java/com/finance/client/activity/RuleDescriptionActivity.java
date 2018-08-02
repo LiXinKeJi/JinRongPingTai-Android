@@ -2,6 +2,7 @@ package com.finance.client.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.telecom.Call;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -12,16 +13,15 @@ import android.widget.Toast;
 import com.finance.client.R;
 import com.finance.client.util.Content;
 import com.finance.client.util.ToastUtils;
-import com.google.common.collect.Maps;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import okhttp3.Call;
 
 /**
  * Created by Administrator on 2017/9/14 0014.
@@ -83,15 +83,15 @@ public class RuleDescriptionActivity extends BaseActivity {
 
     private void requestData() {
         showLoading();
-        Map<String, String> params = Maps.newHashMap();
+        Map<String, String> params =new HashMap<>();
         final String json = "{\"cmd\":\"ruleDescription\",\"nid\":\"" + "6" + "\"}";
         Log.e("获取规则说明...........", json);
         params.put("json", json);
         OkHttpUtils.post().url(Content.DOMAIN).params(params).build().execute(new StringCallback() {
             @Override
-            public void onError(Call call, Exception e, int id) {
-                dismissLoading();
+            public void onError(okhttp3.Call call, Exception e, int id) {
                 ToastUtils.makeText(RuleDescriptionActivity.this, e.getMessage());
+                dismissLoading();
             }
 
             @Override

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 26
     buildToolsVersion '26.0.2'
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
@@ -44,9 +44,9 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:23.1.0'
-    implementation 'com.android.support:design:23.1.0'
-    testCompile 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    testImplementation 'junit:junit:4.12'
     implementation(name: 'alchemy-release', ext: 'aar')
     implementation(name: 'photo-picker-1.0.3.1', ext: 'aar')
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
@@ -56,17 +56,17 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:3.1.0'
     implementation 'com.jakewharton:butterknife:8.4.0'
     implementation 'com.makeramen:roundedimageview:2.2.1'
-    implementation project(':pingpp')
-    implementation project(':okhttputils')
     implementation files('libs/open_sdk_r5781.jar')
     implementation files('libs/SocialSDK_WeiXin_1.jar')
     implementation files('libs/SocialSDK_WeiXin_2.jar')
     implementation files('libs/umeng_social_sdk.jar')
-    implementation 'com.android.support:multidex:1.0.0'
+    implementation 'com.android.support:multidex:1.0.3'
     implementation files('libs/jcore-android-1.1.7.jar')
     implementation files('libs/jpush-android-3.0.9.jar')
     implementation 'com.google.code.gson:gson:2.3.1'
     implementation project(':swipeLayoutlibrary')
-
-    implementation 'com.pingxx:pingpp-ui:2.1.16' // 使用 Ping++ UI 时额外添加
+    implementation 'com.pingxx:pingpp-ui:2.1.16'
+    // 使用 Ping++ UI 时额外添加
+    implementation project(':okhttputils')
+    implementation project(':pingpp')
 }
