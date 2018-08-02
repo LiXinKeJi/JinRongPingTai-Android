@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
+import android.text.TextUtils;
 
 import com.finance.client.util.UserUtil;
 import com.umeng.socialize.PlatformConfig;
@@ -25,6 +26,7 @@ public class MyApplication extends MultiDexApplication {
     public static Context CONTEXT;
     public static int temp = 0;
     private static MyApplication myApplication;
+
     public static MyApplication getInstance() {
         if (myApplication == null) {
             synchronized (MyApplication.class) {
@@ -35,7 +37,7 @@ public class MyApplication extends MultiDexApplication {
     }
 
 
-  //   String json = "{\"cmd\":\"upPrize\",\"prizeId\":\"" + prizeId  + "\",\"userNme\":\"" + MyApplication.getUserName() + "\"}";
+    //   String json = "{\"cmd\":\"upPrize\",\"prizeId\":\"" + prizeId  + "\",\"userNme\":\"" + MyApplication.getUserName() + "\"}";
 
 
     @Override
@@ -45,17 +47,24 @@ public class MyApplication extends MultiDexApplication {
         myApplication = this;
         UMShareAPI.get(this);
         PlatformConfig.setWeixin("wxf33600c85feaf21b", "32f799126ed76ccfa08aa6005b4fb816");
-        JPushInterface.setDebugMode(true);
-        JPushInterface.init(this);
-        JPushInterface.setSilenceTime(CONTEXT, 0, 0, 23, 59);//全天静默
+
         //崩溃错误日志写入本地文档
 //        CrashHandler catchExcep = new CrashHandler(this);
 //        Thread.setDefaultUncaughtExceptionHandler(catchExcep);
 
-       UserUtil.getUid(this);
+        UserUtil.getUid(this);
         ImageLoaderUtil.init(this);
+        if (!TextUtils.isEmpty(UserUtil.getUid(this))) {
+            initJpush();
+        }
     }
 
+    //只有在登陆状态初始化推送
+    public static void initJpush() {
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(CONTEXT);
+        JPushInterface.setSilenceTime(CONTEXT, 0, 0, 23, 59);//全天静默
+    }
 
     /**
      * 检查是否已经登录 true 已登录

@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.finance.client.MyApplication;
 import com.finance.client.R;
 import com.finance.client.model.UserInfo;
 import com.finance.client.util.Content;
@@ -178,6 +179,7 @@ public class LoginActivity extends BaseActivity {
                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                     startActivity(intent);
                     finish();
+                    MyApplication.initJpush();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -254,12 +256,15 @@ public class LoginActivity extends BaseActivity {
                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                     startActivity(intent);
                     finish();
+                    MyApplication.initJpush();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
     }
+
+
 
 
 }
